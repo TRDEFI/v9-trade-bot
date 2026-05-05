@@ -7,9 +7,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 esbuild.build({
   entryPoints: [path.resolve(__dirname, "../server.ts")],
   bundle: true,
+  packages: "external",
   platform: "node",
   target: "node20",
-  outfile: path.resolve(__dirname, "../dist/server.cjs"),
-  format: "cjs",
+  outfile: path.resolve(__dirname, "../dist/server.js"),
+  format: "esm",
   logLevel: "info",
 }).catch(() => process.exit(1));
