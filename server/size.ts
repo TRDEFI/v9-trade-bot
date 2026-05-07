@@ -34,44 +34,34 @@ export function checkDrawdownProtection(capital: number, allTimeHigh: number): {
   };
 }
 
-export function calculatePositionSize(capital: number, entryPrice: number, stopLoss: number, riskMult: number): { size: number, lev: number } {
-  const riskAmount = capital * BASE_RISK_PCT * riskMult;
-  const priceDistance = Math.abs(entryPrice - stopLoss);
+export function calculatePositionSize(capital: number, entryPrice: number, stopLoss: number, riskMult: number, tpPrice: number): { size: number, lev: number } {
+  // Target net profit is $3
+  const TARGET_PROFIT = 3.0; // USD
   
-  if (priceDistance === 0) return { size: 0, lev: 1 };
+  const tpDistance = Math.abs(tpPrice - entryPrice);
+  const tpPct = tpDistance / entryPrice;
   
-  let size = riskAmount / priceDistance; // Note: if priceDistance is nominal price diff, size is in coins.
-  // Wait, in Python:
-  // risk_amount = capital * BASE_RISK_PCT * risk_mult
-  // price_distance = abs(entry_price - stop_loss)
-  // size = risk_amount / price_distance ... wait
-  // If price is 100, SL is 90. Distance is 10. Risk 30$. size = 3. 3 * 100 = 300$ position.
-  // Actually python size seems to be notional USD!
-  // Python: sz, lev = calculate_position_size...
-  // Notional = pos['size'] * pos['lev'] OR pos['size']?
-  // Let's make size represent margin allocated in USD.
+  // Total Commission expected = Notional * 0.0004 * 2 = Notional * 0.0008
+  // Net Profit = (Notional * tpPct) - (Notional * 0.0008)
+  const netTpPct = tpPct - 0.0008;
   
-  // So size calculated here is in base currency (COINS)?
-  // Python code used this `sz` directly as margin because it checks total used capital: `sum(pos['size'] for ...)`
-  // Risk amount = margin * (priceDistance/entryPrice) ? No. By python logic this was returning coins or something.
-  // Let's refine it correctly:
-  // We want to risk "riskAmount" (USD).
-  // Percentage move to SL = priceDistance / entryPrice
-  // Total notional needed = riskAmount / (priceDistance / entryPrice)
-  // Margin required = notional / leverage.
-  let lev = 1;
-  if (riskMult > 0.8) lev = 2;
-  if (riskMult > 1.0) lev = 3;
-  lev = Math.min(lev, MAX_LEV);
+  if (netTpPct <= 0) {
+    // If commission eats the whole TP (tp is less than 0.08%), we shouldn't trade
+    return { size: 0, lev: 1 };
+  }
   
-  const movePct = priceDistance / entryPrice;
-  const notional = riskAmount / movePct;
-  let margin = notional / lev;
-
-  if (margin < 5) return { size: 0, lev: 1 };
-  
+  const notional = TARGET_PROFIT / netTpPct;
   const maxSize = capital * MAX_POSITION_PCT;
+  
+  let lev = 1;
+  while (lev < MAX_LEV && (notional / lev) > maxSize) {
+    lev++;
+  }
+  
+  let margin = notional / lev;
   if (margin > maxSize) margin = maxSize;
+  
+  if (margin < 5) return { size: 0, lev: 1 };
   
   return { size: margin, lev: lev };
 }

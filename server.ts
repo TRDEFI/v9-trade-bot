@@ -18,8 +18,8 @@ async function startServer() {
   // Initialize and start the bot
   const bot = new BotRunner();
   // We can let the user start it via UI or automatically.
-  // The python code auto-started, but we can do auto-start here.
-  bot.start();
+  // The python code auto-started, but let's NOT auto-start to prevent ghost trades!
+  // bot.start();
 
   // API Routes
   app.get('/api/data', (req, res) => {

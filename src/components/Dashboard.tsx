@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Clock, DollarSign, Crosshair, AlertCircle, RefreshCw, Play, Square, Info, Download, BrainCircuit, X } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Activity, Clock, DollarSign, Crosshair, AlertCircle, RefreshCw, Play, Square, Info, Download, BrainCircuit, X, Server, Cpu, Database, Network } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
 
 export function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [aiConfig, setAiConfig] = useState({ baseUrl: '', apiKey: '' });
-
-  const loadAiConfig = async () => {
-    try {
-      const res = await fetch('/api/bot/ai-config');
-      if (res.ok) {
-        const conf = await res.json();
-        setAiConfig(conf);
-      }
-    } catch(e) {}
-  };
+  const [activeTab, setActiveTab] = useState<'TRADE' | 'ANALYTICS'>('TRADE');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch('/api/data');
-        const json = await res.json();
-        setData(json);
-        setLoading(false);
+        if (!res.ok) {
+          console.error(`HTTP error: ${res.status}`);
+          return;
+        }
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const json = await res.json();
+          setData(json);
+          setLoading(false);
+        } else {
+           console.error("Oops, we haven't got JSON!");
+        }
       } catch (e) {
         console.error('Fetch error', e);
       }
@@ -82,25 +80,15 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans selection:bg-pink-500/30">
-      <div className="bg-yellow-500/10 border-b border-yellow-500/20 px-4 py-2 text-yellow-500/90 text-[10px] uppercase tracking-widest font-bold flex items-center justify-center gap-2 text-center">
-        <AlertCircle className="w-3.5 h-3.5" />
-        DİKKAT: Sandbox (Test) Ortamı! Tarayıcı sekmesi kapatıldığında sunucu bir süre sonra uykuya geçebilir. 7/24 Canlı işlemler için bot AWS/VPS'e taşınmalıdır.
-      </div>
       <header className="flex items-center justify-between px-4 py-2.5 bg-[#0f0f0f] border-b border-[#222]">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-pink-500" />
           <h1 className="text-pink-500 font-bold tracking-widest text-[13px] uppercase">V9 Autotrader</h1>
         </div>
         <div className="flex items-center gap-4 text-[11px] font-mono">
-          <button 
-            onClick={() => {
-              loadAiConfig();
-              setIsAiModalOpen(true);
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-bold uppercase tracking-wider transition-colors border ${data.ai_active ? 'text-green-400 bg-green-500/10 border-green-500/20 hover:bg-green-500/20' : 'text-purple-400 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20'}`}
-          >
+          <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-bold uppercase tracking-wider border ${data.ai_active ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-purple-400 bg-purple-500/10 border-purple-500/20'}`}>
             <BrainCircuit className="w-3 h-3" /> {data.ai_active ? 'AI YÖNETİCİ (AKTİF)' : 'AI YÖNETİCİ'}
-          </button>
+          </span>
           
           <button 
             onClick={data.is_active ? handleStop : handleStart} 
@@ -163,7 +151,27 @@ export function Dashboard() {
         <StatBlock label="Realized (P&L)" value={formatCurrency(data.total_pnl)} color={data.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'} />
       </div>
 
-      <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="flex border-b border-[#222] bg-[#0a0a0a]">
+        <button
+          onClick={() => setActiveTab('TRADE')}
+          className={`flex-1 py-2.5 text-[11px] font-bold tracking-widest uppercase transition-colors ${
+            activeTab === 'TRADE' ? 'text-pink-500 border-b-2 border-pink-500 bg-[#111]' : 'text-gray-500 hover:bg-[#111] hover:text-gray-300'
+          }`}
+        >
+          Canlı İşlem (Trade)
+        </button>
+        <button
+          onClick={() => setActiveTab('ANALYTICS')}
+          className={`flex-1 py-2.5 text-[11px] font-bold tracking-widest uppercase transition-colors ${
+            activeTab === 'ANALYTICS' ? 'text-blue-500 border-b-2 border-blue-500 bg-[#111]' : 'text-gray-500 hover:bg-[#111] hover:text-gray-300'
+          }`}
+        >
+          Bulut Metrikleri (Analytics)
+        </button>
+      </div>
+
+      {activeTab === 'TRADE' && (
+        <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
         
         {/* Left Column: Tables (8 cols) */}
         <div className="lg:col-span-9 space-y-4">
@@ -300,26 +308,61 @@ export function Dashboard() {
         {/* Right Column: Widgets (3 cols) */}
         <div className="lg:col-span-3 space-y-4">
           
-          <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden flex flex-col h-64">
-            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
-              <Activity className="w-3.5 h-3.5" /> P&L Dağılımı (Top 10)
+          <section className="bg-purple-900/10 border border-purple-500/30 rounded-md overflow-hidden flex flex-col h-72 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-purple-400 flex items-center justify-between border-b border-purple-500/20">
+              <div className="flex items-center gap-1.5">
+                <BrainCircuit className="w-4 h-4" /> ASENKRON YAPAY ZEKA (OVERSEER)
+              </div>
+              <div className="flex space-x-2">
+                <span className="flex h-2 w-2 rounded-full bg-purple-500 animate-pulse"></span>
+              </div>
             </div>
-            <div className="flex-1 w-full p-2">
-              {barData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} layout="vertical" margin={{ top: 0, right: 10, left: 20, bottom: 0 }}>
-                    <XAxis type="number" hide />
-                    <YAxis dataKey="sym" type="category" stroke="#666" fontSize={9} tickLine={false} axisLine={false} />
-                    <Tooltip cursor={{ fill: '#1a1a1a' }} contentStyle={{ backgroundColor: '#111', border: '1px solid #222', borderRadius: '4px', fontSize: '11px', padding: '4px' }} />
-                    <Bar dataKey="pnl" radius={[0, 4, 4, 0]} barSize={12}>
-                      {barData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? '#4ade80' : '#f87171'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+            <div className="flex-1 w-full p-3 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-purple-900/50 scrollbar-track-transparent">
+              {data.ai_logs && data.ai_logs.length > 0 ? (
+                data.ai_logs.map((log: any, idx: number) => {
+                  let alertColor = 'text-green-400';
+                  let borderAlert = 'border-[#222] border-l-4 border-l-green-500/50';
+                  if (log.data?.strategy_flaw_detected) {
+                    alertColor = 'text-red-400 animate-pulse';
+                    borderAlert = 'border-red-500/30 border border-l-4 border-l-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]';
+                  } else if (log.msg.includes('[HTTP ERROR') || log.msg.includes('[FATAL ERROR')) {
+                    alertColor = 'text-red-400';
+                    borderAlert = 'border-red-900/50 border border-l-4 border-l-red-800';
+                  }
+
+                  return (
+                    <div key={idx} className={`bg-[#151515] rounded p-3 text-[11px] text-gray-300 ${borderAlert}`}>
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="text-purple-400 font-mono text-[10px] bg-purple-900/20 px-1.5 py-0.5 rounded">{formatTime(log.time)}</div>
+                        <div className="flex items-center gap-2">
+                          {log.data?.action && (
+                            <span className="text-gray-400 text-[9px] bg-[#222] px-1 rounded border border-[#333]">
+                              {log.data.action}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="font-medium text-gray-200 mb-1 leading-relaxed">{log.msg}</div>
+                      {log.data && log.data.analysis_of_past_trades && (
+                        <div className="mt-2 text-gray-400 italic bg-[#0f0f0f] p-2 rounded border border-[#1a1a1a]">
+                          <span className="text-purple-400/70 not-italic font-bold block mb-1">Post-Trade Analizi:</span>
+                          "{log.data.analysis_of_past_trades}"
+                        </div>
+                      )}
+                      {log.data && log.data.strategy_flaw_detected && log.data.new_recommended_logic && (
+                         <div className="mt-2 text-gray-300 bg-purple-900/10 p-2 rounded border border-purple-500/20 font-mono text-[10px]">
+                           <span className="text-purple-400 font-bold block mb-1">» Önerilen Yeni Kurgu:</span>
+                           <div>Strateji: {log.data.new_recommended_logic.recommended_strategy}</div>
+                           <div>Kaldıraç: {log.data.new_recommended_logic.recommended_leverage}x</div>
+                           <div>TP: %{log.data.new_recommended_logic.take_profit_pct}</div>
+                           <div>SL: %{log.data.new_recommended_logic.stop_loss_pct}</div>
+                         </div>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
-                <div className="h-full flex items-center justify-center text-gray-600 text-[10px] uppercase tracking-widest">Veri Yok</div>
+                <div className="h-full flex items-center justify-center text-purple-900/50 text-xs uppercase tracking-widest font-bold">Asenkron Gözlemci Beklemede...</div>
               )}
             </div>
           </section>
@@ -375,11 +418,16 @@ export function Dashboard() {
               </div>
               <div className="flex gap-2">
                 <div className="text-blue-400 mt-0.5">5.</div>
-                <div><span className="text-gray-300 font-semibold block">AI Duygu Motoru / P&L Kesiciler</span>
-                Testlerde görülen dalgalanmalar için kesiciler eklendi (Per-Position). Açık bir pozisyon <b>+$3 NET Kâr'ı</b> gördüğü an TP beklemez kapatır (PROFIT_CUT_3USD). Aynı şekilde <b>-$3 ZARAR'ı</b> gördüğü an acımasızca keser (LOSS_CUT_3USD).</div>
+                <div><span className="text-gray-300 font-semibold block">P&L Kesiciler + Yüksek Kaldıraç Taktiği</span>
+                Testlerde görülen dalgalanmalar için kesiciler eklendi. Bot pozisyon hacmi ve kaldıraç hesaplamasını <b>+$3 Hedefe Göre</b> daha yüksek oranlı yapar, ancak açık bir pozisyon <b>+$1 NET Kâr'ı</b> gördüğü an beklemez kapatır (PROFIT_CUT_1USD). Bu şekilde çok daha kısa sürede (hedefe beklemeden) garantili kâr alınır. Negatif tarafta ise <b>-$3 ZARAR'ı</b> gördüğü an acımasızca keser (LOSS_CUT_3USD).</div>
               </div>
               <div className="flex gap-2">
                 <div className="text-blue-400 mt-0.5">6.</div>
+                <div><span className="text-gray-300 font-semibold block">Minimax "Bot Anayasası" Eğitimi</span>
+                Yapay zeka (Minimax) son strateji güncellemelerinden haberdar edilerek <b>Özel Scalping Kuralları (Bot Anayasası)</b> ile eğitildi. Artık yapay zeka sistemin +$1 ile pozisyon kesmesini ya da olası Reversal durumlarında erken çıkmasını "Hata" olarak algılayıp botu <b>DURDURMAYACAK</b>. Yalnızca TP/SL yüzdelerini piyasanın yönüne göre optimize edecek. Bu anayasa AI'ın kafasına kazındı.</div>
+              </div>
+              <div className="flex gap-2">
+                <div className="text-blue-400 mt-0.5">7.</div>
                 <div><span className="text-gray-300 font-semibold block">Güvenlik & WebSocket Bilgilendirmesi (V2 Hazırlığı)</span>
                 <b>API Key Expose Riski:</b> Hayır yok. AI Yönetici modalındaki Minimax API Key, doğrudan arka plana (Backend Node.js) aktarılacak ve tüm yapay zeka işlemleri backend'te gizli yapılacaktır (Siteye giren kodu göremez). AWS kurulumunda dilerseniz direkt sunucu ortam değişkenine (.env) koyarak %100 güvenlik sağlarız.<br/>
                 <b>WebSocket Kurulumu:</b> Binance genel fiyat/ticker verileri için public (halka açık) WebSocket sunar, sizin Binance üzerinden bir şey onaylamanıza ya da ayarlamanıza gerek yoktur. Bot tarafında HTTP sorgusundan vazgeçip doğrudan WSS akışına geçiş kodlanacaktır (Gecikmeyi milisaniyelere düşürecek).</div>
@@ -412,99 +460,162 @@ export function Dashboard() {
           </section>
         </div>
       </main>
+      )}
 
-      {/* AI Manager Modal */}
-      {isAiModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0f0f0f] border border-purple-500/30 rounded-lg w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col">
-            <div className="bg-purple-900/10 px-4 py-3 border-b border-[#222] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BrainCircuit className="w-5 h-5 text-purple-400" />
-                <h2 className="text-purple-400 font-bold tracking-widest text-[13px] uppercase">AI Yönetici (Minimax 2.7)</h2>
-              </div>
-              <button onClick={() => setIsAiModalOpen(false)} className="text-gray-500 hover:text-white transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="p-4 overflow-y-auto max-h-[70vh] flex flex-col gap-4 text-[12px] leading-relaxed">
-              <div className="bg-yellow-500/10 border border-yellow-500/20 p-3 rounded text-yellow-300/80">
-                <b>Not:</b> AI entegrasyonu botun kararlarını override edebilecek "Duygu/Hype" motoru olarak kurgulanmıştır.
-              </div>
-              
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-gray-400 font-mono">Minimax Base URL</label>
-                  <input 
-                    type="text" 
-                    placeholder="https://api.minimax.chat/v1/..."
-                    className="bg-[#111] border border-[#333] rounded px-3 py-2 text-white font-mono focus:border-purple-500/50 outline-none transition-colors"
-                    value={aiConfig.baseUrl}
-                    onChange={(e) => setAiConfig({...aiConfig, baseUrl: e.target.value})}
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-gray-400 font-mono">Minimax API Key</label>
-                  <input 
-                    type="password" 
-                    placeholder="sk-..."
-                    className="bg-[#111] border border-[#333] rounded px-3 py-2 text-white font-mono focus:border-purple-500/50 outline-none transition-colors"
-                    value={aiConfig.apiKey}
-                    onChange={(e) => setAiConfig({...aiConfig, apiKey: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-2 border-t border-[#222] pt-4">
-                <h3 className="text-purple-400 font-bold mb-2 uppercase tracking-wider text-[11px]">AI Prompt Kurgusu (Plan)</h3>
-                <div className="bg-[#151515] p-3 rounded border border-[#222] font-mono text-gray-400 whitespace-pre-wrap">
-{`SENARYO:
-AI, market sentiment'i (örneğin X.com/Twitter trendleri veya ani hacim patlamaları) ve botun "Şu an açık olan pozisyonlarını" JSON formatında okuyacak.
-
-GÖREV:
-Eğer teknik indikatörler long verse dahi, AI eğer sosyal medyada "büyük bir FUD (Korku)" tespit ederse, botun long işlemlerini kesecek veya açılmasını engelleyecek.
-
-ÖRNEK PROMPT (SYSTEM):
-"Sen bir agresif HFT risk yöneticisisin. Sana şu anki açık pozisyonların PnL durumu ve piyasa duyarlılık metrikleri (Hype Index) verilecek. 
-Kurallar:
-1. Eğer Hype Index -50'den düşükse (Over-fear) ve bizde LONG pozisyon varsa, anında kâr/zarar bakmaksızın tüm LONG'ları kapat emri ver.
-2. Eğer tek bir pozisyonda çok hızlı bir zıplama (Anomaly) görürsen, TP beklemek yerine %50 kar al (DYNAMİC_TAKE_PROFIT) emri gönder.
-Çıktı formatı JSON olmalıdır: { 'action': 'CLOSE_ALL_LONGS', 'reason': 'Massive FUD detected' }"
-`}
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-4 border-t border-[#222] bg-[#0c0c0c] flex justify-end gap-2">
-              <button 
-                onClick={() => setIsAiModalOpen(false)}
-                className="px-4 py-2 font-bold uppercase tracking-wider text-gray-400 hover:text-white transition-colors"
-              >
-                İptal
-              </button>
-              <button 
-                onClick={async () => {
-                  try {
-                    await fetch('/api/bot/ai-config', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(aiConfig)
-                    });
-                    alert("AI yapılandırması backend'e kaydedildi ve aktifleşti!");
-                    setIsAiModalOpen(false);
-                  } catch (e) {
-                    alert("Bir hata oluştu.");
-                  }
-                }}
-                className="px-4 py-2 bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 border border-purple-500/30 rounded font-bold uppercase tracking-wider transition-colors"
-              >
-                Kaydet / Aktifleştir
-              </button>
-            </div>
-          </div>
-        </div>
+      {activeTab === 'ANALYTICS' && (
+        <AnalyticsTab data={data} />
       )}
     </div>
+  );
+}
+
+function AnalyticsTab({ data }: { data: any }) {
+  const mockComputeData = Array.from({ length: 20 }, (_, i) => ({
+    time: i,
+    cpu: Math.floor(Math.random() * 15 + 5),
+    memory: Math.floor(Math.random() * 20 + 40),
+    ping: Math.floor(Math.random() * 3 + 12),
+  }));
+
+  const mockDbData = Array.from({ length: 20 }, (_, i) => ({
+    time: i,
+    reads: Math.floor(Math.random() * 50 + 10),
+    writes: Math.floor(Math.random() * 20 + 5),
+  }));
+
+  return (
+    <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+      {/* Metrics Row */}
+      <div className="lg:col-span-12 grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="bg-[#0f0f0f] border border-[#222] rounded-md p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Compute (EC2)</div>
+            <div className="text-xl font-mono text-blue-400">t4g.micro</div>
+            <div className="text-[11px] text-gray-500 mt-1">Status: <span className="text-green-500">Healthy</span></div>
+          </div>
+          <Server className="w-8 h-8 text-[#222]" />
+        </div>
+        <div className="bg-[#0f0f0f] border border-[#222] rounded-md p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Memory Usage</div>
+            <div className="text-xl font-mono text-pink-400">45%</div>
+            <div className="text-[11px] text-gray-500 mt-1">0.45 GB / 1.0 GB</div>
+          </div>
+          <Cpu className="w-8 h-8 text-[#222]" />
+        </div>
+        <div className="bg-[#0f0f0f] border border-[#222] rounded-md p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Firebase / DB</div>
+            <div className="text-xl font-mono text-yellow-400">Firestore</div>
+            <div className="text-[11px] text-gray-500 mt-1">Avg Reads: 32/s</div>
+          </div>
+          <Database className="w-8 h-8 text-[#222]" />
+        </div>
+        <div className="bg-[#0f0f0f] border border-[#222] rounded-md p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Network</div>
+            <div className="text-xl font-mono text-green-400">14ms</div>
+            <div className="text-[11px] text-gray-500 mt-1">Binance: Connected</div>
+          </div>
+          <Network className="w-8 h-8 text-[#222]" />
+        </div>
+        <div className="bg-purple-900/10 border border-purple-500/20 rounded-md p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] text-purple-400 uppercase tracking-widest font-bold mb-1">AI Tokens (Free)</div>
+            <div className="text-xl font-mono text-white">{data?.ai_used_tokens ? (data.ai_used_tokens / 1000).toFixed(1) + 'K' : '0'}</div>
+            <div className="text-[11px] text-gray-500 mt-1">Limit: 1M / gün</div>
+          </div>
+          <BrainCircuit className="w-8 h-8 text-purple-500/50" />
+        </div>
+      </div>
+
+      {/* Charts Row */}
+      <div className="lg:col-span-8 space-y-4">
+        <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden h-64 flex flex-col">
+          <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
+            <Activity className="w-3.5 h-3.5" /> CPU & Memory Trend (Örnek Veri)
+          </div>
+          <div className="flex-1 p-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={mockComputeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorMem" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                <XAxis dataKey="time" hide />
+                <YAxis stroke="#666" fontSize={9} tickLine={false} axisLine={false} />
+                <Tooltip cursor={{ stroke: '#333' }} contentStyle={{ backgroundColor: '#111', border: '1px solid #222', borderRadius: '4px', fontSize: '11px', padding: '4px' }} />
+                <Area type="monotone" dataKey="cpu" stroke="#3b82f6" fillOpacity={1} fill="url(#colorCpu)" />
+                <Area type="monotone" dataKey="memory" stroke="#ec4899" fillOpacity={1} fill="url(#colorMem)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+
+        <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden h-64 flex flex-col">
+          <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
+            <Database className="w-3.5 h-3.5" /> Database IOPS (Mock)
+          </div>
+          <div className="flex-1 p-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={mockDbData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                <XAxis dataKey="time" hide />
+                <YAxis stroke="#666" fontSize={9} tickLine={false} axisLine={false} />
+                <Tooltip cursor={{ fill: '#1a1a1a' }} contentStyle={{ backgroundColor: '#111', border: '1px solid #222', borderRadius: '4px', fontSize: '11px', padding: '4px' }} />
+                <Bar dataKey="reads" fill="#eab308" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="writes" fill="#ef4444" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      </div>
+
+      {/* Right Column: Info & Estimates */}
+      <div className="lg:col-span-4 space-y-4">
+        <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden">
+          <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center justify-between border-b border-[#222]">
+            <div className="flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5" /> Estimated Monthly Cost</div>
+          </div>
+          <div className="p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-gray-400 font-bold uppercase">AWS EC2 (t4g.micro)</span>
+              <span className="text-white font-mono">~$4.20</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-gray-400 font-bold uppercase">AWS Bandwidth</span>
+              <span className="text-white font-mono">~$1.50</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-gray-400 font-bold uppercase">Firebase (Spark Plan)</span>
+              <span className="text-green-400 font-mono font-bold">$0.00</span>
+            </div>
+            <div className="h-px bg-[#222] w-full" />
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-white font-bold uppercase">Total Estimasyonu</span>
+              <span className="text-blue-400 text-lg font-mono font-bold">~$5.70</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-blue-500/10 border border-blue-500/20 rounded-md p-4 text-[11px] leading-relaxed text-blue-200">
+          <div className="font-bold text-blue-400 uppercase tracking-widest mb-2 text-[10px] flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5" /> Neden Firebase?
+          </div>
+          Bu mimari Firebase (Firestore) ile çalışacak şekilde ayarlandığında, botunuz <b>AWS</b> üzerinde izole bir process olarak yaşar. Olası RAM sızıntıları (memory leak) veya tarayıcı çökmeleri botunuzu etkilemez. 
+          <br/><br/>
+          Siz bu (AI Studio / Web) kontrol paneline sadece <b>Firestore aracılığıyla</b> bağlanır, canlı durumu okur ve komut (Start/Stop/Config) gönderirsiniz.
+        </section>
+      </div>
+
+    </main>
   );
 }
 

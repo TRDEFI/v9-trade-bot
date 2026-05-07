@@ -104,6 +104,15 @@ export function getSignal(klines: Kline[], symbol: string, stratWeights: Record<
   if (vr > 2.0 && !rsiPreventLong) {
     sigs.push({ name: 'VOL', score: Math.min((vr - 2.0) / 2.0, 1.0), tp: 2.2, sl: 1.5 });
   }
+
+  // Momentum strategy: Trend following
+  if (ma10 && vr > 1.2) {
+      if (p > ma10 && !rsiPreventLong) {
+         sigs.push({ name: 'MOMENTUM', score: 0.8, tp: 3.0, sl: 2.5 });
+      } else if (p < ma10 && !rsiPreventShort) {
+         sigs.push({ name: 'MOMENTUM', score: 0.8, tp: 3.0, sl: 2.5 });
+      }
+  }
   
   if (sigs.length === 0) return null;
   
@@ -130,6 +139,8 @@ export function getSignal(klines: Kline[], symbol: string, stratWeights: Record<
     actualSide = (ma10! - p) > 0 ? 'LONG' : 'SHORT';
   } else if (best.name === 'VOL') {
     actualSide = 'LONG'; // Follows the original logic for VO.
+  } else if (best.name === 'MOMENTUM') {
+    actualSide = (p > ma10!) ? 'LONG' : 'SHORT'; // Trend following direction
   }
   
   return {

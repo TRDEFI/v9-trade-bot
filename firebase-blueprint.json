@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "BotStatus": {
+      "title": "Bot Status",
+      "description": "Current status of the trading bot",
+      "type": "object",
+      "properties": {
+        "isRunning": { "type": "boolean" },
+        "sessionStart": { "type": "number" },
+        "capital": { "type": "number" },
+        "ownerId": { "type": "string" }
+      },
+      "required": ["isRunning", "capital", "ownerId"]
+    },
+    "BotConfig": {
+      "title": "Bot Configuration",
+      "description": "AI Configuration for the bot",
+      "type": "object",
+      "properties": {
+        "baseUrl": { "type": "string" },
+        "apiKey": { "type": "string" },
+        "ownerId": { "type": "string" }
+      },
+      "required": ["ownerId"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Authorized Admin Users",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/system/{documentId}": {
+      "schema": { "$ref": "#/entities/BotStatus" },
+      "description": "System documents (status, config)"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Admin Users"
+    }
+  }
+}
