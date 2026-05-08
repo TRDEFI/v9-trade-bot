@@ -38,18 +38,9 @@ async function startServer() {
 
   app.post('/api/bot/close/:sym', async (req, res) => {
     const sym = req.params.sym;
-    await bot.closePosition(sym);
+    const currentPrices = await bot.binance.getAllPrices();
+    await bot.closePosition(sym, 'MANUAL', currentPrices);
     res.json({ success: true, message: `${sym} manually closed` });
-  });
-
-  app.post('/api/bot/ai-config', (req, res) => {
-    const { baseUrl, apiKey } = req.body;
-    bot.setAiConfig(baseUrl, apiKey);
-    res.json({ success: true, message: 'AI Config Updated' });
-  });
-
-  app.get('/api/bot/ai-config', (req, res) => {
-    res.json(bot.aiConfig);
   });
 
   app.get('/api/bot/download-log', (req, res) => {

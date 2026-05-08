@@ -44,7 +44,10 @@ export function Dashboard() {
   if (!data) return <div className="text-white p-10 flex items-center justify-center min-h-screen bg-[#0a0a0a]">Dashboard Yükleniyor...</div>;
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
-  const formatNumber = (val: number, dims: number = 4) => (val || 0).toFixed(dims);
+  const formatNumber = (val: any, dims: number = 4) => {
+    if (typeof val === 'string') return val;
+    return Number(val || 0).toFixed(dims);
+  };
   
   // GMT+3 (Istanbul) format
   const formatTime = (ts: number | string) => {
@@ -86,10 +89,6 @@ export function Dashboard() {
           <h1 className="text-pink-500 font-bold tracking-widest text-[13px] uppercase">V9 Autotrader</h1>
         </div>
         <div className="flex items-center gap-4 text-[11px] font-mono">
-          <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-bold uppercase tracking-wider border ${data.ai_active ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-purple-400 bg-purple-500/10 border-purple-500/20'}`}>
-            <BrainCircuit className="w-3 h-3" /> {data.ai_active ? 'AI YÖNETİCİ (AKTİF)' : 'AI YÖNETİCİ'}
-          </span>
-          
           <button 
             onClick={data.is_active ? handleStop : handleStart} 
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm font-bold uppercase tracking-wider transition-colors ${
@@ -224,7 +223,7 @@ export function Dashboard() {
                           <span className="text-gray-500 ml-1">({p.lev}x)</span>
                         </td>
                         <td className={`px-3 py-2 text-right ${isPos ? 'text-green-400' : 'text-red-400'}`}>
-                          {isPos ? '+' : ''}{p.pnl_pct.toFixed(2)}%
+                          {isPos ? '+' : ''}{Number(p.pnl_pct || 0).toFixed(2)}%
                         </td>
                         <td className={`px-3 py-2 text-right font-bold ${isPos ? 'text-green-400' : 'text-red-400'}`}>
                           {isPos ? '+' : ''}{formatCurrency(p.pnl_usd)}
@@ -284,7 +283,7 @@ export function Dashboard() {
                           <span className="text-gray-300">{formatNumber(p.closed_price)}</span>
                         </td>
                         <td className={`px-3 py-1.5 text-right font-bold ${isPos ? 'text-green-400' : 'text-red-400'}`}>
-                          {isPos ? '+' : ''}{p.pnl.toFixed(2)}
+                          {isPos ? '+' : ''}{Number(p.pnl || 0).toFixed(2)}
                         </td>
                         <td className="px-3 py-1.5">
                           <span className={`text-[10px] px-1.5 py-0.5 rounded-[3px] font-bold ${
@@ -307,66 +306,6 @@ export function Dashboard() {
 
         {/* Right Column: Widgets (3 cols) */}
         <div className="lg:col-span-3 space-y-4">
-          
-          <section className="bg-purple-900/10 border border-purple-500/30 rounded-md overflow-hidden flex flex-col h-72 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
-            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-purple-400 flex items-center justify-between border-b border-purple-500/20">
-              <div className="flex items-center gap-1.5">
-                <BrainCircuit className="w-4 h-4" /> ASENKRON YAPAY ZEKA (OVERSEER)
-              </div>
-              <div className="flex space-x-2">
-                <span className="flex h-2 w-2 rounded-full bg-purple-500 animate-pulse"></span>
-              </div>
-            </div>
-            <div className="flex-1 w-full p-3 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-purple-900/50 scrollbar-track-transparent">
-              {data.ai_logs && data.ai_logs.length > 0 ? (
-                data.ai_logs.map((log: any, idx: number) => {
-                  let alertColor = 'text-green-400';
-                  let borderAlert = 'border-[#222] border-l-4 border-l-green-500/50';
-                  if (log.data?.strategy_flaw_detected) {
-                    alertColor = 'text-red-400 animate-pulse';
-                    borderAlert = 'border-red-500/30 border border-l-4 border-l-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]';
-                  } else if (log.msg.includes('[HTTP ERROR') || log.msg.includes('[FATAL ERROR')) {
-                    alertColor = 'text-red-400';
-                    borderAlert = 'border-red-900/50 border border-l-4 border-l-red-800';
-                  }
-
-                  return (
-                    <div key={idx} className={`bg-[#151515] rounded p-3 text-[11px] text-gray-300 ${borderAlert}`}>
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="text-purple-400 font-mono text-[10px] bg-purple-900/20 px-1.5 py-0.5 rounded">{formatTime(log.time)}</div>
-                        <div className="flex items-center gap-2">
-                          {log.data?.action && (
-                            <span className="text-gray-400 text-[9px] bg-[#222] px-1 rounded border border-[#333]">
-                              {log.data.action}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="font-medium text-gray-200 mb-1 leading-relaxed">{log.msg}</div>
-                      {log.data && log.data.analysis_of_past_trades && (
-                        <div className="mt-2 text-gray-400 italic bg-[#0f0f0f] p-2 rounded border border-[#1a1a1a]">
-                          <span className="text-purple-400/70 not-italic font-bold block mb-1">Post-Trade Analizi:</span>
-                          "{log.data.analysis_of_past_trades}"
-                        </div>
-                      )}
-                      {log.data && log.data.strategy_flaw_detected && log.data.new_recommended_logic && (
-                         <div className="mt-2 text-gray-300 bg-purple-900/10 p-2 rounded border border-purple-500/20 font-mono text-[10px]">
-                           <span className="text-purple-400 font-bold block mb-1">» Önerilen Yeni Kurgu:</span>
-                           <div>Strateji: {log.data.new_recommended_logic.recommended_strategy}</div>
-                           <div>Kaldıraç: {log.data.new_recommended_logic.recommended_leverage}x</div>
-                           <div>TP: %{log.data.new_recommended_logic.take_profit_pct}</div>
-                           <div>SL: %{log.data.new_recommended_logic.stop_loss_pct}</div>
-                         </div>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="h-full flex items-center justify-center text-purple-900/50 text-xs uppercase tracking-widest font-bold">Asenkron Gözlemci Beklemede...</div>
-              )}
-            </div>
-          </section>
-
           <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden text-[#e0e0e0]">
             <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
               <Info className="w-3.5 h-3.5 text-blue-400" /> Strateji Prensipleri (5m)
@@ -393,44 +332,23 @@ export function Dashboard() {
           <section className="bg-[#0f0f0f] border border-blue-500/20 rounded-md overflow-hidden text-[#e0e0e0] mt-4 relative">
             <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 blur-xl rounded-full" />
             <div className="bg-gradient-to-r from-[#111] to-blue-900/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-blue-400 flex items-center gap-1.5 border-b border-[#222]">
-              <AlertCircle className="w-3.5 h-3.5" /> V1 Updates / İyileştirmeler
+              <AlertCircle className="w-3.5 h-3.5" /> TradFi Scalping Strategy Aktif!
             </div>
             <div className="p-3 space-y-3 text-[11px] leading-relaxed relative z-10">
               <div className="flex gap-2">
                 <div className="text-blue-400 mt-0.5">1.</div>
-                <div><span className="text-gray-300 font-semibold block">Zaman Dilimi Optimizasyonu (5m)</span>
-                1 dakikalık gürültülü (noisy) mumlar yerine <span className="font-mono text-white">5 dakikalık</span> mumlara geçildi. Yanlış sinyaller filtrelenip hedef 10-30 dk'lık stabil işlemlere ayarlandı.</div>
+                <div><span className="text-gray-300 font-semibold block">24 Sembollük Hızlı Tarama</span>
+                Geleneksel borsa hisselerinin (Stock) ve majör Kriptoların yer aldığı 24 kripto paritesi WS akışına bağlandı. Aynı anda maks 2 pozisyon (Max Open=2) açılarak risk dengesi korundu.</div>
               </div>
               <div className="flex gap-2">
                 <div className="text-blue-400 mt-0.5">2.</div>
-                <div><span className="text-gray-300 font-semibold block">Geliştirilmiş TP/SL (Komisyon Koruması)</span>
-                Eski dar TP(%0.85) / SL(%0.50) hedefleri "fee" makasını kurtarması ve pozisyona nefes payı açması için <span className="font-mono text-white">~%2.0 (TP) / ~%1.5 (SL)</span> olarak genişletildi.</div>
+                <div><span className="text-gray-300 font-semibold block">Dinamik Take Profit & SL Hızlı Kesici</span>
+                Take Profit hedefleri, ilgili periyottaki ortalama hareketin (avg_move) <span className="font-mono text-white">%80</span>'i üzerinden dinamik ayarlandı. SL ise mutlak <span className="font-mono text-white">%2</span> kaybı bulduğunda devreye girer. TP/SL durumunda 5 dk Reversal Cooldown uygulanır.</div>
               </div>
               <div className="flex gap-2">
                 <div className="text-blue-400 mt-0.5">3.</div>
-                <div><span className="text-gray-300 font-semibold block">Toplu (Bulk) API İstekleri</span>
-                Her coin için tek tek sorgu atıp tepkileri 6-7 saniye geciktiren mimari yerine <span className="font-mono text-white">Bütün coin fiyatlarını tek sorguda çeken</span> paralel mimariye (Promise.all) geçildi. Böylece saniyelik makaslar (slippage) önlendi.</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">4.</div>
-                <div><span className="text-gray-300 font-semibold block">Net P&L (Slippage Yanılgısı)</span>
-                Açık pozisyonlarda gördüğünüz kâr/zarar, <b>Binance %0.08 Maker/Taker Komisyonları</b> anlık hesaplanıp düşülerek yansıtılır. Bir kâr <span className="text-green-400">+$0.14</span> brüt olsa da komisyonu <span className="text-red-400">-$0.48</span> ise ekranda (ve log'da matematiksel olarak kusursuz bir şekilde) <span className="text-red-400">-$0.34</span> yazar. Bot komisyonu milisaniyesi milisaniyesine hesaplar. Toptan kapatmak yerine tabloya pozisyon bazlı <b>KAPAT</b> butonu yerleştirildi.</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">5.</div>
-                <div><span className="text-gray-300 font-semibold block">P&L Kesiciler + Yüksek Kaldıraç Taktiği</span>
-                Testlerde görülen dalgalanmalar için kesiciler eklendi. Bot pozisyon hacmi ve kaldıraç hesaplamasını <b>+$3 Hedefe Göre</b> daha yüksek oranlı yapar, ancak açık bir pozisyon <b>+$1 NET Kâr'ı</b> gördüğü an beklemez kapatır (PROFIT_CUT_1USD). Bu şekilde çok daha kısa sürede (hedefe beklemeden) garantili kâr alınır. Negatif tarafta ise <b>-$3 ZARAR'ı</b> gördüğü an acımasızca keser (LOSS_CUT_3USD).</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">6.</div>
-                <div><span className="text-gray-300 font-semibold block">Minimax "Bot Anayasası" Eğitimi</span>
-                Yapay zeka (Minimax) son strateji güncellemelerinden haberdar edilerek <b>Özel Scalping Kuralları (Bot Anayasası)</b> ile eğitildi. Artık yapay zeka sistemin +$1 ile pozisyon kesmesini ya da olası Reversal durumlarında erken çıkmasını "Hata" olarak algılayıp botu <b>DURDURMAYACAK</b>. Yalnızca TP/SL yüzdelerini piyasanın yönüne göre optimize edecek. Bu anayasa AI'ın kafasına kazındı.</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">7.</div>
-                <div><span className="text-gray-300 font-semibold block">Güvenlik & WebSocket Bilgilendirmesi (V2 Hazırlığı)</span>
-                <b>API Key Expose Riski:</b> Hayır yok. AI Yönetici modalındaki Minimax API Key, doğrudan arka plana (Backend Node.js) aktarılacak ve tüm yapay zeka işlemleri backend'te gizli yapılacaktır (Siteye giren kodu göremez). AWS kurulumunda dilerseniz direkt sunucu ortam değişkenine (.env) koyarak %100 güvenlik sağlarız.<br/>
-                <b>WebSocket Kurulumu:</b> Binance genel fiyat/ticker verileri için public (halka açık) WebSocket sunar, sizin Binance üzerinden bir şey onaylamanıza ya da ayarlamanıza gerek yoktur. Bot tarafında HTTP sorgusundan vazgeçip doğrudan WSS akışına geçiş kodlanacaktır (Gecikmeyi milisaniyelere düşürecek).</div>
+                <div><span className="text-gray-300 font-semibold block">RSI, MA10 ve Hacim Motoru (Volume Break)</span>
+                Aşırı alım-satım bölgeleri (RSI{`<`}30, RSI{`>`}70), MA10 Bounce/Reject seviyeleri ve Hacim oranı patlaması (VR{`>`}1.5) baz alınarak 1 saniyelik reaksiyonlarla pozisyona giriliyor.</div>
               </div>
             </div>
           </section>
@@ -486,7 +404,7 @@ function AnalyticsTab({ data }: { data: any }) {
   return (
     <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
       {/* Metrics Row */}
-      <div className="lg:col-span-12 grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="lg:col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-[#0f0f0f] border border-[#222] rounded-md p-4 flex items-center justify-between">
           <div>
             <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Compute (EC2)</div>
@@ -518,14 +436,6 @@ function AnalyticsTab({ data }: { data: any }) {
             <div className="text-[11px] text-gray-500 mt-1">Binance: Connected</div>
           </div>
           <Network className="w-8 h-8 text-[#222]" />
-        </div>
-        <div className="bg-purple-900/10 border border-purple-500/20 rounded-md p-4 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] text-purple-400 uppercase tracking-widest font-bold mb-1">AI Tokens (Free)</div>
-            <div className="text-xl font-mono text-white">{data?.ai_used_tokens ? (data.ai_used_tokens / 1000).toFixed(1) + 'K' : '0'}</div>
-            <div className="text-[11px] text-gray-500 mt-1">Limit: 1M / gün</div>
-          </div>
-          <BrainCircuit className="w-8 h-8 text-purple-500/50" />
         </div>
       </div>
 
