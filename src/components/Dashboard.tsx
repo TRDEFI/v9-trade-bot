@@ -172,8 +172,8 @@ export function Dashboard() {
       {activeTab === 'TRADE' && (
         <main className="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
         
-        {/* Left Column: Tables (8 cols) */}
-        <div className="lg:col-span-9 space-y-4">
+        {/* Full width tables */}
+        <div className="lg:col-span-12 space-y-4">
           
           <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden">
             <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center justify-between border-b border-[#222]">
@@ -300,80 +300,6 @@ export function Dashboard() {
                   })}
                 </tbody>
               </table>
-            </div>
-          </section>
-        </div>
-
-        {/* Right Column: Widgets (3 cols) */}
-        <div className="lg:col-span-3 space-y-4">
-          <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden text-[#e0e0e0]">
-            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
-              <Info className="w-3.5 h-3.5 text-blue-400" /> Strateji Prensipleri (5m)
-            </div>
-            <div className="p-3 space-y-3 text-[11px] leading-relaxed">
-              <div>
-                <span className="text-blue-400 font-bold block mb-0.5">🟢 Mean Reversion (Ortalamaya Dönüş)</span>
-                Gerçekleşen sert sapmaları hedefler. Fiyat, son 10 mumluk ortalamasından (MA10) <span className="text-white font-mono">%1.5</span>'den fazla saparsa tepki bekler. (Hedef: ~%1.8, Stop: ~%1.2).
-              </div>
-              <div className="h-px bg-[#222] w-full" />
-              <div>
-                <span className="text-yellow-400 font-bold block mb-0.5">🟠 Volume Breakout (Hacim Patlaması)</span>
-                Momentumu yakalar. 5 Dakikalık hacim, son ortalamanın <span className="text-white font-mono">2.0</span> katını aşarsa işleme girer. (Hedef: ~%2.2, Stop: ~%1.5).
-              </div>
-              <div className="h-px bg-[#222] w-full" />
-              <div>
-                <span className="text-pink-400 font-bold block mb-0.5">🔴 Erken Kaçış (Reversal - RSI)</span>
-                Piyasa aniden terse dönerse hedefleri (TP/SL) beklemez. Long'dayken RSI <span className="text-white font-mono">30</span> altına sarkarsa veya Short'tayken RSI <span className="text-white font-mono">70</span> üstüne çıkarsa anında çıkar.
-              </div>
-            </div>
-          </section>
-
-          {/* V1 YENİLİKLERİ KARTI */}
-          <section className="bg-[#0f0f0f] border border-blue-500/20 rounded-md overflow-hidden text-[#e0e0e0] mt-4 relative">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 blur-xl rounded-full" />
-            <div className="bg-gradient-to-r from-[#111] to-blue-900/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-blue-400 flex items-center gap-1.5 border-b border-[#222]">
-              <AlertCircle className="w-3.5 h-3.5" /> TradFi Scalping Strategy Aktif!
-            </div>
-            <div className="p-3 space-y-3 text-[11px] leading-relaxed relative z-10">
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">1.</div>
-                <div><span className="text-gray-300 font-semibold block">24 Sembollük Hızlı Tarama</span>
-                Geleneksel borsa hisselerinin (Stock) ve majör Kriptoların yer aldığı 24 kripto paritesi WS akışına bağlandı. Aynı anda maks 2 pozisyon (Max Open=2) açılarak risk dengesi korundu.</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">2.</div>
-                <div><span className="text-gray-300 font-semibold block">Dinamik Take Profit & SL Hızlı Kesici</span>
-                Take Profit hedefleri, ilgili periyottaki ortalama hareketin (avg_move) <span className="font-mono text-white">%80</span>'i üzerinden dinamik ayarlandı. SL ise mutlak <span className="font-mono text-white">%2</span> kaybı bulduğunda devreye girer. TP/SL durumunda 5 dk Reversal Cooldown uygulanır.</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-blue-400 mt-0.5">3.</div>
-                <div><span className="text-gray-300 font-semibold block">RSI, MA10 ve Hacim Motoru (Volume Break)</span>
-                Aşırı alım-satım bölgeleri (RSI{`<`}30, RSI{`>`}70), MA10 Bounce/Reject seviyeleri ve Hacim oranı patlaması (VR{`>`}1.5) baz alınarak 1 saniyelik reaksiyonlarla pozisyona giriliyor.</div>
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-[#0f0f0f] border border-pink-500/20 rounded-md overflow-hidden text-[#e0e0e0] mt-4 relative">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-pink-500/10 blur-xl rounded-full" />
-            <div className="bg-gradient-to-r from-[#111] to-pink-900/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-pink-400 flex items-center gap-1.5 border-b border-[#222]">
-              <Activity className="w-3.5 h-3.5" /> 🚀 V2 Yol Haritası: Maliyet ve Altyapı
-            </div>
-            <div className="p-3 space-y-3 text-[11px] leading-relaxed relative z-10">
-              <div className="flex gap-2">
-                <div className="text-pink-400 mt-0.5">1.</div>
-                <div><span className="text-gray-300 font-semibold block">WebSockets Maliyeti (Sıfır Ek Ücret)</span>
-                WebSockets mimarisine geçmek için <span className="text-green-400 font-bold">ekstra donanım veya üyelik satın almanıza gerek yoktur!</span> Binance bu yayını (API/Stream) ücretsiz sunar. Yapılması gereken tek şey botun kodunu (Rest'ten WSS'e) güncellemektir (Tamamen yazılımsal bir revizyon).</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-pink-400 mt-0.5">2.</div>
-                <div><span className="text-gray-300 font-semibold block">AWS Tokyo VPS Maliyeti ($5 - $20 / Ay)</span>
-                Binance sunucuları <span className="font-mono text-white">AWS Tokyo (ap-northeast-1)</span> bölgesindedir. Hızdan faydalanmak için onbinlerce dolar harcamaya gerek yok. Kurumsal bir AWS hesabı açıp <span className="font-mono text-white">EC2 t4g.micro</span> veya <span className="font-mono text-white">t3.micro</span> sunucu kiralayabilirsiniz. Maliyeti aylık ortalama <span className="text-green-400 font-bold">$5 - $10</span> civarıdır.</div>
-              </div>
-              <div className="flex gap-2">
-                <div className="text-pink-400 mt-0.5">3.</div>
-                <div><span className="text-gray-300 font-semibold block">Alternatif VPS Sağlayıcıları (Tokyo İçin)</span>
-                Eğer AWS yönetim paneli karışık gelirse, kullanımı daha kolay olan <span className="font-mono text-white text-blue-300 hover:underline">Vultr</span>, <span className="font-mono text-white text-blue-300 hover:underline">DigitalOcean</span> veya <span className="font-mono text-white text-blue-300 hover:underline">Linode (Akamai)</span> kullanabilirsiniz. Bu firmaların Tokyo veri merkezlerinden alınacak standart 1GB/2GB Ram'li bir Linux VPS'in aylık ücreti ortalama <span className="text-green-400 font-bold">$5 - $12</span> arasındadır. <br/><span className="text-gray-500 mt-1 block">*Ping oranları AWS kadar kusursuz 2ms olmasa da 10-15ms ile ciddi avantaj sağlar.*</span></div>
-              </div>
             </div>
           </section>
         </div>
