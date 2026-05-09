@@ -39,8 +39,13 @@ export const USER_CONFIG = {
 };
 
 export class BotRunner {
-    isRunning = false;
+    isScanning = false;
     binance = new BinanceClient();
+    
+    constructor() {
+        // Start the background system loop immediately
+        this.loop();
+    }
     
     sessionStart = Date.now();
     sessionNum = 1;
@@ -62,27 +67,22 @@ export class BotRunner {
     downloadableLog: string | null = null;
 
     start() {
-        if (this.isRunning) return;
-        this.isRunning = true;
+        if (this.isScanning) return;
+        this.isScanning = true;
         this.sessionStart = Date.now();
         if (!this.startTimeStr) this.startTimeStr = Date.now();
-        console.log('[Bot] Starting - TOP100 scanner');
+        console.log('[Bot] Scanning Started - TOP100 scanner');
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
         this.binance.subscribeKlines(TOP100_PAIRS, ['15m', '1h']);
-        
-        this.loop();
     }
 
     stop() {
-        if (this.isRunning) {
-            this.isRunning = false;
+        if (this.isScanning) {
+            this.isScanning = false;
         }
-        if (this.loopInterval) {
-            clearTimeout(this.loopInterval);
-            this.loopInterval = null;
-        }
+        console.log('[Bot] Scanning Stopped. Managing open positions only.');
         this.generateLog();
     }
 
@@ -101,8 +101,6 @@ export class BotRunner {
     }
 
     private async loop() {
-        if (!this.isRunning) return;
-
         try {
             const now = Date.now();
             const currentPrices = await this.binance.getAllPrices();
@@ -145,7 +143,7 @@ export class BotRunner {
                     this.lastReversalCheck[sym] = now;
                     this.binance.getKlines(sym, '15m', 20).then(async c => { // 15m for short-term momentum
                         if (!c || c.length < 20) return;
-                        const sig = getSignal(c);
+                        const sig = getSignal(c.slice(0, -1)); // ONLY use closed candles
                         
                         // Calculate current PNL percentage
                         const pnlPct = pos.side === 'LONG' 
@@ -161,7 +159,7 @@ export class BotRunner {
                             try {
                                 const c1h = await this.binance.getKlines(sym, '1h', 50);
                                 if (c1h && c1h.length >= 20) {
-                                    const sig1h = getSignal(c1h);
+                                    const sig1h = getSignal(c1h.slice(0, -1)); // ONLY use closed candles
                                     // If 1h still strongly supports our ORIGINAL position, ignore the 15m reversal
                                     if (sig1h && sig1h.side === pos.side && sig1h.score >= USER_CONFIG.min_score) {
                                         console.log(`[Bot] Ignored 15m reversal for ${sym} because 1h signal (${sig1h.side}) is still strong.`);
@@ -200,33 +198,34 @@ export class BotRunner {
             }
 
             // 2. Round-Robin Signal Lookup
-            const openCount = Object.keys(this.openPositions).length;
-            
-            if (openCount < USER_CONFIG.max_open) {
-                // Check up to 10 pairs per loop to speed up but still avoid rate limit blocking. 
-                // Or we can just check 1 pair as user's original logic. User had 1 loop/sec. Let's do 1 pair per tick.
-                let checked = 0;
-                while (checked < TOP100_PAIRS.length) {
-                    const sym = TOP100_PAIRS[this.pairIndex % TOP100_PAIRS.length];
-                    this.pairIndex++;
-                    checked++;
+            if (this.isScanning) {
+                const openCount = Object.keys(this.openPositions).length;
+                
+                if (openCount < USER_CONFIG.max_open) {
+                    // Check up to 10 pairs per loop to speed up but still avoid rate limit blocking. 
+                    // Or we can just check 1 pair as user's original logic. User had 1 loop/sec. Let's do 1 pair per tick.
+                    let checked = 0;
+                    while (checked < TOP100_PAIRS.length) {
+                        const sym = TOP100_PAIRS[this.pairIndex % TOP100_PAIRS.length];
+                        this.pairIndex++;
+                        checked++;
 
-                    if (this.openPositions[sym]) continue;
-                    if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) continue;
+                        if (this.openPositions[sym]) continue;
+                        if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) continue;
 
-                    const price = currentPrices[sym];
-                    if (!price) continue;
+                        const price = currentPrices[sym];
+                        if (!price) continue;
 
-                    // 5-second cooldown per pair before re-checking klines to avoid API spam.
-                    if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
-                    this.lastKlineCheck[sym] = now;
+                        // 5-second cooldown per pair before re-checking klines to avoid API spam.
+                        if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
+                        this.lastKlineCheck[sym] = now;
 
-                    try {
-                        const c = await this.binance.getKlines(sym, '1h', 50);
-                        if (!c || c.length < 20) continue;
+                        try {
+                            const c = await this.binance.getKlines(sym, '1h', 50);
+                            if (!c || c.length < 20) continue;
 
-                        const sig = getSignal(c);
-                        if (!sig || sig.score < USER_CONFIG.min_score) continue;
+                            const sig = getSignal(c.slice(0, -1)); // ONLY use closed candles
+                            if (!sig || sig.score < USER_CONFIG.min_score) continue;
 
                         const size = USER_CONFIG.margin;
                         const notional = size * USER_CONFIG.lev;
@@ -275,6 +274,7 @@ export class BotRunner {
                     break;
                 }
             }
+            }
         } catch (e) {
             console.error('Bot Loop Error:', e);
         }
@@ -321,7 +321,7 @@ export class BotRunner {
         return {
             session_start: this.startTimeStr,
             session_num: this.sessionNum,
-            is_active: this.isRunning,
+            is_active: this.isScanning,
             capital: this.capital,
             total_trades: this.closedPositions.length,
             total_pnl: this.totalRealizedPnl,
@@ -347,7 +347,7 @@ export class BotRunner {
                 opened: p.opened, closed: p.closed,
             })),
             server_time: Date.now(),
-            elapsed: this.isRunning
+            elapsed: this.isScanning
                 ? (() => {
                     const totalSeconds = Math.floor((Date.now() - this.sessionStart) / 1000);
                     const hours = Math.floor(totalSeconds / 3600);
