@@ -1,5 +1,5 @@
 import { BinanceClient } from './binanceClient.js';
-import { getSignal, getSignal5m, calcMa } from './strategy.js';
+import { getSignal, getSignal5m, calcMa, calcEma, calcRsi } from './strategy.js';
 
 export const TOP100_PAIRS = [
     'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'ZECUSDT', 'XRPUSDT', 'DOGEUSDT', 'FILUSDT',
@@ -157,8 +157,16 @@ export class BotRunner {
                     this.lastReversalCheck[sym] = now;
                     this.binance.getKlines(sym, '5m', 50).then(async c => { // 5m for fast scalping momentum
                         if (!c || c.length < 25) return;
-                        const sig = getSignal5m(c.slice(0, -1)); // ONLY use closed candles
                         
+                        const closedK = c.slice(0, -1);
+                        const ema9 = calcEma(closedK, 9);
+                        const ema21 = calcEma(closedK, 21);
+                        const rsi = calcRsi(closedK, 14);
+                        
+                        const reversalSide = pos.side === 'LONG' 
+                             ? (ema9 < ema21 && rsi < 45 ? 'SHORT' : null)
+                             : (ema9 > ema21 && rsi > 55 ? 'LONG' : null);
+
                         // Calculate current PNL percentage
                         const pnlPct = pos.side === 'LONG' 
                              ? (price - pos.entry) / pos.entry 
@@ -167,7 +175,7 @@ export class BotRunner {
                         const isLosing = pnlPct < 0;
                         const lossPct = isLosing ? Math.abs(pnlPct * 100) : 0;
 
-                        if (sig && sig.score >= USER_CONFIG.min_score && sig.side !== pos.side) {
+                        if (reversalSide && reversalSide !== pos.side) {
                             
                             // 15m Cross-Check (Replacing old 1h check for faster resolution)
                             try {
@@ -187,10 +195,7 @@ export class BotRunner {
                             // Reversal sharpness evaluation
                             let isSharpReversal = false;
                             
-                            // 1. Strong signal score indicates sharper reversal
-                            if (sig.score >= 0.86) isSharpReversal = true;
-                            
-                            // 2. High momentum on the latest candle (e.g., > 0.4% move in 5min)
+                            // 1. High momentum on the latest candle (e.g., > 0.4% move in 5min)
                             const lastK = c[c.length - 1];
                             const candleMove = Math.abs(lastK.c - lastK.o) / lastK.o * 100;
                             if (candleMove >= 0.4) isSharpReversal = true;
@@ -198,7 +203,7 @@ export class BotRunner {
                             if (lossPct < 0.5) {
                                 // If loss is small, require a sharp reversal to panic close
                                 if (isSharpReversal) {
-                                     console.log(`[Bot] Sharp reversal detected for ${sym}, changing from ${pos.side} to ${sig.side}. Closing position...`);
+                                     console.log(`[Bot] Sharp reversal detected for ${sym}, changing from ${pos.side} to ${reversalSide}. Closing position...`);
                                      this.closePosition(sym, 'REVERSAL_SHARP', { [sym]: lastK.c });
                                 }
                             } else {
@@ -333,7 +338,7 @@ export class BotRunner {
         }
 
         const notionalValue = pos.size * pos.lev;
-        const commissionUsd = notionalValue * 0.0004;
+        const commissionUsd = notionalValue * 0.0004 * 2; // round-trip
         const pnlRaw = pos.side === 'LONG' 
             ? ((price - pos.entry) / pos.entry) 
             : ((pos.entry - price) / pos.entry);
