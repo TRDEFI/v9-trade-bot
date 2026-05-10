@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Clock, DollarSign, Crosshair, AlertCircle, RefreshCw, Play, Square, Info, Download, BrainCircuit, X, Server, Cpu, Database, Network } from 'lucide-react';
+import { Activity, Clock, DollarSign, Crosshair, AlertCircle, RefreshCw, Play, Square, Info, Download, BrainCircuit, X, Server, Cpu, Database, Network, Terminal } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
 
 export function Dashboard() {
@@ -67,9 +67,9 @@ export function Dashboard() {
 
   // Calc Win Rate logic
   const closedTrades = data.closed || [];
-  const wins = closedTrades.filter((t: any) => t.pnl > 0).length;
-  const losses = closedTrades.filter((t: any) => t.pnl <= 0).length;
-  const winRate = closedTrades.length > 0 ? (wins / closedTrades.length * 100).toFixed(1) : '0';
+  const wins = data.total_wins || 0;
+  const losses = data.total_losses || 0;
+  const winRate = data.total_trades > 0 ? ((wins / data.total_trades) * 100).toFixed(1) : '0';
 
   // Calc PNL by symbol
   const symPnlMap: Record<string, number> = {};
@@ -142,9 +142,9 @@ export function Dashboard() {
         <StatBlock label="Capital" value={formatCurrency(data.capital)} color="text-blue-400" />
         <StatBlock label="Free Bal" value={formatCurrency(data.capital - data.used_capital)} color="text-white" />
         <StatBlock label="Süre" value={data.elapsed} color="text-yellow-400" />
-        <StatBlock label="Win Rate" value={`${winRate}% (${wins}W/${losses}L)`} color={parseInt(winRate) > 50 ? 'text-green-400' : 'text-gray-300'} />
+        <StatBlock label="Win Rate" value={`${winRate}% (${wins}W/${losses}L)`} color={parseFloat(winRate) > 50 ? 'text-green-400' : 'text-gray-300'} />
         <StatBlock label="Açık Poz" value={`${data.opens.length}`} color="text-white" />
-        <StatBlock label="Kapalı" value={`${data.closed.length}`} color="text-white" />
+        <StatBlock label="Kapalı" value={`${data.total_trades}`} color="text-white" />
         <StatBlock label="Used Cap" value={formatCurrency(data.used_capital)} color="text-orange-400" />
         <StatBlock label="Unrealized" value={formatCurrency(data.unrealized_pnl)} color={data.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'} />
         <StatBlock label="Realized (P&L)" value={formatCurrency(data.total_pnl)} color={data.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'} />
@@ -300,6 +300,31 @@ export function Dashboard() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </section>
+
+          {/* Sinyal Tarama ve Sistem Logları */}
+          <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden">
+            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
+              <Terminal className="w-3.5 h-3.5" /> Otonom Sinyal Tarama & Sistem Logları
+            </div>
+            <div className="p-3 h-48 overflow-y-auto font-mono text-[10px] text-gray-400 space-y-1 bg-[#0a0a0a]">
+              {data.scanning_logs?.length === 0 ? (
+                <div className="text-gray-600 italic">Sistem bekleniyor...</div>
+              ) : (
+                data.scanning_logs?.map((log: string, idx: number) => {
+                  let colorClass = 'text-gray-400';
+                  if (log.includes('Mükemmel eşleşme')) colorClass = 'text-green-400 font-bold';
+                  else if (log.includes('İptal')) colorClass = 'text-red-400';
+                  else if (log.includes('bulundu')) colorClass = 'text-yellow-400';
+                  
+                  return (
+                    <div key={idx} className={`${colorClass}`}>
+                      {log}
+                    </div>
+                  );
+                })
+              )}
             </div>
           </section>
         </div>

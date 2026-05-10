@@ -1,27 +1,19 @@
 import { Kline } from './binanceClient.js';
 
 export function calcRsi(klines: Kline[], period: number = 14): number {
-  if (klines.length <= period) return 50;
+  if (klines.length < period + 1) return 50;
   let gains = 0, losses = 0;
   for (let i = 1; i <= period; i++) {
-    const diff = klines[i].c - klines[i - 1].c;
-    if (diff > 0) gains += diff;
-    else losses -= diff;
+    const d = klines[i].c - klines[i - 1].c;
+    d > 0 ? (gains += d) : (losses -= d);
   }
-  let avgGain = gains / period;
-  let avgLoss = losses / period;
+  let ag = gains / period, al = losses / period;
   for (let i = period + 1; i < klines.length; i++) {
-    const diff = klines[i].c - klines[i - 1].c;
-    if (diff > 0) {
-      avgGain = (avgGain * (period - 1) + diff) / period;
-      avgLoss = (avgLoss * (period - 1)) / period;
-    } else {
-      avgGain = (avgGain * (period - 1)) / period;
-      avgLoss = (avgLoss * (period - 1) - diff) / period;
-    }
+    const d = klines[i].c - klines[i - 1].c;
+    if (d > 0) { ag = (ag*(period-1)+d)/period; al = al*(period-1)/period; }
+    else       { ag = ag*(period-1)/period; al = (al*(period-1)-d)/period; }
   }
-  if (avgLoss === 0) return 100;
-  return 100 - (100 / (1 + avgGain / avgLoss));
+  return al === 0 ? 100 : 100 - (100 / (1 + ag / al));
 }
 
 export function calcMa(klines: Kline[], period: number): number {
@@ -32,8 +24,8 @@ export function calcMa(klines: Kline[], period: number): number {
 export function calcEma(klines: Kline[], period: number): number {
   if (klines.length < period) return 0;
   const k = 2 / (period + 1);
-  let ema = klines[0].c;
-  for (let i = 1; i < klines.length; i++) {
+  let ema = klines.slice(0, period).reduce((s, c) => s + c.c, 0) / period;
+  for (let i = period; i < klines.length; i++) {
     ema = (klines[i].c - ema) * k + ema;
   }
   return ema;
@@ -87,6 +79,33 @@ export interface Signal {
   score: number;
   avg_move: number;
   side: 'LONG' | 'SHORT';
+}
+
+// 5m specific Scalping Strategy
+export function getSignal5m(klines: Kline[]): Signal | null {
+  if (!klines || klines.length < 25) return null;
+
+  const ema9 = calcEma(klines, 9);
+  const ema21 = calcEma(klines, 21);
+  const vr = calcVolumeRatio(klines, 10);
+  const rsi = calcRsi(klines, 14);
+  const p = klines[klines.length - 1].c;
+
+  const prevEma9 = calcEma(klines.slice(0, -1), 9);
+  const prevEma21 = calcEma(klines.slice(0, -1), 21);
+
+  const justCrossedUp = prevEma9 <= prevEma21 && ema9 > ema21;
+  const justCrossedDn = prevEma9 >= prevEma21 && ema9 < ema21;
+
+  const avg = calcAtr(klines, 14);
+
+  if (justCrossedUp && vr > 1.2 && rsi >= 40 && rsi <= 65) {
+      return { name: 'EMA_CROSS_UP', score: 0.88, side: 'LONG', avg_move: avg };
+  }
+  if (justCrossedDn && vr > 1.2 && rsi >= 35 && rsi <= 60) {
+      return { name: 'EMA_CROSS_DN', score: 0.88, side: 'SHORT', avg_move: avg };
+  }
+  return null;
 }
 
 // 1H Strategy

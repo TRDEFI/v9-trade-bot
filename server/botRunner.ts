@@ -1,5 +1,5 @@
 import { BinanceClient } from './binanceClient.js';
-import { getSignal } from './strategy.js';
+import { getSignal, getSignal5m, calcMa } from './strategy.js';
 
 export const TOP100_PAIRS = [
     'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'ZECUSDT', 'XRPUSDT', 'DOGEUSDT', 'FILUSDT',
@@ -28,14 +28,14 @@ export const TOP100_PAIRS = [
 
 export const USER_CONFIG = {
     budget:        5000,
-    lev:           5,
-    stop_pct:      2.0,      // User updated config: SL %2, uzak SL.
+    lev:           30,
+    stop_pct:      0.5,      // Scalping Stop Loss: 0.5%
     min_score:     0.75,     
-    max_open:      5,
-    cooldown_min:  5,
+    max_open:      10,
+    cooldown_min:  15,       // Cooldown increased to 15m as per Claude's suggestion
     run_minutes:   0,        // 0 -> run indefinitely
-    tp_pct:        1.0,      // Avg tp ratio calculation base
-    margin:        1000,     // Amount used per position
+    tp_usd:        25,       // Target TP value in USD
+    margin:        500,      // Amount used per position
 };
 
 export class BotRunner {
@@ -65,6 +65,14 @@ export class BotRunner {
     loopInterval: NodeJS.Timeout | null = null;
     startTimeStr: number = Date.now();
     downloadableLog: string | null = null;
+    scanningLogs: string[] = [];
+
+    private logScan(msg: string) {
+        const d = new Date();
+        const t = d.toTimeString().split(' ')[0];
+        this.scanningLogs.unshift(`[${t}] ${msg}`);
+        if(this.scanningLogs.length > 50) this.scanningLogs.pop();
+    }
 
     start() {
         if (this.isScanning) return;
@@ -75,7 +83,7 @@ export class BotRunner {
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
-        this.binance.subscribeKlines(TOP100_PAIRS, ['15m', '1h']);
+        this.binance.subscribeKlines(TOP100_PAIRS, ['5m', '15m', '1h']);
     }
 
     stop() {
@@ -100,9 +108,15 @@ export class BotRunner {
         this.downloadableLog = [headers.join(','), ...rows].join('\n');
     }
 
+    private lastLogScan: number = Date.now();
+
     private async loop() {
         try {
             const now = Date.now();
+            if (now - this.lastLogScan > 60000 && this.isScanning) {
+                this.logScan("Otomatik Tarama Devam Ediyor... (Filtreler: 5m Hacim, 15m Trend, 1h MA)");
+                this.lastLogScan = now;
+            }
             const currentPrices = await this.binance.getAllPrices();
 
             let currentTotalNetPnl = 0;
@@ -141,9 +155,9 @@ export class BotRunner {
                 // Smart Reversal Check (every 60 sec)
                 if (!this.lastReversalCheck[sym] || now - this.lastReversalCheck[sym] > 60000) {
                     this.lastReversalCheck[sym] = now;
-                    this.binance.getKlines(sym, '15m', 20).then(async c => { // 15m for short-term momentum
-                        if (!c || c.length < 20) return;
-                        const sig = getSignal(c.slice(0, -1)); // ONLY use closed candles
+                    this.binance.getKlines(sym, '5m', 50).then(async c => { // 5m for fast scalping momentum
+                        if (!c || c.length < 25) return;
+                        const sig = getSignal5m(c.slice(0, -1)); // ONLY use closed candles
                         
                         // Calculate current PNL percentage
                         const pnlPct = pos.side === 'LONG' 
@@ -155,19 +169,19 @@ export class BotRunner {
 
                         if (sig && sig.score >= USER_CONFIG.min_score && sig.side !== pos.side) {
                             
-                            // 1h Cross-Check 
+                            // 15m Cross-Check (Replacing old 1h check for faster resolution)
                             try {
-                                const c1h = await this.binance.getKlines(sym, '1h', 50);
-                                if (c1h && c1h.length >= 20) {
-                                    const sig1h = getSignal(c1h.slice(0, -1)); // ONLY use closed candles
-                                    // If 1h still strongly supports our ORIGINAL position, ignore the 15m reversal
-                                    if (sig1h && sig1h.side === pos.side && sig1h.score >= USER_CONFIG.min_score) {
-                                        console.log(`[Bot] Ignored 15m reversal for ${sym} because 1h signal (${sig1h.side}) is still strong.`);
+                                const c15m = await this.binance.getKlines(sym, '15m', 50);
+                                if (c15m && c15m.length >= 20) {
+                                    const sig15m = getSignal(c15m.slice(0, -1));
+                                    // If 15m still strongly supports our ORIGINAL position, ignore the 5m reversal check
+                                    if (sig15m && sig15m.side === pos.side && sig15m.score >= USER_CONFIG.min_score) {
+                                        console.log(`[Bot] Ignored 5m reversal for ${sym} because 15m signal (${sig15m.side}) is still strong.`);
                                         return;
                                     }
                                 }
                             } catch (e: any) {
-                                console.error(`[Bot] 1h cross-check failed for ${sym}:`, e.message);
+                                console.error(`[Bot] 15m cross-check failed for ${sym}:`, e.message);
                             }
 
                             // Reversal sharpness evaluation
@@ -176,7 +190,7 @@ export class BotRunner {
                             // 1. Strong signal score indicates sharper reversal
                             if (sig.score >= 0.86) isSharpReversal = true;
                             
-                            // 2. High momentum on the latest candle (e.g., > 0.4% move in 15min)
+                            // 2. High momentum on the latest candle (e.g., > 0.4% move in 5min)
                             const lastK = c[c.length - 1];
                             const candleMove = Math.abs(lastK.c - lastK.o) / lastK.o * 100;
                             if (candleMove >= 0.4) isSharpReversal = true;
@@ -221,30 +235,56 @@ export class BotRunner {
                         this.lastKlineCheck[sym] = now;
 
                         try {
-                            const c = await this.binance.getKlines(sym, '1h', 50);
-                            if (!c || c.length < 20) continue;
+                            // 1. Fast trigger on 5m
+                            const c5m = await this.binance.getKlines(sym, '5m', 50);
+                            if (!c5m || c5m.length < 20) continue;
 
-                            const sig = getSignal(c.slice(0, -1)); // ONLY use closed candles
+                            const sig = getSignal5m(c5m.slice(0, -1)); // ONLY use closed candles
                             if (!sig || sig.score < USER_CONFIG.min_score) continue;
+                            
+                            this.logScan(`[${sym}] 5m Sinyal Olasılığı (${sig.side}) bulundu. Üst TF'ler inceleniyor...`);
+
+                            // 2. Trend alignment on 15m
+                            const c15m = await this.binance.getKlines(sym, '15m', 50);
+                            if (!c15m || c15m.length < 20) continue;
+                            const sig15m = getSignal(c15m.slice(0, -1));
+
+                            if (sig15m && sig15m.score >= USER_CONFIG.min_score && sig15m.side !== sig.side) {
+                                this.logScan(`[${sym}] İptal: 15m sinyali (${sig15m.side}) ters yönde.`);
+                                continue;
+                            }
+
+                            // 3. Fakeout detection on 1h trend
+                            const c1h = await this.binance.getKlines(sym, '1h', 50);
+                            if (!c1h || c1h.length < 20) continue;
+                            
+                            const closed1hObj = c1h.slice(0, -1);
+                            const ma1h20 = calcMa(closed1hObj, 20);
+                            const p1h = closed1hObj[closed1hObj.length - 1].c;
+                            
+                            // Prevent going heavily against the 1h trend 
+                            if (sig.side === 'LONG' && p1h < ma1h20) {
+                                this.logScan(`[${sym}] İptal: LONG sinyali ancak fiyat 1h MA20 (Düşüş) altında.`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && p1h > ma1h20) {
+                                this.logScan(`[${sym}] İptal: SHORT sinyali ancak fiyat 1h MA20 (Yükseliş) üstünde.`);
+                                continue;
+                            }
+                            
+                            this.logScan(`[${sym}] Mükemmel eşleşme! Tüm zaman dilimleri onayladı. Pozisyon açılıyor.`);
 
                         const size = USER_CONFIG.margin;
                         const notional = size * USER_CONFIG.lev;
 
-                        // Dynamic TP distance based on avg_move
-                        const avg = sig.avg_move > 0 ? sig.avg_move : price * 0.005;
-
-                        let tpDist = avg * USER_CONFIG.tp_pct;
-                        
-                        // Limit Kar Hedefi : Sabit $5
-                        const minTpDist = price * (5 / notional);
-                        const maxTpDist = price * (5 / notional);
-
-                        if (tpDist < minTpDist) tpDist = minTpDist;
-                        else if (tpDist > maxTpDist) tpDist = maxTpDist;
-
+                        // Doğru TP Hesaplaması (komisyon dahil)
+                        const commissionPerSide = notional * 0.0004;
+                        const totalCommission = commissionPerSide * 2; // giriş + çıkış
+                        const targetGross = USER_CONFIG.tp_usd + totalCommission;
+                        const tpDist = price * (targetGross / notional);
                         const tp_price = sig.side === 'LONG' ? price + tpDist : price - tpDist;
                         
-                        // %2 strict Stop Loss (USER_CONFIG.stop_pct)
+                        // Strict Stop Loss Calculation (USER_CONFIG.stop_pct)
                         const sl_price = sig.side === 'LONG'
                             ? price * (1 - USER_CONFIG.stop_pct / 100)
                             : price * (1 + USER_CONFIG.stop_pct / 100);
@@ -307,7 +347,8 @@ export class BotRunner {
             sym, side: pos.side, entry: pos.entry,
             closed_price: price, pnl: netPnlUsd,
             strat: pos.strat, reason,
-            opened: pos.opened_at, closed: Date.now()
+            opened: pos.opened_at, closed: Date.now(),
+            lev: pos.lev, size: pos.size
         });
 
         this.reservedCapital -= pos.size;
@@ -324,6 +365,8 @@ export class BotRunner {
             is_active: this.isScanning,
             capital: this.capital,
             total_trades: this.closedPositions.length,
+            total_wins: this.closedPositions.filter(p => p.pnl > 0).length,
+            total_losses: this.closedPositions.filter(p => p.pnl <= 0).length,
             total_pnl: this.totalRealizedPnl,
             opens: Object.values(this.openPositions).map(p => ({
                 sym: p.sym,
@@ -332,8 +375,8 @@ export class BotRunner {
                 current_price: p.currentPrice || p.entry,
                 tp_price: p.tp_price,
                 sl_price: p.sl_price,
-                tp: (p.tp_abs / p.entry) * 100 * p.lev,
-                sl: USER_CONFIG.stop_pct * p.lev,
+                tp: p.tp_price,
+                sl: p.sl_price,
                 lev: p.lev,
                 size: p.size,
                 pnl_pct: p.pnlPct || 0,
@@ -360,6 +403,7 @@ export class BotRunner {
             used_capital: this.reservedCapital,
             unrealized_pnl: Object.values(this.openPositions).reduce((s, p) => s + (p.netPnlUsd || 0), 0),
             has_downloadable_log: !!this.downloadableLog,
+            scanning_logs: this.scanningLogs,
         };
     }
 }
