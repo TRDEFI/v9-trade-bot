@@ -85,6 +85,12 @@ export interface Signal {
 export function getSignal5m(klines: Kline[]): Signal | null {
   if (!klines || klines.length < 25) return null;
 
+  const MIN_ATR_PCT = 0.245; // TP gereksinimi (%0.163) × 1.5 güvenlik
+  const atr = calcAtr(klines, 14);
+  const atrPct = (atr / klines[klines.length-1].c) * 100;
+
+  if (atrPct < MIN_ATR_PCT) return null; // Coin çok sakin, TP'ye ulaşamaz
+
   const ema9 = calcEma(klines, 9);
   const ema21 = calcEma(klines, 21);
   const vr = calcVolumeRatio(klines, 10);

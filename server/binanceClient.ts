@@ -19,9 +19,25 @@ export class BinanceClient {
   public pricesCache: Record<string, number> = {};
   public klinesCache: Record<string, Record<string, Kline[]>> = {};
   private wsConnected = false;
+  
+  public onCandleClose: ((sym: string, interval: string) => void) | null = null;
+
+  private restQueue: Promise<void> = Promise.resolve();
+  private lastRestCall = 0;
 
   constructor() {
     this.connectWs();
+  }
+
+  private async throttledRest<T>(fn: () => Promise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.restQueue = this.restQueue.then(async () => {
+        const elapsed = Date.now() - this.lastRestCall;
+        if (elapsed < 100) await new Promise(r => setTimeout(r, 100 - elapsed));
+        this.lastRestCall = Date.now();
+        try { resolve(await fn()); } catch(e) { reject(e); }
+      });
+    });
   }
 
   public subscribeKlines(symbols: string[], intervals: string[]) {
@@ -73,7 +89,10 @@ export class BinanceClient {
               lastCandle.c = parseFloat(k.c);
               lastCandle.v = parseFloat(k.v);
             } else if (k.t > lastCandle.t) {
-              // New candle started
+              // New candle started (old candle closed)
+              if (this.onCandleClose) {
+                this.onCandleClose(symbol, interval);
+              }
               list.push({
                 t: k.t,
                 o: parseFloat(k.o),
@@ -195,10 +214,10 @@ export class BinanceClient {
     // Afterwards, the WebSocket will keep this cache updated in real time.
     if (!cache || cache.length < limit) {
       try {
-        const response = await axios.get(`${BASE_URL}/fapi/v1/klines`, {
+        const response = await this.throttledRest(() => axios.get(`${BASE_URL}/fapi/v1/klines`, {
           params: { symbol, interval, limit: Math.max(limit, 50) }, // Fetch 50 to have enough history
           timeout: 5000
-        });
+        }));
         if (Array.isArray(response.data)) {
           this.klinesCache[symbol][interval] = response.data.map((x: any[]) => ({
             t: parseInt(x[0]),
