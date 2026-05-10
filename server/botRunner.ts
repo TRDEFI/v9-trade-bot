@@ -130,7 +130,7 @@ export class BotRunner {
                 pos.currentPrice = price;
                 
                 const notionalValue = pos.size * pos.lev;
-                const commissionUsd = notionalValue * 0.0004;
+                const commissionUsd = notionalValue * 0.0004 * 2;
                 const pnlRaw = pos.side === 'LONG' 
                     ? ((price - pos.entry) / pos.entry) 
                     : ((pos.entry - price) / pos.entry);
@@ -265,15 +265,16 @@ export class BotRunner {
                             
                             const closed1hObj = c1h.slice(0, -1);
                             const ma1h20 = calcMa(closed1hObj, 20);
+                            const rsi1h = calcRsi(closed1hObj, 14);
                             const p1h = closed1hObj[closed1hObj.length - 1].c;
                             
-                            // Prevent going heavily against the 1h trend 
-                            if (sig.side === 'LONG' && p1h < ma1h20) {
-                                this.logScan(`[${sym}] İptal: LONG sinyali ancak fiyat 1h MA20 (Düşüş) altında.`);
+                            // Prevent going heavily against the 1h trend unless RSI indicates extreme overbought/oversold reversal
+                            if (sig.side === 'LONG' && p1h < ma1h20 && rsi1h > 32) {
+                                this.logScan(`[${sym}] İptal: LONG ama 1h MA altı ve RSI normal (${rsi1h.toFixed(1)}).`);
                                 continue;
                             }
-                            if (sig.side === 'SHORT' && p1h > ma1h20) {
-                                this.logScan(`[${sym}] İptal: SHORT sinyali ancak fiyat 1h MA20 (Yükseliş) üstünde.`);
+                            if (sig.side === 'SHORT' && p1h > ma1h20 && rsi1h < 68) {
+                                this.logScan(`[${sym}] İptal: SHORT ama 1h MA üstü ve RSI normal (${rsi1h.toFixed(1)}).`);
                                 continue;
                             }
                             
