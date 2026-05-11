@@ -85,7 +85,7 @@ export interface Signal {
 export function getSignal5m(klines: Kline[]): Signal | null {
   if (!klines || klines.length < 25) return null;
 
-  const MIN_ATR_PCT = 0.10; // Daha düşük bir seviye
+  const MIN_ATR_PCT = 0.245; // TP gereksinimi (%0.163) × 1.5 güvenlik
   const atr = calcAtr(klines, 14);
   const atrPct = (atr / klines[klines.length-1].c) * 100;
 
@@ -97,32 +97,18 @@ export function getSignal5m(klines: Kline[]): Signal | null {
   const rsi = calcRsi(klines, 14);
   const p = klines[klines.length - 1].c;
 
-  const ema9_1 = calcEma(klines.slice(0, -1), 9);
-  const ema21_1 = calcEma(klines.slice(0, -1), 21);
-  const ema9_2 = calcEma(klines.slice(0, -2), 9);
-  const ema21_2 = calcEma(klines.slice(0, -2), 21);
-  const ema9_3 = calcEma(klines.slice(0, -3), 9);
-  const ema21_3 = calcEma(klines.slice(0, -3), 21);
+  const prevEma9 = calcEma(klines.slice(0, -1), 9);
+  const prevEma21 = calcEma(klines.slice(0, -1), 21);
 
-  const crossedUpRecently = 
-      (ema9_1 <= ema21_1 && ema9 > ema21) ||
-      (ema9_2 <= ema21_2 && ema9_1 > ema21_1) ||
-      (ema9_3 <= ema21_3 && ema9_2 > ema21_2);
-
-  const crossedDnRecently = 
-      (ema9_1 >= ema21_1 && ema9 < ema21) ||
-      (ema9_2 >= ema21_2 && ema9_1 < ema21_1) ||
-      (ema9_3 >= ema21_3 && ema9_2 < ema21_2);
-
-  const validCrossUp = crossedUpRecently && ema9 > ema21;
-  const validCrossDn = crossedDnRecently && ema9 < ema21;
+  const justCrossedUp = prevEma9 <= prevEma21 && ema9 > ema21;
+  const justCrossedDn = prevEma9 >= prevEma21 && ema9 < ema21;
 
   const avg = calcAtr(klines, 14);
 
-  if (validCrossUp && vr > 1.0 && rsi >= 35 && rsi <= 72) {
+  if (justCrossedUp && vr > 1.2 && rsi >= 40 && rsi <= 65) {
       return { name: 'EMA_CROSS_UP', score: 0.88, side: 'LONG', avg_move: avg };
   }
-  if (validCrossDn && vr > 1.0 && rsi >= 28 && rsi <= 65) {
+  if (justCrossedDn && vr > 1.2 && rsi >= 35 && rsi <= 60) {
       return { name: 'EMA_CROSS_DN', score: 0.88, side: 'SHORT', avg_move: avg };
   }
   return null;

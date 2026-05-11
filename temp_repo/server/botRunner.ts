@@ -37,7 +37,7 @@ export const USER_CONFIG = {
     lev:           30,
     stop_pct:      0.5,      // Scalping Stop Loss: 0.5%
     min_score:     0.75,     
-    max_open:      5,
+    max_open:      10,
     cooldown_min:  15,       // Cooldown increased to 15m as per Claude's suggestion
     run_minutes:   0,        // 0 -> run indefinitely
     tp_usd:        25,       // Target TP value in USD
@@ -109,14 +109,17 @@ export class BotRunner {
         // Setup event-driven scanning BEFORE initial payload so any late WS events are caught
         this.binance.onCandleClose = (sym, interval) => {
             if (interval === '5m' && this.isScanning) {
-                const cache = this.binance.klinesCache[sym]?.['5m'];
-                if (!cache || cache.length < 20) return; // cache hazır değil
                 this.checkSignal(sym).catch(e => console.error("checkSignal err:", e.message));
             }
         };
 
-        // 1. Fetch REST history logic (Removed per user suggestion, WS stream fills it)
+        // 1. Fetch REST history to populate cache (this will take ~90 seconds)
         const intervals = ['5m', '15m', '1h'];
+        for (const sym of TRACKED_PAIRS) {
+            for (const inv of intervals) {
+               this.binance.getKlines(sym, inv, 50).catch(e => {}); 
+            }
+        }
 
         this.logScan(`[Bot] Veri geçmişi çekilmeye başlandı. WS Streamleri açılıyor...`);
         
@@ -300,7 +303,7 @@ export class BotRunner {
             if (!c15m || c15m.length < 20) return;
             const sig15m = getSignal(c15m.slice(0, -1));
 
-            if (sig15m && sig15m.score >= 0.88 && sig15m.side !== sig.side) {
+            if (sig15m && sig15m.score >= USER_CONFIG.min_score && sig15m.side !== sig.side) {
                 this.logScan(`[${sym}] İptal: 15m sinyali (${sig15m.side}) ters yönde.`);
                 return;
             }
