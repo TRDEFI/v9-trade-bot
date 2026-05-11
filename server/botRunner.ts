@@ -208,26 +208,25 @@ export class BotRunner {
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // 1. ZAMAN AŞIMI KONTROLÜ (Fresh Signal): Sinyal kapanalı 5 dkyı geçtiyse girme.
-                            if (candleAgeMs > 5 * 60 * 1000) continue;
+                            // 1. ZAMAN AŞIMI KONTROLÜ (Fresh Signal): Sinyal kapatıldıktan sonraki mum boyunca geçerli olsun (14 dakika)
+                            if (candleAgeMs > 14 * 60 * 1000) continue;
 
                             // 2. FİYAT KAYMASI (Slippage) / PULLBACK KONTROLÜ: 
-                            // İşleme girerken mevcut fiyatın sinyal fiyatından (mum kapanışı) en fazla %0.1 daha kötü olmasına izin veriyoruz.
-                            // Çok uçmuşsa (tren kaçtıysa) girmez, ya da fiyat istenilen yere çekilince (pullback) girer.
-                            if (sig.side === 'LONG' && price > sigClosePrice * 1.001) continue;
-                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.999) continue;
+                            // İşleme girerken mevcut fiyatın sinyal fiyatından (mum kapanışı) en fazla %0.3 daha kötü olmasına izin veriyoruz.
+                            if (sig.side === 'LONG' && price > sigClosePrice * 1.003) continue;
+                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) continue;
 
                             // 3. 5M ALT ZAMAN DİLİMİ MOMENTUM TEYİDİ:
-                            // Yönün odmah terse dönmemesi için alt periyotta RSI uyumsuz olmamalı.
+                            // Yönün hemen terse dönmemesi için alt periyotta RSI uyumsuz olmamalı. (Kural biraz esnetildi 75/25)
                             const rsi5m = calcRsi(closed5m, 14);
-                            if (sig.side === 'LONG' && rsi5m > 70) continue; // 5 dk'lıkta aşırı alınmışsa long girme
-                            if (sig.side === 'SHORT' && rsi5m < 30) continue; // 5 dk'lıkta aşırı satılmışsa short girme
+                            if (sig.side === 'LONG' && rsi5m > 75) continue;
+                            if (sig.side === 'SHORT' && rsi5m < 25) continue;
 
                             // 4. ANLIK AKTİF MUM YÖN & SERT HAREKET TEYİDİ:
-                            // Anlık fiyatta işlemin tersine çok sert bir hareket varsa (düşen bıçak) bekle.
+                            // Anlık fiyatta işlemin tersine çok sert bir hareket varsa (düşen bıçak) bekle. (Kural %0.5'e esnetildi)
                             const active5m = c5m[c5m.length - 1];
-                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.998) continue; // Çok sert düşüyorsa bekle
-                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.002) continue; // Çok sert çıkıyorsa bekle
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.995) continue; // Çok sert düşüyorsa bekle
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.005) continue; // Çok sert çıkıyorsa bekle
 
                         const size = USER_CONFIG.margin;
                         const notional = size * USER_CONFIG.lev;
