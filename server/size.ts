@@ -35,8 +35,8 @@ export function checkDrawdownProtection(capital: number, allTimeHigh: number): {
 }
 
 export function calculatePositionSize(capital: number, entryPrice: number, stopLoss: number, riskMult: number, tpPrice: number): { size: number, lev: number } {
-  // Target net profit is $3
-  const TARGET_PROFIT = 3.0; // USD
+  // Target net profit is $10
+  const TARGET_PROFIT = 10.0; // USD
   
   const tpDistance = Math.abs(tpPrice - entryPrice);
   const tpPct = tpDistance / entryPrice;

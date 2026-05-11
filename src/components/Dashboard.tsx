@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Clock, DollarSign, Crosshair, AlertCircle, RefreshCw, Play, Square, Info, Download, BrainCircuit, X, Server, Cpu, Database, Network, Terminal } from 'lucide-react';
+import { Activity, Clock, DollarSign, Crosshair, AlertCircle, RefreshCw, Play, Square, Info, Download, BrainCircuit, X, Server, Cpu, Database, Network } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
 
 export function Dashboard() {
@@ -81,6 +81,10 @@ export function Dashboard() {
     .sort((a,b) => b.pnl - a.pnl)
     .slice(0, 10); // top 10
 
+  const marginBalance = data.capital + data.unrealized_pnl;
+  const freeMargin = marginBalance - data.used_capital;
+  const marginRatio = marginBalance > 0 ? (data.used_capital / marginBalance) * 100 : 0;
+
   return (
     <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans selection:bg-pink-500/30">
       <header className="flex items-center justify-between px-4 py-2.5 bg-[#0f0f0f] border-b border-[#222]">
@@ -125,12 +129,12 @@ export function Dashboard() {
           )}
 
           <div className="flex flex-col items-end leading-tight">
-            <div className={`flex items-center gap-1.5 ${data.is_active ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`flex items-center gap-1.5 ${data.global_risk_halted ? 'text-yellow-400' : (data.is_active ? 'text-green-400' : 'text-red-400')}`}>
               <span className="relative flex h-1.5 w-1.5">
-                {data.is_active && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>}
+                {data.is_active && !data.global_risk_halted && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>}
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current"></span>
               </span>
-              <span>{data.is_active ? 'ÇALIŞIYOR' : 'DURDURULDU'}</span>
+              <span>{data.global_risk_halted ? 'RISK BEKLEMESİ (-$400)' : (data.is_active ? 'ÇALIŞIYOR' : 'DURDURULDU')}</span>
             </div>
             <span className="text-gray-500">{formatTime(data.server_time)} (GMT+3)</span>
           </div>
@@ -138,9 +142,11 @@ export function Dashboard() {
       </header>
 
       {/* Ultra Compact Stats Grid */}
-      <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-px bg-[#1a1a1a] border-b border-[#1a1a1a]">
+      <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-11 gap-px bg-[#1a1a1a] border-b border-[#1a1a1a]">
         <StatBlock label="Capital" value={formatCurrency(data.capital)} color="text-blue-400" />
         <StatBlock label="Free Bal" value={formatCurrency(data.capital - data.used_capital)} color="text-white" />
+        <StatBlock label="Free Margin" value={formatCurrency(freeMargin)} color="text-teal-400" />
+        <StatBlock label="Margin Ratio" value={`${marginRatio.toFixed(2)}%`} color={marginRatio > 80 ? 'text-red-400' : 'text-green-400'} />
         <StatBlock label="Süre" value={data.elapsed} color="text-yellow-400" />
         <StatBlock label="Win Rate" value={`${winRate}% (${wins}W/${losses}L)`} color={parseFloat(winRate) > 50 ? 'text-green-400' : 'text-gray-300'} />
         <StatBlock label="Açık Poz" value={`${data.opens.length}`} color="text-white" />
@@ -214,9 +220,9 @@ export function Dashboard() {
                           <span className="text-white font-semibold">{formatNumber(p.current_price)}</span>
                         </td>
                         <td className="px-3 py-2">
-                          <span className="text-green-400">{formatNumber(p.tp)}</span>
+                          <span className="text-green-400">{formatNumber(p.tp_price)}</span>
                           <span className="mx-1 text-gray-600">/</span>
-                          <span className="text-red-400">{formatNumber(p.sl)}</span>
+                          <span className="text-red-400">{formatNumber(p.sl_price)}</span>
                         </td>
                         <td className="px-3 py-2">
                           <span className="text-orange-400 font-semibold">{formatCurrency(p.size)}</span>
@@ -300,31 +306,6 @@ export function Dashboard() {
                   })}
                 </tbody>
               </table>
-            </div>
-          </section>
-
-          {/* Sinyal Tarama ve Sistem Logları */}
-          <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden">
-            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5 border-b border-[#222]">
-              <Terminal className="w-3.5 h-3.5" /> Otonom Sinyal Tarama & Sistem Logları
-            </div>
-            <div className="p-3 h-48 overflow-y-auto font-mono text-[10px] text-gray-400 space-y-1 bg-[#0a0a0a]">
-              {data.scanning_logs?.length === 0 ? (
-                <div className="text-gray-600 italic">Sistem bekleniyor...</div>
-              ) : (
-                data.scanning_logs?.map((log: string, idx: number) => {
-                  let colorClass = 'text-gray-400';
-                  if (log.includes('Mükemmel eşleşme')) colorClass = 'text-green-400 font-bold';
-                  else if (log.includes('İptal')) colorClass = 'text-red-400';
-                  else if (log.includes('bulundu')) colorClass = 'text-yellow-400';
-                  
-                  return (
-                    <div key={idx} className={`${colorClass}`}>
-                      {log}
-                    </div>
-                  );
-                })
-              )}
             </div>
           </section>
         </div>

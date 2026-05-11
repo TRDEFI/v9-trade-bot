@@ -1,8 +1,7 @@
-import axios from 'axios';
 import { BinanceClient } from './binanceClient.js';
-import { getSignal, getSignal5m, calcMa, calcEma, calcRsi, calcAtr } from './strategy.js';
+import { getSignal, calcRsi } from './strategy.js';
 
-export let TRACKED_PAIRS = [
+export const TOP100_PAIRS = [
     'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'ZECUSDT', 'XRPUSDT', 'DOGEUSDT', 'FILUSDT',
     'TONUSDT', 'BNBUSDT', 'SUIUSDT', 'NEARUSDT', 'TAOUSDT', 'ICPUSDT', 'ENAUSDT',
     'LINKUSDT', 'ADAUSDT', 'AVAXUSDT', 'OPUSDT', 'SKYAIUSDT', 'ARBUSDT', 'UNIUSDT',
@@ -18,30 +17,25 @@ export let TRACKED_PAIRS = [
     'KAVAUSDT', 'WOOUSDT', 'APEUSDT', 'NEOUSDT', 'XTZUSDT', 'IOTAUSDT', 'ILVUSDT',
     'KSMUSDT', 'GNOUSDT', 'BLURUSDT', 'GLMRUSDT', 'MASKUSDT', 'JASMYUSDT', 'QTUMUSDT',
     'SUSHIUSDT', 'ONDOUSDT', 'OCEANUSDT', 'BICOUSDT', 'ZRXUSDT', 'BATUSDT', 'ONTUSDT',
-    'METISUSDT', 'NKNUSDT', 'BANDUSDT', 'ICXUSDT', 'ZENUSDT', 'YFIUSDT',
+    'METISUSDT', 'NKNUSDT', 'BANDUSDT', 'ICXUSDT', 'ZENUSDT', 'YFIUSDT', 'ZECUSDT',
     'BALUSDT', 'STORJUSDT', 'SKLUSDT', 'CVCUSDT', 'CTSIUSDT', 'RLCUSDT', 'TRBUSDT',
     'NMRUSDT', 'LPTUSDT', 'BAKEUSDT', 'ALPHAUSDT', 'SFPUSDT', 'BELUSDT', 'LITUSDT',
     'C98USDT', 'DARUSDT', 'ALICEUSDT', 'TLMUSDT', 'SLPUSDT', 'GTCUSDT', 'YGGUSDT',
     'ATAUSDT', 'RAYUSDT', 'FIDAUSDT', 'AGLDUSDT', 'RADUSDT', 'LRCUSDT', '1000PEPEUSDT',
     '1000FLOKIUSDT', '1000XECUSDT', '1000SATSUSDT', '1000RATSUSDT', 'MBOXUSDT', 'CFXUSDT',
-    'ACHUSDT', 'SSVUSDT', 'JOEUSDT', 'BNXUSDT', 'HIGHUSDT', 'CVXUSDT', 'FXSUSDT',
-    // New requested pairs:
-    'FTMUSDT', 'STXUSDT', 'CELRUSDT', 'IDUSDT', 'ARKMUSDT', 'JTOUSDT', 'WUSDT', 'STRKUSDT', 
-    'PIXELUSDT', 'PORTALUSDT', 'DYMUSDT', 'ALTUSDT', 'PYTHUSDT', 'AIUSDT', 'ACEUSDT',
-    'NFPUSDT', 'XAIUSDT', 'MANTAUSDT', 'ZUSUSDT', 'RONINUSDT', 'CATIUSDT', 'HMSTRUSDT', 
-    'SCRUSDT', 'BANANAUSDT'
+    'ACHUSDT', 'SSVUSDT', 'JOEUSDT', 'BNXUSDT', 'HIGHUSDT', 'CVXUSDT', 'FXSUSDT'
 ];
 
 export const USER_CONFIG = {
     budget:        5000,
-    lev:           30,
-    stop_pct:      0.5,      // Scalping Stop Loss: 0.5%
+    lev:           40,
+    stop_pct:      2.0,      // User updated config: SL %2, uzak SL.
     min_score:     0.75,     
-    max_open:      5,
-    cooldown_min:  15,       // Cooldown increased to 15m as per Claude's suggestion
+    max_open:      13,
+    cooldown_min:  5,
     run_minutes:   0,        // 0 -> run indefinitely
-    tp_usd:        25,       // Target TP value in USD
-    margin:        1000,     // Amount used per position
+    tp_pct:        1.0,      // Avg tp ratio calculation base
+    margin:        250,     // Amount used per position
 };
 
 export class BotRunner {
@@ -49,7 +43,8 @@ export class BotRunner {
     binance = new BinanceClient();
     
     constructor() {
-        // We do not start the background system loop immediately, it will be started on start()
+        // Start the background system loop immediately
+        this.loop();
     }
     
     sessionStart = Date.now();
@@ -58,6 +53,7 @@ export class BotRunner {
     reservedCapital = 0;
     totalRealizedPnl = 0;
     allTimeHigh = USER_CONFIG.budget;
+    globalRiskHalted = false;
     
     openPositions: Record<string, any> = {};
     closedPositions: any[] = [];
@@ -70,61 +66,17 @@ export class BotRunner {
     loopInterval: NodeJS.Timeout | null = null;
     startTimeStr: number = Date.now();
     downloadableLog: string | null = null;
-    scanningLogs: string[] = [];
 
-    private logScan(msg: string) {
-        const d = new Date();
-        const t = d.toTimeString().split(' ')[0];
-        this.scanningLogs.unshift(`[${t}] ${msg}`);
-        if(this.scanningLogs.length > 50) this.scanningLogs.pop();
-    }
-
-    async start() {
+    start() {
         if (this.isScanning) return;
         this.isScanning = true;
         this.sessionStart = Date.now();
         if (!this.startTimeStr) this.startTimeStr = Date.now();
-        
-        try {
-            this.logScan("[Bot] Binance API'den en yüksek hacimli 300 USDT pair'i çekiliyor...");
-            const { data } = await axios.get('https://fapi.binance.com/fapi/v1/ticker/24hr', { timeout: 10000 });
-            if (Array.isArray(data)) {
-                const usdtPairs = data
-                    .filter((p: any) => p.symbol.endsWith('USDT') && parseFloat(p.lastPrice) > 0)
-                    .sort((a: any, b: any) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
-                    .map((p: any) => p.symbol);
-                
-                if (usdtPairs.length > 0) {
-                    TRACKED_PAIRS = usdtPairs.slice(0, 300);
-                }
-            }
-        } catch (error: any) {
-            this.logScan(`[Bot] Pair listesi güncellenemedi, varsayılan liste kullanılacak. Hata: ${error.message}`);
-        }
-
-        console.log(`[Bot] Scanning Started - ${TRACKED_PAIRS.length} pairs`);
+        console.log('[Bot] Scanning Started - TOP100 scanner');
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
-        this.logScan(`[Bot] Başlatılıyor - ${TRACKED_PAIRS.length} pair için geçmiş veriler yükleniyor...`);
         
-        // Setup event-driven scanning BEFORE initial payload so any late WS events are caught
-        this.binance.onCandleClose = (sym, interval) => {
-            if (interval === '5m' && this.isScanning) {
-                const cache = this.binance.klinesCache[sym]?.['5m'];
-                if (!cache || cache.length < 20) return; // cache hazır değil
-                this.checkSignal(sym).catch(e => console.error("checkSignal err:", e.message));
-            }
-        };
-
-        // 1. Fetch REST history logic (Removed per user suggestion, WS stream fills it)
-        const intervals = ['5m', '15m', '1h'];
-
-        this.logScan(`[Bot] Veri geçmişi çekilmeye başlandı. WS Streamleri açılıyor...`);
-        
-        // 2. Subscribe to Websocket for all tracked pairs and intervals
-        this.binance.subscribeKlines(TRACKED_PAIRS, intervals);
-
-        // 3. Start loop for position management
-        this.loop();
+        // Subscribe to Websocket for all tracked pairs and intervals
+        this.binance.subscribeKlines(TOP100_PAIRS, ['15m', '1h']);
     }
 
     stop() {
@@ -149,18 +101,9 @@ export class BotRunner {
         this.downloadableLog = [headers.join(','), ...rows].join('\n');
     }
 
-    private lastLogScan: number = Date.now();
-    
     private async loop() {
-        if (this.loopInterval) {
-            clearTimeout(this.loopInterval);
-        }
         try {
             const now = Date.now();
-            if (now - this.lastLogScan > 60000 && this.isScanning) {
-                this.logScan("Otomatik Tarama Devam Ediyor... (Filtreler: 5m Hacim, 15m Trend, 1h MA)");
-                this.lastLogScan = now;
-            }
             const currentPrices = await this.binance.getAllPrices();
 
             let currentTotalNetPnl = 0;
@@ -174,7 +117,7 @@ export class BotRunner {
                 pos.currentPrice = price;
                 
                 const notionalValue = pos.size * pos.lev;
-                const commissionUsd = notionalValue * 0.0004 * 2;
+                const commissionUsd = notionalValue * 0.0010; // 0.05% taker * 2
                 const pnlRaw = pos.side === 'LONG' 
                     ? ((price - pos.entry) / pos.entry) 
                     : ((pos.entry - price) / pos.entry);
@@ -183,6 +126,8 @@ export class BotRunner {
 
                 pos.netPnlUsd = netPnlUsd;
                 pos.pnlPct = (netPnlUsd / pos.size) * 100;
+                
+                currentTotalNetPnl += netPnlUsd;
 
                 const tpHit = pos.side === 'LONG' ? price >= pos.tp_price : price <= pos.tp_price;
                 const slHit = pos.side === 'LONG' ? price <= pos.sl_price : price >= pos.sl_price;
@@ -195,178 +140,142 @@ export class BotRunner {
                     this.closePosition(sym, 'STOP_LOSS');
                     continue;
                 }
-                
-                // Smart Reversal Check (every 60 sec)
-                if (!this.lastReversalCheck[sym] || now - this.lastReversalCheck[sym] > 60000) {
-                    this.lastReversalCheck[sym] = now;
-                    this.binance.getKlines(sym, '5m', 50).then(async c => { // 5m for fast scalping momentum
-                        if (!c || c.length < 25) return;
-                        
-                        const closedK = c.slice(0, -1);
-                        const ema9 = calcEma(closedK, 9);
-                        const ema21 = calcEma(closedK, 21);
-                        const rsi = calcRsi(closedK, 14);
-                        
-                        const reversalSide = pos.side === 'LONG' 
-                             ? (ema9 < ema21 && rsi < 45 ? 'SHORT' : null)
-                             : (ema9 > ema21 && rsi > 55 ? 'LONG' : null);
-
-                        // Calculate current PNL percentage
-                        const pnlPct = pos.side === 'LONG' 
-                             ? (price - pos.entry) / pos.entry 
-                             : (pos.entry - price) / pos.entry;
-
-                        const isLosing = pnlPct < 0;
-                        const lossPct = isLosing ? Math.abs(pnlPct * 100) : 0;
-
-                        if (reversalSide && reversalSide !== pos.side) {
-                            
-                            // 15m Cross-Check (Replacing old 1h check for faster resolution)
-                            try {
-                                const c15m = await this.binance.getKlines(sym, '15m', 50);
-                                if (c15m && c15m.length >= 20) {
-                                    const sig15m = getSignal(c15m.slice(0, -1));
-                                    // If 15m still strongly supports our ORIGINAL position, ignore the 5m reversal check
-                                    if (sig15m && sig15m.side === pos.side && sig15m.score >= USER_CONFIG.min_score) {
-                                        console.log(`[Bot] Ignored 5m reversal for ${sym} because 15m signal (${sig15m.side}) is still strong.`);
-                                        return;
-                                    }
-                                }
-                            } catch (e: any) {
-                                console.error(`[Bot] 15m cross-check failed for ${sym}:`, e.message);
-                            }
-
-                            // Reversal sharpness evaluation
-                            let isSharpReversal = false;
-                            
-                            // 1. High momentum on the latest candle (e.g., > 0.4% move in 5min)
-                            const lastK = c[c.length - 1];
-                            const candleMove = Math.abs(lastK.c - lastK.o) / lastK.o * 100;
-                            if (candleMove >= 0.4) isSharpReversal = true;
-
-                            if (lossPct < 0.5) {
-                                // If loss is small, require a sharp reversal to panic close
-                                if (isSharpReversal) {
-                                     console.log(`[Bot] Sharp reversal detected for ${sym}, changing from ${pos.side} to ${reversalSide}. Closing position...`);
-                                     this.closePosition(sym, 'REVERSAL_SHARP', { [sym]: lastK.c });
-                                }
-                            } else {
-                                // If loss is already significant (> 0.5%), a reversal signal confirms the wrong direction, close to cut losses.
-                                console.log(`[Bot] Reversal confirmed with >0.5% loss for ${sym}. Closing position...`);
-                                this.closePosition(sym, 'REVERSAL', { [sym]: lastK.c });
-                            }
-                        }
-                    }).catch(e => console.error("Reversal check err:", e.message));
-                }
             }
 
-            // Signal scanning is now event-driven from onCandleClose hook
+            // Global Risk Check
+            if (!this.globalRiskHalted && currentTotalNetPnl <= -400) {
+                this.globalRiskHalted = true;
+                console.log(`[Bot] Global Risk Halt TRIGGERED! Unrealized PnL: ${currentTotalNetPnl.toFixed(2)} <= -400`);
+            } else if (this.globalRiskHalted && currentTotalNetPnl > -390) {
+                this.globalRiskHalted = false;
+                console.log(`[Bot] Global Risk Halt LIFTED! Unrealized PnL: ${currentTotalNetPnl.toFixed(2)} > -390`);
+            }
+
+            // 2. Round-Robin Signal Lookup
+            if (this.isScanning && !this.globalRiskHalted) {
+                const openCount = Object.keys(this.openPositions).length;
+                
+                if (openCount < USER_CONFIG.max_open) {
+                    // Check up to 10 pairs per loop to speed up but still avoid rate limit blocking. 
+                    // Or we can just check 1 pair as user's original logic. User had 1 loop/sec. Let's do 1 pair per tick.
+                    let checked = 0;
+                    while (checked < TOP100_PAIRS.length) {
+                        const sym = TOP100_PAIRS[this.pairIndex % TOP100_PAIRS.length];
+                        this.pairIndex++;
+                        checked++;
+
+                        if (this.openPositions[sym]) continue;
+                        if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) continue;
+
+                        const price = currentPrices[sym];
+                        if (!price) continue;
+
+                        // 5-second cooldown per pair before re-checking klines to avoid API spam.
+                        if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
+                        this.lastKlineCheck[sym] = now;
+
+                        try {
+                            const c15m = await this.binance.getKlines(sym, '15m', 50);
+                            if (!c15m || c15m.length < 20) continue;
+
+                            const closed15m = c15m.slice(0, -1);
+                            const last10_15m = closed15m.slice(-10);
+
+                            const getVolatility = (candles: any[]) => {
+                                const maxH = Math.max(...candles.map(c => c.h));
+                                const minL = Math.min(...candles.map(c => c.l));
+                                if (minL === 0) return 0;
+                                return ((maxH - minL) / minL) * 100;
+                            };
+
+                            // Her bir chartın son 10 mumunda min %0.5 hareketlilik olmali
+                            if (getVolatility(last10_15m) < 0.5) continue;
+
+                            const c5m = await this.binance.getKlines(sym, '5m', 15);
+                            if (!c5m || c5m.length < 11) continue;
+                            
+                            const closed5m = c5m.slice(0, -1);
+                            const last10_5m = closed5m.slice(-10);
+
+                            if (getVolatility(last10_5m) < 0.5) continue;
+
+                            const sig = getSignal(closed15m); // ONLY use closed candles
+                            if (!sig || sig.score < USER_CONFIG.min_score) continue;
+
+                            const sigCandle = closed15m[closed15m.length - 1];
+                            const sigClosePrice = sigCandle.c;
+                            // A 15m candle's "t" is open time, so close time is t + 15m
+                            const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
+                            const candleAgeMs = now - sigCloseTime;
+
+                            // 1. ZAMAN AŞIMI KONTROLÜ (Fresh Signal): Sinyal kapanalı 5 dkyı geçtiyse girme.
+                            if (candleAgeMs > 5 * 60 * 1000) continue;
+
+                            // 2. FİYAT KAYMASI (Slippage) / PULLBACK KONTROLÜ: 
+                            // İşleme girerken mevcut fiyatın sinyal fiyatından (mum kapanışı) en fazla %0.1 daha kötü olmasına izin veriyoruz.
+                            // Çok uçmuşsa (tren kaçtıysa) girmez, ya da fiyat istenilen yere çekilince (pullback) girer.
+                            if (sig.side === 'LONG' && price > sigClosePrice * 1.001) continue;
+                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.999) continue;
+
+                            // 3. 5M ALT ZAMAN DİLİMİ MOMENTUM TEYİDİ:
+                            // Yönün odmah terse dönmemesi için alt periyotta RSI uyumsuz olmamalı.
+                            const rsi5m = calcRsi(closed5m, 14);
+                            if (sig.side === 'LONG' && rsi5m > 70) continue; // 5 dk'lıkta aşırı alınmışsa long girme
+                            if (sig.side === 'SHORT' && rsi5m < 30) continue; // 5 dk'lıkta aşırı satılmışsa short girme
+
+                            // 4. ANLIK AKTİF MUM YÖN & SERT HAREKET TEYİDİ:
+                            // Anlık fiyatta işlemin tersine çok sert bir hareket varsa (düşen bıçak) bekle.
+                            const active5m = c5m[c5m.length - 1];
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.998) continue; // Çok sert düşüyorsa bekle
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.002) continue; // Çok sert çıkıyorsa bekle
+
+                        const size = USER_CONFIG.margin;
+                        const notional = size * USER_CONFIG.lev;
+
+                        // Tahmini komisyon %0.1:
+                        const estimatedCommissionUsd = notional * 0.0010;
+                        
+                        // Hedef NET $10 kar
+                        const targetNetProfitUsd = 10;
+                        const requiredGrossProfitUsd = targetNetProfitUsd + estimatedCommissionUsd;
+                        const tpDist = price * (requiredGrossProfitUsd / notional);
+                        const tp_price = sig.side === 'LONG' ? price + tpDist : price - tpDist;
+                        
+                        // %2 Price Drop Stop Loss (Kripto fiyatinda %2 degisim)
+                        const slDist = price * (USER_CONFIG.stop_pct / 100);
+                        const sl_price = sig.side === 'LONG' ? price - slDist : price + slDist;
+
+                        if (size > (this.capital - this.reservedCapital)) continue;
+
+                        this.openPositions[sym] = {
+                            sym, 
+                            side: sig.side,
+                            entry: price, 
+                            tp_price, 
+                            sl_price,
+                            tp_abs: tpDist,
+                            size, 
+                            lev: USER_CONFIG.lev,
+                            strat: sig.name,
+                            opened_at: now,
+                        };
+                        this.reservedCapital += size;
+                        console.log('  OPEN ' + sig.side + ' ' + sym + ' @ ' + price.toFixed(4) + ' TP=' + tp_price.toFixed(4) + ' SL=' + sl_price.toFixed(4) + ' [' + sig.name + '] sz=' + size);
+
+                    } catch (e) {
+                         // silently skip on error
+                    }
+
+                    // Only check 1 API call per tick
+                    break;
+                }
+            }
+            }
         } catch (e) {
             console.error('Bot Loop Error:', e);
         }
 
         this.loopInterval = setTimeout(() => this.loop(), 500);
-    }
-
-    private async checkSignal(sym: string) {
-        if (!this.isScanning) return;
-        const now = Date.now();
-        
-        const openCount = Object.keys(this.openPositions).length;
-        if (openCount >= USER_CONFIG.max_open) return;
-
-        if (this.openPositions[sym]) return;
-        if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) return;
-
-        const price = await this.binance.getPrice(sym);
-        if (!price) return;
-
-        // 5-second cooldown per pair before re-checking klines to avoid API spam.
-        if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) return;
-        this.lastKlineCheck[sym] = now;
-
-        try {
-            // 1. Fast trigger on 5m
-            const c5m = await this.binance.getKlines(sym, '5m', 50);
-            if (!c5m || c5m.length < 20) return;
-
-            const sig = getSignal5m(c5m.slice(0, -1)); // ONLY use closed candles
-            if (!sig || sig.score < USER_CONFIG.min_score) return;
-            
-            this.logScan(`[${sym}] 5m Sinyal Olasılığı (${sig.side}) bulundu. Üst TF'ler inceleniyor...`);
-
-            // 2. Trend alignment on 15m
-            const c15m = await this.binance.getKlines(sym, '15m', 50);
-            if (!c15m || c15m.length < 20) return;
-            const sig15m = getSignal(c15m.slice(0, -1));
-
-            if (sig15m && sig15m.score >= 0.88 && sig15m.side !== sig.side) {
-                this.logScan(`[${sym}] İptal: 15m sinyali (${sig15m.side}) ters yönde.`);
-                return;
-            }
-
-            // 3. Fakeout detection on 1h trend
-            const c1h = await this.binance.getKlines(sym, '1h', 50);
-            if (!c1h || c1h.length < 20) return;
-            
-            const closed1hObj = c1h.slice(0, -1);
-            const ma1h20 = calcMa(closed1hObj, 20);
-            const rsi1h = calcRsi(closed1hObj, 14);
-            const p1h = closed1hObj[closed1hObj.length - 1].c;
-            
-            // Prevent going heavily against the 1h trend unless RSI indicates extreme overbought/oversold reversal
-            if (sig.side === 'LONG' && p1h < ma1h20 && rsi1h > 32) {
-                this.logScan(`[${sym}] İptal: LONG ama 1h MA altı ve RSI normal (${rsi1h.toFixed(1)}).`);
-                return;
-            }
-            if (sig.side === 'SHORT' && p1h > ma1h20 && rsi1h < 68) {
-                this.logScan(`[${sym}] İptal: SHORT ama 1h MA üstü ve RSI normal (${rsi1h.toFixed(1)}).`);
-                return;
-            }
-            
-            this.logScan(`[${sym}] Mükemmel eşleşme! Tüm zaman dilimleri onayladı. Pozisyon açılıyor.`);
-
-            const size = USER_CONFIG.margin;
-            const notional = size * USER_CONFIG.lev;
-
-            // Doğru TP Hesaplaması (komisyon dahil)
-            const commissionPerSide = notional * 0.0004;
-            const totalCommission = commissionPerSide * 2; // giriş + çıkış
-            const targetGross = USER_CONFIG.tp_usd + totalCommission;
-            
-            // ATR tabanlı dinamik TP
-            const atr5m = calcAtr(c5m.slice(0, -1), 14);
-            const atrBasedDist = atr5m * 1.2;          // 1.2 ATR mesafe hedefle
-            const fixedDist = price * (targetGross / notional);
-            const tpDist = Math.max(fixedDist, atrBasedDist); // hangisi büyükse
-            
-            const tp_price = sig.side === 'LONG' ? price + tpDist : price - tpDist;
-            
-            // Strict Stop Loss Calculation (USER_CONFIG.stop_pct)
-            const sl_price = sig.side === 'LONG'
-                ? price * (1 - USER_CONFIG.stop_pct / 100)
-                : price * (1 + USER_CONFIG.stop_pct / 100);
-
-            if (size > (this.capital - this.reservedCapital)) return;
-
-            this.openPositions[sym] = {
-                sym, 
-                side: sig.side,
-                entry: price, 
-                tp_price, 
-                sl_price,
-                tp_abs: tpDist,
-                size, 
-                lev: USER_CONFIG.lev,
-                strat: sig.name,
-                opened_at: now,
-            };
-            this.reservedCapital += size;
-            console.log('  OPEN ' + sig.side + ' ' + sym + ' @ ' + price.toFixed(4) + ' TP=' + tp_price.toFixed(4) + ' SL=' + sl_price.toFixed(4) + ' [' + sig.name + '] sz=' + size);
-
-        } catch (e) {
-             // silently skip on error
-        }
     }
 
     public closePosition(sym: string, reason: string, currentPrices?: Record<string, number>) {
@@ -380,7 +289,7 @@ export class BotRunner {
         }
 
         const notionalValue = pos.size * pos.lev;
-        const commissionUsd = notionalValue * 0.0004 * 2; // round-trip
+        const commissionUsd = notionalValue * 0.0010; // 0.05% taker * 2
         const pnlRaw = pos.side === 'LONG' 
             ? ((price - pos.entry) / pos.entry) 
             : ((pos.entry - price) / pos.entry);
@@ -394,13 +303,16 @@ export class BotRunner {
             sym, side: pos.side, entry: pos.entry,
             closed_price: price, pnl: netPnlUsd,
             strat: pos.strat, reason,
-            opened: pos.opened_at, closed: Date.now(),
-            lev: pos.lev, size: pos.size
+            opened: pos.opened_at, closed: Date.now()
         });
 
         this.reservedCapital -= pos.size;
         delete this.openPositions[sym];
-        this.reversalCooldown[sym] = Date.now() + USER_CONFIG.cooldown_min * 60000;
+        
+        // Sadece zarar edilen islemlerde cooldown (5 dakika) beklemesi yap
+        if (netPnlUsd < 0) {
+            this.reversalCooldown[sym] = Date.now() + USER_CONFIG.cooldown_min * 60000;
+        }
 
         console.log('  CLOSED ' + reason + ' ' + sym + ' PNL=' + netPnlUsd.toFixed(2));
     }
@@ -422,8 +334,8 @@ export class BotRunner {
                 current_price: p.currentPrice || p.entry,
                 tp_price: p.tp_price,
                 sl_price: p.sl_price,
-                tp: p.tp_price,
-                sl: p.sl_price,
+                tp: ((Math.abs(p.tp_price - p.entry) / p.entry) * 100).toFixed(2),
+                sl: ((Math.abs(p.sl_price - p.entry) / p.entry) * 100).toFixed(2),
                 lev: p.lev,
                 size: p.size,
                 pnl_pct: p.pnlPct || 0,
@@ -450,7 +362,7 @@ export class BotRunner {
             used_capital: this.reservedCapital,
             unrealized_pnl: Object.values(this.openPositions).reduce((s, p) => s + (p.netPnlUsd || 0), 0),
             has_downloadable_log: !!this.downloadableLog,
-            scanning_logs: this.scanningLogs,
+            global_risk_halted: this.globalRiskHalted,
         };
     }
 }
