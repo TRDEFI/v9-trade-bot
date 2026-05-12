@@ -169,9 +169,12 @@ export class BinanceClient {
   }
 
   async getAllPrices(): Promise<Record<string, number>> {
-    if (this.wsConnected && Object.keys(this.pricesCache).length > 0) {
-      return { ...this.pricesCache }; // Return cached prices from WS
+    // Always return cache if non-empty (WS has populated it)
+    const cached = Object.keys(this.pricesCache).length > 0;
+    if (cached) {
+      return { ...this.pricesCache };
     }
+    // Fallback to HTTP REST — WS not yet connected or cache empty
     try {
       const response = await axios.get(`${BASE_URL}/fapi/v1/ticker/price`, {
         timeout: 8000
