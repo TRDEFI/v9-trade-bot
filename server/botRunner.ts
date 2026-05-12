@@ -28,14 +28,14 @@ export const TOP100_PAIRS = [
 
 export const USER_CONFIG = {
     budget:        5000,
-    lev:           40,
-    stop_pct:      2.0,      // User updated config: SL %2, uzak SL.
+    lev:           30,
+    stop_pct:      0.5,
     min_score:     0.75,     
-    max_open:      13,
+    max_open:      7,
     cooldown_min:  5,
     run_minutes:   0,        // 0 -> run indefinitely
     tp_pct:        1.0,      // Avg tp ratio calculation base
-    margin:        250,     // Amount used per position
+    margin:        200,     // Amount used per position
 };
 
 export class BotRunner {
@@ -76,7 +76,7 @@ export class BotRunner {
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
-        this.binance.subscribeKlines(TOP100_PAIRS, ['15m', '1h']);
+        this.binance.subscribeKlines(TOP100_PAIRS, ['5m', '15m', '1h']);
     }
 
     stop() {
@@ -174,7 +174,21 @@ export class BotRunner {
                         if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
                         this.lastKlineCheck[sym] = now;
 
+                        // Startup protection: Wait 15 seconds so websocket cache loads, preventing stale signals
+                        if (now - this.sessionStart < 15000) continue;
+
                         try {
+                            const c1h = await this.binance.getKlines(sym, '1h', 10);
+                            let trend1hDown = false;
+                            let trend1hUp = false;
+                            if (c1h && c1h.length >= 3) {
+                                const closed1h = c1h.slice(0, -1);
+                                const last1h = closed1h[closed1h.length - 1];
+                                const prev1h = closed1h[closed1h.length - 2];
+                                trend1hDown = last1h.c < prev1h.c && last1h.c < last1h.o;
+                                trend1hUp = last1h.c > prev1h.c && last1h.c > last1h.o;
+                            }
+
                             const c15m = await this.binance.getKlines(sym, '15m', 50);
                             if (!c15m || c15m.length < 20) continue;
 
@@ -201,6 +215,10 @@ export class BotRunner {
 
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < USER_CONFIG.min_score) continue;
+
+                            // 1h trend filter
+                            if (sig.side === 'LONG' && trend1hDown) continue;
+                            if (sig.side === 'SHORT' && trend1hUp) continue;
 
                             const sigCandle = closed15m[closed15m.length - 1];
                             const sigClosePrice = sigCandle.c;
@@ -231,11 +249,11 @@ export class BotRunner {
                         const size = USER_CONFIG.margin;
                         const notional = size * USER_CONFIG.lev;
 
-                        // Tahmini komisyon %0.1:
+                        // Tahmini komisyon (Gercek taker) %0.1 (alıs + satıs):
                         const estimatedCommissionUsd = notional * 0.0010;
                         
-                        // Hedef NET $10 kar
-                        const targetNetProfitUsd = 10;
+                        // Hedef NET $40 kar (Onerilen Config B'ye gore)
+                        const targetNetProfitUsd = 40;
                         const requiredGrossProfitUsd = targetNetProfitUsd + estimatedCommissionUsd;
                         const tpDist = price * (requiredGrossProfitUsd / notional);
                         const tp_price = sig.side === 'LONG' ? price + tpDist : price - tpDist;
