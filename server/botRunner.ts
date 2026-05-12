@@ -252,8 +252,8 @@ export class BotRunner {
                         // Tahmini komisyon (Gercek taker) %0.1 (alıs + satıs):
                         const estimatedCommissionUsd = notional * 0.0010;
                         
-                        // Hedef NET $40 kar (Onerilen Config B'ye gore)
-                        const targetNetProfitUsd = 40;
+                        // Hedef NET $25 kar
+                        const targetNetProfitUsd = 25;
                         const requiredGrossProfitUsd = targetNetProfitUsd + estimatedCommissionUsd;
                         const tpDist = price * (requiredGrossProfitUsd / notional);
                         const tp_price = sig.side === 'LONG' ? price + tpDist : price - tpDist;

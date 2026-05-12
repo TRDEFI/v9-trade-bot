@@ -18,6 +18,8 @@ export class BinanceClient {
   private klineWsConnections: WebSocket[] = [];
   public pricesCache: Record<string, number> = {};
   public klinesCache: Record<string, Record<string, Kline[]>> = {};
+  private klinesLastRestFetch: Record<string, Record<string, number>> = {};
+  private globalRestBackoffUntil: number = 0;
   private wsConnected = false;
 
   constructor() {
@@ -189,11 +191,27 @@ export class BinanceClient {
 
   async getKlines(symbol: string, interval: string = '5m', limit: number = 24): Promise<Kline[]> {
     if (!this.klinesCache[symbol]) this.klinesCache[symbol] = {};
+    if (!this.klinesLastRestFetch[symbol]) this.klinesLastRestFetch[symbol] = {};
+
     const cache = this.klinesCache[symbol][interval];
+    const now = Date.now();
+    
+    // Global backoff active?
+    if (now < this.globalRestBackoffUntil) {
+      return cache || [];
+    }
     
     // If cache doesn't exist or doesn't have enough candles, fetch via REST once.
     // Afterwards, the WebSocket will keep this cache updated in real time.
     if (!cache || cache.length < limit) {
+      // Cooldown for this specific pair+interval to avoid 60req/s spam
+      const lastFetch = this.klinesLastRestFetch[symbol][interval] || 0;
+      if (now - lastFetch < 60000) { 
+          // Wait at least 60 seconds before retrying the same missing REST data
+          return cache || [];
+      }
+      this.klinesLastRestFetch[symbol][interval] = now;
+
       try {
         const response = await axios.get(`${BASE_URL}/fapi/v1/klines`, {
           params: { symbol, interval, limit: Math.max(limit, 50) }, // Fetch 50 to have enough history
@@ -209,9 +227,12 @@ export class BinanceClient {
             v: parseFloat(x[5])
           }));
         }
-      } catch (e) {
-        // Fallback or ignore
-        return [];
+      } catch (e: any) {
+        if (e.response && (e.response.status === 429 || e.response.status === 418)) {
+            console.error(`[Binance API] Rate Limited! Backing off entirely for 1 minute.`);
+            this.globalRestBackoffUntil = now + 60000;
+        }
+        return cache || [];
       }
     }
     
