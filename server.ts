@@ -56,6 +56,17 @@ async function startServer() {
     bot.closedPositions = []; // Veya sadece logu temizle
   });
 
+  app.get('/api/bot/download-system-logs', (req, res) => {
+    if (bot.systemLogs.length === 0) {
+      return res.status(404).send('No system logs available');
+    }
+    
+    const txt = bot.systemLogs.map(l => `[${l.time}] [${l.level.toUpperCase()}] ${l.msg}`).join('\n');
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Disposition', 'attachment; filename=V9_AutoTrader_System_Logs.txt');
+    res.send(txt);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');

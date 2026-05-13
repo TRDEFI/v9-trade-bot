@@ -1,42 +1,21 @@
 import { BinanceClient } from './binanceClient.js';
-import { getSignal, calcRsi } from './strategy.js';
-
-export const TOP100_PAIRS = [
-    'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'ZECUSDT', 'XRPUSDT', 'DOGEUSDT', 'FILUSDT',
-    'TONUSDT', 'BNBUSDT', 'SUIUSDT', 'NEARUSDT', 'TAOUSDT', 'ICPUSDT', 'ENAUSDT',
-    'LINKUSDT', 'ADAUSDT', 'AVAXUSDT', 'OPUSDT', 'SKYAIUSDT', 'ARBUSDT', 'UNIUSDT',
-    'DASHUSDT', 'WLDUSDT', 'NOTUSDT', '1000BONKUSDT', 'LTCUSDT', 'AAVEUSDT', 'DOTUSDT',
-    'TIAUSDT', 'APTUSDT', '1000LUNCUSDT', 'PENDLEUSDT', 'TRXUSDT', 'BCHUSDT', 'ORDIUSDT',
-    '1000SHIBUSDT', 'JUPUSDT', 'INJUSDT', 'XLMUSDT', 'CHZUSDT', 'ETCUSDT', 'FETUSDT',
-    'ALGOUSDT', 'WIFUSDT', 'MOVRUSDT', 'XMRUSDT', 'EIGENUSDT', 'ARUSDT', 'HBARUSDT',
-    'SEIUSDT', 'ORCAUSDT', 'MAGICUSDT', 'GALAUSDT', 'DYDXUSDT', 'PEPEUSDT', 'BOMEUSDT',
-    'ENSUSDT', 'FLOKIUSDT', 'RNDRUSDT', 'MATICUSDT', 'SANDUSDT', 'MANAUSDT', 'AXSUSDT',
-    'SNXUSDT', 'THETAUSDT', 'KASUSDT', 'IMXUSDT', 'VETUSDT', 'GRTUSDT', 'EGLDUSDT',
-    'RUNEUSDT', 'MKRUSDT', 'QNTUSDT', 'MNTUSDT', 'BEAMXUSDT', 'FLOWUSDT', 'CRVUSDT',
-    'GMXUSDT', 'ZILUSDT', 'ENJUSDT', '1INCHUSDT', 'COMPUSDT', 'ROSEUSDT', 'MINAUSDT',
-    'KAVAUSDT', 'WOOUSDT', 'APEUSDT', 'NEOUSDT', 'XTZUSDT', 'IOTAUSDT', 'ILVUSDT',
-    'KSMUSDT', 'GNOUSDT', 'BLURUSDT', 'GLMRUSDT', 'MASKUSDT', 'JASMYUSDT', 'QTUMUSDT',
-    'SUSHIUSDT', 'ONDOUSDT', 'OCEANUSDT', 'BICOUSDT', 'ZRXUSDT', 'BATUSDT', 'ONTUSDT',
-    'METISUSDT', 'NKNUSDT', 'BANDUSDT', 'ICXUSDT', 'ZENUSDT', 'YFIUSDT', 'ZECUSDT',
-    'BALUSDT', 'STORJUSDT', 'SKLUSDT', 'CVCUSDT', 'CTSIUSDT', 'RLCUSDT', 'TRBUSDT',
-    'NMRUSDT', 'LPTUSDT', 'BAKEUSDT', 'ALPHAUSDT', 'SFPUSDT', 'BELUSDT', 'LITUSDT',
-    'C98USDT', 'DARUSDT', 'ALICEUSDT', 'TLMUSDT', 'SLPUSDT', 'GTCUSDT', 'YGGUSDT',
-    'ATAUSDT', 'RAYUSDT', 'FIDAUSDT', 'AGLDUSDT', 'RADUSDT', 'LRCUSDT', '1000PEPEUSDT',
-    '1000FLOKIUSDT', '1000XECUSDT', '1000SATSUSDT', '1000RATSUSDT', 'MBOXUSDT', 'CFXUSDT',
-    'ACHUSDT', 'SSVUSDT', 'JOEUSDT', 'BNXUSDT', 'HIGHUSDT', 'CVXUSDT', 'FXSUSDT'
-];
+import { getSignal, calcRsi, calcSupertrend } from './strategy.js';
 
 export const USER_CONFIG = {
-    budget:        5000,
-    lev:           30,
-    stop_pct:      0.5,
-    min_score:     0.75,     
-    max_open:      7,
-    cooldown_min:  5,
-    run_minutes:   0,        // 0 -> run indefinitely
-    tp_pct:        1.0,      // Avg tp ratio calculation base
-    margin:        200,     // Amount used per position
+    budget:        2000,
+    lev:           20,
+    max_open:      4,
+    margin:        250,     // Amount used per position
+    target_profit: 1,       // Net target profit in USD
+    cut_loss:      -200,    // Net max loss per position in USD
+    cooldown_min:  5
 };
+
+export interface SystemLog {
+    time: string;
+    msg: string;
+    level: 'info' | 'warn' | 'error';
+}
 
 export class BotRunner {
     isScanning = false;
@@ -66,17 +45,37 @@ export class BotRunner {
     loopInterval: NodeJS.Timeout | null = null;
     startTimeStr: number = Date.now();
     downloadableLog: string | null = null;
+    
+    public systemLogs: SystemLog[] = [];
 
-    start() {
+    public addLog(msg: string, level: 'info' | 'warn' | 'error' = 'info') {
+        const time = new Date().toISOString().split('T')[1].split('.')[0]; // HH:mm:ss
+        this.systemLogs.unshift({ time, msg, level });
+        if (this.systemLogs.length > 500) {
+            this.systemLogs.pop();
+        }
+    }
+
+    activePairs: string[] = [];
+
+    async start() {
         if (this.isScanning) return;
         this.isScanning = true;
         this.sessionStart = Date.now();
         if (!this.startTimeStr) this.startTimeStr = Date.now();
-        console.log('[Bot] Scanning Started - TOP100 scanner');
+        console.log('[Bot] Fetching Top 300 Volume Pairs...');
+        
+        this.activePairs = await this.binance.getTop300VolumePairs();
+        if (this.activePairs.length === 0) {
+            console.error('[Bot] Failed to loaded pairs. Fallback to BTCUSDT');
+            this.activePairs = ['BTCUSDT'];
+        }
+
+        console.log(`[Bot] Scanning Started - ${this.activePairs.length} pairs loaded.`);
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
-        this.binance.subscribeKlines(TOP100_PAIRS, ['5m', '15m', '1h']);
+        this.binance.subscribeKlines(this.activePairs, ['5m', '15m', '1h']);
     }
 
     stop() {
@@ -129,16 +128,42 @@ export class BotRunner {
                 
                 currentTotalNetPnl += netPnlUsd;
 
-                const tpHit = pos.side === 'LONG' ? price >= pos.tp_price : price <= pos.tp_price;
-                const slHit = pos.side === 'LONG' ? price <= pos.sl_price : price >= pos.sl_price;
-
-                if (tpHit) {
+                if (netPnlUsd >= USER_CONFIG.target_profit) {
                     this.closePosition(sym, 'TAKE_PROFIT');
                     continue;
                 }
-                if (slHit) {
-                    this.closePosition(sym, 'STOP_LOSS');
+                if (netPnlUsd <= USER_CONFIG.cut_loss) {
+                    this.closePosition(sym, 'STOP_LOSS_MAX');
                     continue;
+                }
+
+                // Trend Reversal Check (Cut Loss)
+                const c1h = this.binance.klinesCache[sym]?.['1h'];
+                if (c1h && c1h.length >= 4) {
+                    const cl = c1h.slice(0, -1).slice(-3);
+                    if (cl.length === 3) {
+                        const is3Red = cl.every(c => c.c < c.o);
+                        const is3Green = cl.every(c => c.c > c.o);
+                        if (pos.side === 'LONG' && is3Red) {
+                            this.closePosition(sym, 'TREND_SHIFT_3RED');
+                            continue;
+                        }
+                        if (pos.side === 'SHORT' && is3Green) {
+                            this.closePosition(sym, 'TREND_SHIFT_3GREEN');
+                            continue;
+                        }
+                    }
+                    const str = calcSupertrend(c1h.slice(0, -1));
+                    if (str) {
+                        if (pos.side === 'LONG' && str.trend === -1) {
+                            this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_DOWN');
+                            continue;
+                        }
+                        if (pos.side === 'SHORT' && str.trend === 1) {
+                            this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_UP');
+                            continue;
+                        }
+                    }
                 }
             }
 
@@ -152,15 +177,13 @@ export class BotRunner {
             }
 
             // 2. Round-Robin Signal Lookup
-            if (this.isScanning && !this.globalRiskHalted) {
+            if (this.isScanning && !this.globalRiskHalted && this.activePairs.length > 0) {
                 const openCount = Object.keys(this.openPositions).length;
                 
                 if (openCount < USER_CONFIG.max_open) {
-                    // Check up to 10 pairs per loop to speed up but still avoid rate limit blocking. 
-                    // Or we can just check 1 pair as user's original logic. User had 1 loop/sec. Let's do 1 pair per tick.
                     let checked = 0;
-                    while (checked < TOP100_PAIRS.length) {
-                        const sym = TOP100_PAIRS[this.pairIndex % TOP100_PAIRS.length];
+                    while (checked < this.activePairs.length) {
+                        const sym = this.activePairs[this.pairIndex % this.activePairs.length];
                         this.pairIndex++;
                         checked++;
 
@@ -175,118 +198,86 @@ export class BotRunner {
                         this.lastKlineCheck[sym] = now;
 
                         // Startup protection: Wait 15 seconds so websocket cache loads, preventing stale signals
-                        if (now - this.sessionStart < 15000) continue;
+                        if (now - this.sessionStart < 15000) {
+                            continue;
+                        }
 
                         try {
-                            const c1h = await this.binance.getKlines(sym, '1h', 10);
-                            let trend1hDown = false;
-                            let trend1hUp = false;
-                            if (c1h && c1h.length >= 3) {
-                                const closed1h = c1h.slice(0, -1);
-                                const last1h = closed1h[closed1h.length - 1];
-                                const prev1h = closed1h[closed1h.length - 2];
-                                trend1hDown = last1h.c < prev1h.c && last1h.c < last1h.o;
-                                trend1hUp = last1h.c > prev1h.c && last1h.c > last1h.o;
+                            const c15m = await this.binance.getKlines(sym, '15m', 50);
+                            if (!c15m || c15m.length < 20) {
+                                continue;
                             }
 
-                            const c15m = await this.binance.getKlines(sym, '15m', 50);
-                            if (!c15m || c15m.length < 20) continue;
-
                             const closed15m = c15m.slice(0, -1);
-                            const last10_15m = closed15m.slice(-10);
-
-                            const getVolatility = (candles: any[]) => {
-                                const maxH = Math.max(...candles.map(c => c.h));
-                                const minL = Math.min(...candles.map(c => c.l));
-                                if (minL === 0) return 0;
-                                return ((maxH - minL) / minL) * 100;
-                            };
-
-                            // Her bir chartın son 10 mumunda min %0.5 hareketlilik olmali
-                            if (getVolatility(last10_15m) < 0.5) continue;
-
+                            
                             const c5m = await this.binance.getKlines(sym, '5m', 15);
-                            if (!c5m || c5m.length < 11) continue;
+                            if (!c5m || c5m.length < 11) {
+                                continue;
+                            }
                             
                             const closed5m = c5m.slice(0, -1);
-                            const last10_5m = closed5m.slice(-10);
-
-                            if (getVolatility(last10_5m) < 0.5) continue;
-
+                            
                             const sig = getSignal(closed15m); // ONLY use closed candles
-                            if (!sig || sig.score < USER_CONFIG.min_score) continue;
-
-                            // 1h trend filter
-                            if (sig.side === 'LONG' && trend1hDown) continue;
-                            if (sig.side === 'SHORT' && trend1hUp) continue;
+                            if (!sig || sig.score < 0.70) {
+                                continue;
+                            }
 
                             const sigCandle = closed15m[closed15m.length - 1];
                             const sigClosePrice = sigCandle.c;
-                            // A 15m candle's "t" is open time, so close time is t + 15m
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // 1. ZAMAN AŞIMI KONTROLÜ (Fresh Signal): Sinyal kapatıldıktan sonraki mum boyunca geçerli olsun (14 dakika)
-                            if (candleAgeMs > 14 * 60 * 1000) continue;
+                            // Fresh Signal: Valid for 28 minutes
+                            if (candleAgeMs > 28 * 60 * 1000) {
+                                continue;
+                            }
 
-                            // 2. FİYAT KAYMASI (Slippage) / PULLBACK KONTROLÜ: 
-                            // İşleme girerken mevcut fiyatın sinyal fiyatından (mum kapanışı) en fazla %0.3 daha kötü olmasına izin veriyoruz.
-                            if (sig.side === 'LONG' && price > sigClosePrice * 1.003) continue;
-                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) continue;
+                            // Pullback Control (0.3% allowed slippage)
+                            if (sig.side === 'LONG' && price > sigClosePrice * 1.003) {
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) {
+                                continue;
+                            }
 
-                            // 3. 5M ALT ZAMAN DİLİMİ MOMENTUM TEYİDİ:
-                            // Yönün hemen terse dönmemesi için alt periyotta RSI uyumsuz olmamalı. (Kural biraz esnetildi 75/25)
+                            // Alt zaman momentum (esnetildi)
                             const rsi5m = calcRsi(closed5m, 14);
-                            if (sig.side === 'LONG' && rsi5m > 75) continue;
-                            if (sig.side === 'SHORT' && rsi5m < 25) continue;
+                            if (sig.side === 'LONG' && rsi5m > 80) continue;
+                            if (sig.side === 'SHORT' && rsi5m < 20) continue;
 
-                            // 4. ANLIK AKTİF MUM YÖN & SERT HAREKET TEYİDİ:
-                            // Anlık fiyatta işlemin tersine çok sert bir hareket varsa (düşen bıçak) bekle. (Kural %0.5'e esnetildi)
+                            // Anlik hareket kontrolu
                             const active5m = c5m[c5m.length - 1];
-                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.995) continue; // Çok sert düşüyorsa bekle
-                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.005) continue; // Çok sert çıkıyorsa bekle
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.99) continue;
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.01) continue;
 
-                        const size = USER_CONFIG.margin;
-                        const notional = size * USER_CONFIG.lev;
+                            const size = USER_CONFIG.margin;
+                            if (size > (this.capital - this.reservedCapital)) {
+                                continue;
+                            }
 
-                        // Tahmini komisyon (Gercek taker) %0.1 (alıs + satıs):
-                        const estimatedCommissionUsd = notional * 0.0010;
-                        
-                        // Hedef NET $25 kar
-                        const targetNetProfitUsd = 25;
-                        const requiredGrossProfitUsd = targetNetProfitUsd + estimatedCommissionUsd;
-                        const tpDist = price * (requiredGrossProfitUsd / notional);
-                        const tp_price = sig.side === 'LONG' ? price + tpDist : price - tpDist;
-                        
-                        // %2 Price Drop Stop Loss (Kripto fiyatinda %2 degisim)
-                        const slDist = price * (USER_CONFIG.stop_pct / 100);
-                        const sl_price = sig.side === 'LONG' ? price - slDist : price + slDist;
+                            this.openPositions[sym] = {
+                                sym, 
+                                side: sig.side,
+                                entry: price, 
+                                size, 
+                                lev: USER_CONFIG.lev,
+                                strat: sig.name,
+                                opened_at: now,
+                            };
+                            this.reservedCapital += size;
+                            
+                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + price.toFixed(4) + ' [' + sig.name + '] sz=' + size;
+                            this.addLog(`[${sym}] ${logMsg}`, 'info');
+                            console.log('  ' + logMsg);
 
-                        if (size > (this.capital - this.reservedCapital)) continue;
+                        } catch (e: any) {
+                             // silently skip on error
+                        }
 
-                        this.openPositions[sym] = {
-                            sym, 
-                            side: sig.side,
-                            entry: price, 
-                            tp_price, 
-                            sl_price,
-                            tp_abs: tpDist,
-                            size, 
-                            lev: USER_CONFIG.lev,
-                            strat: sig.name,
-                            opened_at: now,
-                        };
-                        this.reservedCapital += size;
-                        console.log('  OPEN ' + sig.side + ' ' + sym + ' @ ' + price.toFixed(4) + ' TP=' + tp_price.toFixed(4) + ' SL=' + sl_price.toFixed(4) + ' [' + sig.name + '] sz=' + size);
-
-                    } catch (e) {
-                         // silently skip on error
+                        // Only check 1 valid pair API call sequence per tick
+                        break;
                     }
-
-                    // Only check 1 API call per tick
-                    break;
                 }
-            }
             }
         } catch (e) {
             console.error('Bot Loop Error:', e);
@@ -349,10 +340,6 @@ export class BotRunner {
                 side: p.side,
                 entry: p.entry,
                 current_price: p.currentPrice || p.entry,
-                tp_price: p.tp_price,
-                sl_price: p.sl_price,
-                tp: ((Math.abs(p.tp_price - p.entry) / p.entry) * 100).toFixed(2),
-                sl: ((Math.abs(p.sl_price - p.entry) / p.entry) * 100).toFixed(2),
                 lev: p.lev,
                 size: p.size,
                 pnl_pct: p.pnlPct || 0,
@@ -365,6 +352,7 @@ export class BotRunner {
                 strat: p.strat, reason: p.reason,
                 opened: p.opened, closed: p.closed,
             })),
+            system_logs: this.systemLogs.slice(0, 50),
             server_time: Date.now(),
             elapsed: this.isScanning
                 ? (() => {

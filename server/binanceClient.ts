@@ -153,6 +153,23 @@ export class BinanceClient {
     });
   }
 
+  async getTop300VolumePairs(): Promise<string[]> {
+    try {
+      const response = await axios.get(`${BASE_URL}/fapi/v1/ticker/24hr`, { timeout: 8000 });
+      if (Array.isArray(response.data)) {
+        return response.data
+          .filter((t: any) => t.symbol.endsWith('USDT'))
+          .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+          .map((t: any) => t.symbol)
+          .slice(0, 300);
+      }
+      return [];
+    } catch (e) {
+      console.error('[Binance API] Failed to fetch top 300 pairs:', e);
+      return [];
+    }
+  }
+
   async getPrice(symbol: string): Promise<number | null> {
     if (this.wsConnected && this.pricesCache[symbol]) {
       return this.pricesCache[symbol];
@@ -169,12 +186,9 @@ export class BinanceClient {
   }
 
   async getAllPrices(): Promise<Record<string, number>> {
-    // Always return cache if non-empty (WS has populated it)
-    const cached = Object.keys(this.pricesCache).length > 0;
-    if (cached) {
-      return { ...this.pricesCache };
+    if (this.wsConnected && Object.keys(this.pricesCache).length > 0) {
+      return { ...this.pricesCache }; // Return cached prices from WS
     }
-    // Fallback to HTTP REST — WS not yet connected or cache empty
     try {
       const response = await axios.get(`${BASE_URL}/fapi/v1/ticker/price`, {
         timeout: 8000
@@ -206,7 +220,16 @@ export class BinanceClient {
     
     // If cache doesn't exist or doesn't have enough candles, fetch via REST once.
     // Afterwards, the WebSocket will keep this cache updated in real time.
-    if (!cache || cache.length < limit) {
+    let isStale = false;
+    if (cache && cache.length > 0) {
+       const lastCandle = cache[cache.length - 1];
+       const intervalMinutes = interval === '1h' ? 60 : interval === '15m' ? 15 : 5;
+       if (now - lastCandle.t > intervalMinutes * 60 * 1000 * 3) {
+           isStale = true;
+       }
+    }
+
+    if (!cache || cache.length < limit || isStale) {
       // Cooldown for this specific pair+interval to avoid 60req/s spam
       const lastFetch = this.klinesLastRestFetch[symbol][interval] || 0;
       if (now - lastFetch < 60000) { 

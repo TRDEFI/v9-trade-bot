@@ -82,6 +82,85 @@ export function calcAvgMove(klines: Kline[], period: number = 20): number {
   return klines.slice(-period).reduce((s, k) => s + (k.h - k.l), 0) / period;
 }
 
+export function calcSupertrend(klines: Kline[], period: number = 10, multiplier: number = 3) {
+  if (klines.length < period + 1) return null;
+  const atrVals: number[] = [];
+  
+  // Calculate ATR manually for each step
+  const getTr = (h: number, l: number, pc: number) => Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc));
+  let trSum = 0;
+  for (let i = 1; i <= period; i++) {
+    trSum += getTr(klines[i].h, klines[i].l, klines[i-1].c);
+  }
+  let atr = trSum / period;
+  atrVals[period] = atr;
+  
+  for (let i = period + 1; i < klines.length; i++) {
+    const tr = getTr(klines[i].h, klines[i].l, klines[i-1].c);
+    // Wilder's Smoothing for ATR
+    atr = (atr * (period - 1) + tr) / period;
+    atrVals[i] = atr;
+  }
+
+  const finalUpper: number[] = [];
+  const finalLower: number[] = [];
+  const supertrend: number[] = [];
+  const trendDir: number[] = []; // 1 = UP, -1 = DOWN
+
+  for (let i = period; i < klines.length; i++) {
+    const k = klines[i];
+    const prevC = klines[i-1].c;
+    const a = atrVals[i];
+    const hl2 = (k.h + k.l) / 2;
+    
+    const basicUpper = hl2 + multiplier * a;
+    const basicLower = hl2 - multiplier * a;
+    
+    if (i === period) {
+      finalUpper[i] = basicUpper;
+      finalLower[i] = basicLower;
+      trendDir[i] = 1;
+      supertrend[i] = finalLower[i];
+      continue;
+    }
+    
+    const prevFinalUpper = finalUpper[i-1];
+    const prevFinalLower = finalLower[i-1];
+    
+    if (basicUpper < prevFinalUpper || prevC > prevFinalUpper) {
+      finalUpper[i] = basicUpper;
+    } else {
+      finalUpper[i] = prevFinalUpper;
+    }
+    
+    if (basicLower > prevFinalLower || prevC < prevFinalLower) {
+      finalLower[i] = basicLower;
+    } else {
+      finalLower[i] = prevFinalLower;
+    }
+    
+    const prevTrend = trendDir[i-1];
+    if (prevTrend === 1 && k.c <= finalUpper[i]) {
+      trendDir[i] = k.c < finalLower[i] ? -1 : 1; 
+    } else if (prevTrend === -1 && k.c >= finalLower[i]) {
+      trendDir[i] = k.c > finalUpper[i] ? 1 : -1;
+    } else {
+      trendDir[i] = prevTrend;
+    }
+    
+    // Exact switch logic
+    if (prevTrend === 1 && k.c < finalLower[i]) trendDir[i] = -1;
+    if (prevTrend === -1 && k.c > finalUpper[i]) trendDir[i] = 1;
+    
+    supertrend[i] = trendDir[i] === 1 ? finalLower[i] : finalUpper[i];
+  }
+  
+  return {
+    trend: trendDir[klines.length - 1], // 1 for UP, -1 for DOWN
+    value: supertrend[klines.length - 1]
+  };
+}
+
 export interface Signal {
   name: string;
   score: number;

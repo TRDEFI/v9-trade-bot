@@ -219,10 +219,8 @@ export function Dashboard() {
                           <span className="mx-1 text-gray-600">→</span>
                           <span className="text-white font-semibold">{formatNumber(p.current_price)}</span>
                         </td>
-                        <td className="px-3 py-2">
-                          <span className="text-green-400">{formatNumber(p.tp_price)}</span>
-                          <span className="mx-1 text-gray-600">/</span>
-                          <span className="text-red-400">{formatNumber(p.sl_price)}</span>
+                        <td className="px-3 py-2 text-gray-500 text-[9px] tracking-widest font-bold">
+                          DİNAMİK
                         </td>
                         <td className="px-3 py-2">
                           <span className="text-orange-400 font-semibold">{formatCurrency(p.size)}</span>
@@ -306,6 +304,53 @@ export function Dashboard() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </section>
+
+          <section className="bg-[#0f0f0f] border border-[#222] rounded-md overflow-hidden">
+            <div className="bg-[#111] px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center justify-between border-b border-[#222]">
+              <div className="flex items-center gap-1.5"><BrainCircuit className="w-3.5 h-3.5" /> Bot Processing Log (Canlı)</div>
+              <button 
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/bot/download-system-logs');
+                    if (!res.ok) return;
+                    const text = await res.text();
+                    const blob = new Blob([text], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'V9_AutoTrader_System_Logs.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                  } catch (e) {
+                    console.error("Download failed", e);
+                  }
+                }}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-sm font-bold uppercase tracking-wider text-pink-400 bg-pink-500/10 hover:bg-pink-500/20 transition-colors text-[9px]"
+              >
+                <Download className="w-3 h-3"/> txt İndir
+              </button>
+            </div>
+            <div className="p-3 max-h-[400px] overflow-y-auto font-mono text-[11px] leading-relaxed bg-[#0a0a0a]">
+              {data.system_logs?.length === 0 && (
+                <div className="text-gray-600 text-center py-4 font-sans tracking-wide text-[10px]">Henüz log kaydı yok...</div>
+              )}
+              {data.system_logs?.map((log: any, i: number) => {
+                let colorClass = 'text-gray-400';
+                if (log.level === 'warn') colorClass = 'text-yellow-400';
+                if (log.level === 'error') colorClass = 'text-red-400';
+                if (log.level === 'info' && log.msg.includes('OPEN')) colorClass = 'text-green-400 font-bold';
+                
+                return (
+                  <div key={i} className="mb-1 border-b border-[#1a1a1a] pb-1 hover:bg-[#111] px-1">
+                    <span className="text-gray-600 mr-2">[{log.time}]</span>
+                    <span className={`${colorClass}`}>{log.msg}</span>
+                  </div>
+                )
+              })}
             </div>
           </section>
         </div>
