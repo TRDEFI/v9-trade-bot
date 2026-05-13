@@ -129,12 +129,12 @@ export function Dashboard() {
           )}
 
           <div className="flex flex-col items-end leading-tight">
-            <div className={`flex items-center gap-1.5 ${data.global_risk_halted ? 'text-yellow-400' : (data.is_active ? 'text-green-400' : 'text-red-400')}`}>
+            <div className={`flex items-center gap-1.5 ${data.is_active ? 'text-green-400' : 'text-red-400'}`}>
               <span className="relative flex h-1.5 w-1.5">
-                {data.is_active && !data.global_risk_halted && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>}
+                {data.is_active && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>}
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current"></span>
               </span>
-              <span>{data.global_risk_halted ? 'RISK BEKLEMESİ (-$400)' : (data.is_active ? 'ÇALIŞIYOR' : 'DURDURULDU')}</span>
+              <span>{data.is_active ? 'ÇALIŞIYOR' : 'DURDURULDU'}</span>
             </div>
             <span className="text-gray-500">{formatTime(data.server_time)} (GMT+3)</span>
           </div>

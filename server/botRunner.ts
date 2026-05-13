@@ -32,7 +32,6 @@ export class BotRunner {
     reservedCapital = 0;
     totalRealizedPnl = 0;
     allTimeHigh = USER_CONFIG.budget;
-    globalRiskHalted = false;
     
     openPositions: Record<string, any> = {};
     closedPositions: any[] = [];
@@ -132,11 +131,8 @@ export class BotRunner {
                     this.closePosition(sym, 'TAKE_PROFIT');
                     continue;
                 }
-                if (netPnlUsd <= USER_CONFIG.cut_loss) {
-                    this.closePosition(sym, 'STOP_LOSS_MAX');
-                    continue;
-                }
-
+                // Removed static cut_loss check
+                
                 // Trend Reversal Check (Cut Loss)
                 const c1h = this.binance.klinesCache[sym]?.['1h'];
                 if (c1h && c1h.length >= 4) {
@@ -167,17 +163,41 @@ export class BotRunner {
                 }
             }
 
-            // Global Risk Check
-            if (!this.globalRiskHalted && currentTotalNetPnl <= -400) {
-                this.globalRiskHalted = true;
-                console.log(`[Bot] Global Risk Halt TRIGGERED! Unrealized PnL: ${currentTotalNetPnl.toFixed(2)} <= -400`);
-            } else if (this.globalRiskHalted && currentTotalNetPnl > -390) {
-                this.globalRiskHalted = false;
-                console.log(`[Bot] Global Risk Halt LIFTED! Unrealized PnL: ${currentTotalNetPnl.toFixed(2)} > -390`);
+            // Dynamic Margin Level Check (Liquidation of worst position)
+            const freeMargin = this.capital - this.reservedCapital + currentTotalNetPnl;
+            const marginThreshold = this.capital * 0.05; // 5% limit buffer
+
+            if (freeMargin <= marginThreshold && Object.keys(this.openPositions).length > 0) {
+                let targetSym: string | null = null;
+                let smallestLoss = -Infinity;
+
+                for (const sym of Object.keys(this.openPositions)) {
+                    const pos = this.openPositions[sym];
+                    // -100 is > -400, so we want the maximum value that is still negative
+                    if (pos.netPnlUsd !== undefined && pos.netPnlUsd < 0 && pos.netPnlUsd > smallestLoss) {
+                        smallestLoss = pos.netPnlUsd;
+                        targetSym = sym;
+                    }
+                }
+
+                // If somehow there are no negative positions, just close any to free margin
+                if (!targetSym && Object.keys(this.openPositions).length > 0) {
+                    targetSym = Object.keys(this.openPositions)[0];
+                    smallestLoss = this.openPositions[targetSym].netPnlUsd || 0;
+                }
+
+                if (targetSym) {
+                    const logMsg = `[${targetSym}] Kritik Margin Seviyesi! Free: $${freeMargin.toFixed(2)} <= Limit: $${marginThreshold.toFixed(2)}. Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
+                    this.addLog(logMsg, 'error');
+                    console.log(logMsg);
+                    this.closePosition(targetSym, 'MARGIN_CALL_LIQUIDATION');
+                    
+                    currentTotalNetPnl -= smallestLoss;
+                }
             }
 
             // 2. Round-Robin Signal Lookup
-            if (this.isScanning && !this.globalRiskHalted && this.activePairs.length > 0) {
+            if (this.isScanning && this.activePairs.length > 0) {
                 const openCount = Object.keys(this.openPositions).length;
                 
                 if (openCount < USER_CONFIG.max_open) {
@@ -366,8 +386,7 @@ export class BotRunner {
                 : '0dk 0s',
             used_capital: this.reservedCapital,
             unrealized_pnl: Object.values(this.openPositions).reduce((s, p) => s + (p.netPnlUsd || 0), 0),
-            has_downloadable_log: !!this.downloadableLog,
-            global_risk_halted: this.globalRiskHalted,
+            has_downloadable_log: !!this.downloadableLog
         };
     }
 }
