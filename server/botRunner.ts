@@ -163,11 +163,11 @@ export class BotRunner {
                 }
             }
 
-            // Dynamic Margin Level Check (Liquidation of worst position)
-            const freeMargin = this.capital - this.reservedCapital + currentTotalNetPnl;
-            const marginThreshold = this.capital * 0.05; // 5% limit buffer
+            // Dynamic Margin Level Check
+            const idleMargin = this.capital - this.reservedCapital; // Boşta duran paramız
+            const marginThreshold = idleMargin * 0.80; // Boş paranın %80'i
 
-            if (freeMargin <= marginThreshold && Object.keys(this.openPositions).length > 0) {
+            if (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= marginThreshold && Object.keys(this.openPositions).length > 0) {
                 let targetSym: string | null = null;
                 let smallestLoss = -Infinity;
 
@@ -187,7 +187,8 @@ export class BotRunner {
                 }
 
                 if (targetSym) {
-                    const logMsg = `[${targetSym}] Kritik Margin Seviyesi! Free: $${freeMargin.toFixed(2)} <= Limit: $${marginThreshold.toFixed(2)}. Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
+                    const absLoss = Math.abs(currentTotalNetPnl);
+                    const logMsg = `[${targetSym}] Kritik Margin Seviyesi! Toplam Zarar ($${absLoss.toFixed(2)}) >= Limit ($${marginThreshold.toFixed(2)}). Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
                     this.addLog(logMsg, 'error');
                     console.log(logMsg);
                     this.closePosition(targetSym, 'MARGIN_CALL_LIQUIDATION');
@@ -202,6 +203,7 @@ export class BotRunner {
                 
                 if (openCount < USER_CONFIG.max_open) {
                     let checked = 0;
+                    let processed = 0;
                     while (checked < this.activePairs.length) {
                         const sym = this.activePairs[this.pairIndex % this.activePairs.length];
                         this.pairIndex++;
@@ -247,8 +249,8 @@ export class BotRunner {
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // Fresh Signal: Valid for 28 minutes
-                            if (candleAgeMs > 28 * 60 * 1000) {
+                            // Fresh Signal: Valid for 7 minutes (15m strategy)
+                            if (candleAgeMs > 7 * 60 * 1000) {
                                 continue;
                             }
 
@@ -290,12 +292,18 @@ export class BotRunner {
                             this.addLog(`[${sym}] ${logMsg}`, 'info');
                             console.log('  ' + logMsg);
 
+                            const newOpenCount = Object.keys(this.openPositions).length;
+                            if (newOpenCount >= USER_CONFIG.max_open) {
+                                break;
+                            }
+
                         } catch (e: any) {
                              // silently skip on error
                         }
 
-                        // Only check 1 valid pair API call sequence per tick
-                        break;
+                        // Process up to 10 valid pair signal checks per tick to speed up 300-pair scan
+                        processed++;
+                        if (processed >= 10) break;
                     }
                 }
             }
