@@ -218,7 +218,10 @@ export class BotRunner {
                         checked++;
 
                         if (this.openPositions[sym]) continue;
-                        if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) continue;
+                        if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) {
+                            // Sadece cooldown yeni basladiginda spam yapmamak icin sessizce gec, ama her pair icin 5sn gecikmeden sonra logla ki cok sismesin
+                            continue;
+                        }
 
                         const price = currentPrices[sym];
                         if (!price) continue;
@@ -227,14 +230,21 @@ export class BotRunner {
                         if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
                         this.lastKlineCheck[sym] = now;
 
+                        if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) {
+                             this.logToFile(`[${sym}] REJECT: In cooldown until ${new Date(this.reversalCooldown[sym]).toLocaleTimeString()}`);
+                             continue;
+                        }
+
                         // Startup protection: Wait 15 seconds so websocket cache loads, preventing stale signals
                         if (now - this.sessionStart < 15000) {
+                            this.logToFile(`[${sym}] REJECT: Startup protection active`);
                             continue;
                         }
 
                         try {
                             const c15m = await this.binance.getKlines(sym, '15m', 50);
                             if (!c15m || c15m.length < 20) {
+                                this.logToFile(`[${sym}] REJECT: c15m data not sufficient (${c15m ? c15m.length : 0})`);
                                 continue;
                             }
 
@@ -242,6 +252,7 @@ export class BotRunner {
                             
                             const c5m = await this.binance.getKlines(sym, '5m', 15);
                             if (!c5m || c5m.length < 11) {
+                                this.logToFile(`[${sym}] REJECT: c5m data not sufficient (${c5m ? c5m.length : 0})`);
                                 continue;
                             }
                             
@@ -249,7 +260,7 @@ export class BotRunner {
                             
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.70) {
-                                this.logToFile(`[${sym}] Rejected: No signal or score < 0.70`);
+                                this.logToFile(`[${sym}] REJECT: No signal or score < 0.70`);
                                 continue;
                             }
 
@@ -260,45 +271,45 @@ export class BotRunner {
 
                             // Fresh Signal: Valid for 7 minutes (15m strategy)
                             if (candleAgeMs > 7 * 60 * 1000) {
-                                this.logToFile(`[${sym}] Rejected: Signal too old (Age: ${(candleAgeMs / 60000).toFixed(1)} mins)`);
+                                this.logToFile(`[${sym}] REJECT: Signal too old (Age: ${(candleAgeMs / 60000).toFixed(1)} mins)`);
                                 continue;
                             }
 
                             // Pullback Control (0.3% allowed slippage)
                             if (sig.side === 'LONG' && price > sigClosePrice * 1.003) {
-                                this.logToFile(`[${sym}] Rejected: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.003})`);
+                                this.logToFile(`[${sym}] REJECT: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.003})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) {
-                                this.logToFile(`[${sym}] Rejected: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.997})`);
+                                this.logToFile(`[${sym}] REJECT: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.997})`);
                                 continue;
                             }
 
                             // Alt zaman momentum (esnetildi)
                             const rsi5m = calcRsi(closed5m, 14);
                             if (sig.side === 'LONG' && rsi5m > 80) {
-                                this.logToFile(`[${sym}] Rejected: LONG RSI5m too high (${rsi5m.toFixed(2)})`);
+                                this.logToFile(`[${sym}] REJECT: LONG RSI5m too high (${rsi5m.toFixed(2)})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && rsi5m < 20) {
-                                this.logToFile(`[${sym}] Rejected: SHORT RSI5m too low (${rsi5m.toFixed(2)})`);
+                                this.logToFile(`[${sym}] REJECT: SHORT RSI5m too low (${rsi5m.toFixed(2)})`);
                                 continue;
                             }
 
                             // Anlik hareket kontrolu
                             const active5m = c5m[c5m.length - 1];
                             if (sig.side === 'LONG' && active5m.c < active5m.o * 0.99) {
-                                this.logToFile(`[${sym}] Rejected: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
+                                this.logToFile(`[${sym}] REJECT: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.01) {
-                                this.logToFile(`[${sym}] Rejected: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
+                                this.logToFile(`[${sym}] REJECT: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
 
                             const size = USER_CONFIG.margin;
                             if (size > (this.capital - this.reservedCapital)) {
-                                this.logToFile(`[${sym}] Rejected: Insufficient Margin (Required: ${size}, Available: ${this.capital - this.reservedCapital})`);
+                                this.logToFile(`[${sym}] REJECT: Insufficient Margin (Required: ${size}, Available: ${this.capital - this.reservedCapital})`);
                                 continue;
                             }
 
