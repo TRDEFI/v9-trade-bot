@@ -56,6 +56,8 @@ export function Dashboard() {
     try {
       return new Intl.DateTimeFormat('tr-TR', { 
         timeZone: 'Europe/Istanbul', 
+        day: '2-digit',
+        month: 'short',
         hour: '2-digit', 
         minute: '2-digit', 
         second: '2-digit' 
@@ -275,7 +277,7 @@ export function Dashboard() {
                       <tr key={i} className="border-b border-[#151515] hover:bg-[#111]">
                         <td className="px-3 py-1.5 leading-tight">
                           <div className="text-gray-300">{formatTime(p.closed)}</div>
-                          <div className="text-[9px] text-gray-600">↳ {formatTime(p.opened)}</div>
+                          <div className="text-[9px] text-red-400 font-semibold mt-0.5">↳ {formatTime(p.opened)}</div>
                         </td>
                         <td className="px-3 py-1.5 font-bold text-white">{p.sym}</td>
                         <td className="px-3 py-1.5">
