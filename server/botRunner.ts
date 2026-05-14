@@ -1,5 +1,6 @@
 import { BinanceClient } from './binanceClient.js';
 import { getSignal, calcRsi, calcSupertrend } from './strategy.js';
+import fs from 'fs';
 
 export const USER_CONFIG = {
     budget:        2000,
@@ -20,7 +21,13 @@ export interface SystemLog {
 export class BotRunner {
     isScanning = false;
     binance = new BinanceClient();
+    private fileLogStream = fs.createWriteStream('bot_scan.log', { flags: 'a' });
     
+    private logToFile(msg: string) {
+        const time = new Date().toISOString();
+        this.fileLogStream.write(`[${time}] ${msg}\n`);
+    }
+
     constructor() {
         // Start the background system loop immediately
         this.loop();
@@ -71,6 +78,7 @@ export class BotRunner {
         }
 
         console.log(`[Bot] Scanning Started - ${this.activePairs.length} pairs loaded.`);
+        this.logToFile(`[Bot] Scanning Started - ${this.activePairs.length} pairs loaded: ${this.activePairs.join(', ')}`);
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
@@ -241,6 +249,7 @@ export class BotRunner {
                             
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.70) {
+                                this.logToFile(`[${sym}] Rejected: No signal or score < 0.70`);
                                 continue;
                             }
 
@@ -251,31 +260,49 @@ export class BotRunner {
 
                             // Fresh Signal: Valid for 7 minutes (15m strategy)
                             if (candleAgeMs > 7 * 60 * 1000) {
+                                this.logToFile(`[${sym}] Rejected: Signal too old (Age: ${(candleAgeMs / 60000).toFixed(1)} mins)`);
                                 continue;
                             }
 
                             // Pullback Control (0.3% allowed slippage)
                             if (sig.side === 'LONG' && price > sigClosePrice * 1.003) {
+                                this.logToFile(`[${sym}] Rejected: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.003})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) {
+                                this.logToFile(`[${sym}] Rejected: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.997})`);
                                 continue;
                             }
 
                             // Alt zaman momentum (esnetildi)
                             const rsi5m = calcRsi(closed5m, 14);
-                            if (sig.side === 'LONG' && rsi5m > 80) continue;
-                            if (sig.side === 'SHORT' && rsi5m < 20) continue;
+                            if (sig.side === 'LONG' && rsi5m > 80) {
+                                this.logToFile(`[${sym}] Rejected: LONG RSI5m too high (${rsi5m.toFixed(2)})`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && rsi5m < 20) {
+                                this.logToFile(`[${sym}] Rejected: SHORT RSI5m too low (${rsi5m.toFixed(2)})`);
+                                continue;
+                            }
 
                             // Anlik hareket kontrolu
                             const active5m = c5m[c5m.length - 1];
-                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.99) continue;
-                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.01) continue;
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.99) {
+                                this.logToFile(`[${sym}] Rejected: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.01) {
+                                this.logToFile(`[${sym}] Rejected: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
+                                continue;
+                            }
 
                             const size = USER_CONFIG.margin;
                             if (size > (this.capital - this.reservedCapital)) {
+                                this.logToFile(`[${sym}] Rejected: Insufficient Margin (Required: ${size}, Available: ${this.capital - this.reservedCapital})`);
                                 continue;
                             }
+
+                            this.logToFile(`[${sym}] OPENED: side=${sig.side} price=${price} strat=${sig.name}`);
 
                             this.openPositions[sym] = {
                                 sym, 
@@ -338,7 +365,7 @@ export class BotRunner {
         this.closedPositions.push({
             sym, side: pos.side, entry: pos.entry,
             closed_price: price, pnl: netPnlUsd,
-            strat: pos.strat, reason,
+            strat: pos.strat, reason, lev: pos.lev, size: pos.size,
             opened: pos.opened_at, closed: Date.now()
         });
 
