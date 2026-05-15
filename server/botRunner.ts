@@ -121,11 +121,21 @@ export class BotRunner {
                 }
                 
                 // Sync positions to fix PNL and Entry Price reporting discrepancy
-                const activeBinancePos = await this.binance.getActivePositions();
-                let updatedReservedCapital = 0;
-                const activeBinanceSyms = new Set(activeBinancePos.map((p: any) => p.symbol));
+                let activeBinancePos: any[] = [];
+                try {
+                    activeBinancePos = await this.binance.getActivePositions();
+                } catch (e) {
+                    this.addLog('[SYNC] getActivePositions failed, skipping position sync', 'warn');
+                }
+                
+                if (activeBinancePos.length === 0) {
+                    // No active positions from Binance - skip sync to avoid deleting local positions
+                    this.reservedCapital = 0;
+                } else {
+                    let updatedReservedCapital = 0;
+                    const activeBinanceSyms = new Set(activeBinancePos.map((p: any) => p.symbol));
 
-                for (const bPos of activeBinancePos) {
+                    for (const bPos of activeBinancePos) {
                     const sym = bPos.symbol;
                     const entryPrice = parseFloat(bPos.entryPrice);
                     const posAmt = parseFloat(bPos.positionAmt);
@@ -172,6 +182,7 @@ export class BotRunner {
                 
                 // Toplam capital (Kasa) ve Reserved (Kullanilan) Margin'i kalibre et
                 this.reservedCapital = updatedReservedCapital;
+                }
             }
             
             const currentPrices = await this.binance.getAllPrices();
