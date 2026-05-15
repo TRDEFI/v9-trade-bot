@@ -125,10 +125,22 @@ export class BotRunner {
                 for (const bPos of activeBinancePos) {
                     const sym = bPos.symbol;
                     if (this.openPositions[sym]) {
-                        // Guncel ortalama giris fiyatini Binance ten aliyoruz (Gercek slipaj ve ucretleri de kapar)
-                        this.openPositions[sym].entry = parseFloat(bPos.entryPrice);
-                        this.openPositions[sym].lev = parseFloat(bPos.leverage);
+                        // Guncel ortalama giris fiyatini Binance ten aliyoruz
+                        const entryPrice = parseFloat(bPos.entryPrice);
+                        const posAmt = Math.abs(parseFloat(bPos.positionAmt));
+                        const lev = parseFloat(bPos.leverage);
+                        const estNotional = posAmt * entryPrice;
+
+                        this.openPositions[sym].entry = entryPrice;
+                        this.openPositions[sym].lev = lev;
                         this.openPositions[sym].unRealizedProfit = parseFloat(bPos.unRealizedProfit);
+                        this.openPositions[sym].filledQty = posAmt;
+                        this.openPositions[sym].size = estNotional / lev; // Sync actual USD margin
+                        
+                        // Eger openCommission local'de yoksa, tahmin et (0.05% taker):
+                        if (!this.openPositions[sym].openCommission) {
+                            this.openPositions[sym].openCommission = estNotional * 0.0005; 
+                        }
                     }
                 }
             }
@@ -309,9 +321,9 @@ export class BotRunner {
                                 continue;
                             }
 
-                            const size = USER_CONFIG.margin;
-                            if (size > (this.capital - this.reservedCapital)) {
-                                this.logToFile(`[${sym}] REJECT: Insufficient Margin (Required: ${size}, Available: ${this.capital - this.reservedCapital})`);
+                            const configMarginUsd = USER_CONFIG.margin;
+                            if (configMarginUsd > (this.capital - this.reservedCapital)) {
+                                this.logToFile(`[${sym}] REJECT: Insufficient Margin (Required: ${configMarginUsd}, Available: ${this.capital - this.reservedCapital})`);
                                 continue;
                             }
 
@@ -326,7 +338,7 @@ export class BotRunner {
 
                             // Send actual API request
                             const apiSide = sig.side === 'LONG' ? 'BUY' : 'SELL';
-                            const result = await this.binance.placeMarketOrder(sym, apiSide, size, USER_CONFIG.lev, price);
+                            const result = await this.binance.placeMarketOrder(sym, apiSide, configMarginUsd, USER_CONFIG.lev, price);
                             
                             // BUG #1 FIX: Check if API order was successful before saving position
                             if (!result.success) {
@@ -335,20 +347,22 @@ export class BotRunner {
                                 continue; 
                             }
 
+                            const actualMarginUsd = (result.filledQty * result.avgPrice) / USER_CONFIG.lev;
+
                             this.openPositions[sym] = {
                                 sym, 
                                 side: sig.side,
                                 entry: result.avgPrice, 
-                                size, // keep original config margin used
+                                size: actualMarginUsd, // actual USD margin used based on filled quote quantity
+                                filledQty: result.filledQty, // store base asset quantity
                                 lev: USER_CONFIG.lev,
                                 strat: sig.name,
                                 opened_at: now,
-                                // Add open commission manually for keeping local tracking better if needed
                                 openCommission: result.totalCommission
                             };
-                            this.reservedCapital += size;
+                            this.reservedCapital += actualMarginUsd;
                             
-                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + price.toFixed(4) + ' [' + sig.name + '] sz=' + size;
+                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + result.avgPrice.toFixed(4) + ' [' + sig.name + '] sz=' + actualMarginUsd.toFixed(2);
                             this.addLog(`[${sym}] ${logMsg}`, 'info');
                             console.log('  ' + logMsg);
 
