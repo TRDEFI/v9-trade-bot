@@ -441,7 +441,10 @@ export class BotRunner {
         }
 
         const closePrice = closeResult.avgPrice;
-        const closeCommission = closeResult.totalCommission;
+        let closeCommission = closeResult.totalCommission;
+        if (closeCommission === 0) {
+            closeCommission = pos.size * pos.lev * 0.0005; // Estimate close commission if 0 (e.g. in simulation mode)
+        }
         const openCommission = pos.openCommission || (pos.size * pos.lev * 0.0005);
         const totalCommission = openCommission + closeCommission;
 
