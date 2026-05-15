@@ -127,6 +127,8 @@ export class BotRunner {
                     if (this.openPositions[sym]) {
                         // Guncel ortalama giris fiyatini Binance ten aliyoruz (Gercek slipaj ve ucretleri de kapar)
                         this.openPositions[sym].entry = parseFloat(bPos.entryPrice);
+                        this.openPositions[sym].lev = parseFloat(bPos.leverage);
+                        this.openPositions[sym].unRealizedProfit = parseFloat(bPos.unRealizedProfit);
                     }
                 }
             }
@@ -144,12 +146,20 @@ export class BotRunner {
                 pos.currentPrice = price;
                 
                 const notionalValue = pos.size * pos.lev;
-                const commissionUsd = notionalValue * 0.0010; // 0.05% taker * 2
-                const pnlRaw = pos.side === 'LONG' 
-                    ? ((price - pos.entry) / pos.entry) 
-                    : ((pos.entry - price) / pos.entry);
-                const grossUsd = notionalValue * pnlRaw;
-                const netPnlUsd = grossUsd - commissionUsd;
+                const estCloseCommission = notionalValue * 0.0005; // 0.05% expected taker fee for closing
+                const openCommission = pos.openCommission || (notionalValue * 0.0005);
+                const totalCommission = openCommission + estCloseCommission;
+                
+                let netPnlUsd = 0;
+                if (pos.unRealizedProfit !== undefined) {
+                    netPnlUsd = pos.unRealizedProfit - totalCommission; 
+                } else {
+                    const pnlRaw = pos.side === 'LONG' 
+                        ? ((price - pos.entry) / pos.entry) 
+                        : ((pos.entry - price) / pos.entry);
+                    const grossUsd = notionalValue * pnlRaw;
+                    netPnlUsd = grossUsd - totalCommission;
+                }
 
                 pos.netPnlUsd = netPnlUsd;
                 pos.pnlPct = (netPnlUsd / pos.size) * 100;
@@ -163,8 +173,9 @@ export class BotRunner {
             }
 
             // Dynamic Margin Level Check
-            const idleMargin = this.capital - this.reservedCapital; // Boşta duran paramız
-            const marginThreshold = idleMargin * 0.80; // Boş paranın %80'i
+            const freeMargin = this.capital + currentTotalNetPnl;
+            const idleMargin = freeMargin - this.reservedCapital;
+            const marginThreshold = idleMargin * 0.80;
 
             if (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= marginThreshold && Object.keys(this.openPositions).length > 0) {
                 let targetSym: string | null = null;
@@ -315,10 +326,10 @@ export class BotRunner {
 
                             // Send actual API request
                             const apiSide = sig.side === 'LONG' ? 'BUY' : 'SELL';
-                            const success = await this.binance.placeMarketOrder(sym, apiSide, size, USER_CONFIG.lev, price);
+                            const result = await this.binance.placeMarketOrder(sym, apiSide, size, USER_CONFIG.lev, price);
                             
                             // BUG #1 FIX: Check if API order was successful before saving position
-                            if (!success) {
+                            if (!result.success) {
                                 this.logToFile(`[${sym}] REJECT: API placeMarketOrder failed.`);
                                 this.addLog(`[${sym}] OPEN BASARISIZ! API reddetti.`, 'error');
                                 continue; 
@@ -327,11 +338,13 @@ export class BotRunner {
                             this.openPositions[sym] = {
                                 sym, 
                                 side: sig.side,
-                                entry: price, 
-                                size, 
+                                entry: result.avgPrice, 
+                                size, // keep original config margin used
                                 lev: USER_CONFIG.lev,
                                 strat: sig.name,
                                 opened_at: now,
+                                // Add open commission manually for keeping local tracking better if needed
+                                openCommission: result.totalCommission
                             };
                             this.reservedCapital += size;
                             
@@ -371,30 +384,35 @@ export class BotRunner {
             pos.currentPrice = price;
         }
 
-        const notionalValue = pos.size * pos.lev;
-        const commissionUsd = notionalValue * 0.0010; // 0.05% taker * 2
-        const pnlRaw = pos.side === 'LONG' 
-            ? ((price - pos.entry) / pos.entry) 
-            : ((pos.entry - price) / pos.entry);
-        const grossUsd = notionalValue * pnlRaw;
-        const netPnlUsd = grossUsd - commissionUsd;
-
         // Execute API close real order
         const closeSide = pos.side === 'LONG' ? 'SELL' : 'BUY';
         
         // BUG #2 FIX: Verify actual closing
-        const success = await this.binance.closeMarketOrder(sym, closeSide);
-        if (!success) {
+        const closeResult = await this.binance.closeMarketOrder(sym, closeSide, price);
+        if (!closeResult.success) {
             this.addLog(`[${sym}] KAPATMA BASARISIZ! API reddetti. 10sn sonra tekrar denenecek. Nedeni: ${reason}`, 'error');
             return; // Pozisyonu dashboard'da acik birakmaya devam et!
         }
 
+        const closePrice = closeResult.avgPrice;
+        const closeCommission = closeResult.totalCommission;
+        const openCommission = pos.openCommission || (pos.size * pos.lev * 0.0005);
+        const totalCommission = openCommission + closeCommission;
+
+        const notional = pos.size * pos.lev;
+        const pnlRaw = pos.side === 'LONG' 
+            ? ((closePrice - pos.entry) / pos.entry) 
+            : ((pos.entry - closePrice) / pos.entry);
+        const grossUsd = notional * pnlRaw;
+        const netPnlUsd = grossUsd - (totalCommission);
+
         this.totalRealizedPnl += netPnlUsd;
+        // capital guncellemesini ayrica Binance'ten senkronize edecegiz ama local olarak guncelliyoruz:
         this.capital += netPnlUsd;
 
         this.closedPositions.push({
             sym, side: pos.side, entry: pos.entry,
-            closed_price: price, pnl: netPnlUsd,
+            closed_price: closePrice, pnl: netPnlUsd,
             strat: pos.strat, reason, lev: pos.lev, size: pos.size,
             opened: pos.opened_at, closed: Date.now()
         });

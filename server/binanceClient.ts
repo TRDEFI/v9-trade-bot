@@ -392,17 +392,19 @@ export class BinanceClient {
     }
   }
 
-  async placeMarketOrder(symbol: string, side: 'BUY' | 'SELL', marginUsd: number, lev: number, currentPrice: number): Promise<boolean> {
+  async placeMarketOrder(symbol: string, side: 'BUY' | 'SELL', marginUsd: number, lev: number, currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
     if (!this.apiKey || !this.apiSecret) {
       console.log('[Binance SIMULATION] Order simulated due to missing API keys.');
-      return true;
+      const qty = (marginUsd * lev) / currentPrice;
+      const commission = qty * currentPrice * 0.0005;
+      return { success: true, avgPrice: currentPrice, filledQty: qty, totalCommission: commission };
     }
     
     try {
       const setupOk = await this.setupMarginAndLeverage(symbol, lev);
       if (!setupOk) {
         console.error(`[Binance API] Order canceled because setupMarginAndLeverage failed for ${symbol}`);
-        return false;
+        return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
       }
       
       const exInfo = await this.getExchangeInfo();
@@ -427,7 +429,7 @@ export class BinanceClient {
       
       if (parseFloat(quantityStr) <= 0) {
           console.error(`[Binance API] Quantity calculated as <= 0 for ${symbol}`);
-          return false;
+          return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
       }
 
       const timestamp = Date.now();
@@ -438,16 +440,40 @@ export class BinanceClient {
         headers: { 'X-MBX-APIKEY': this.apiKey }
       });
       console.log(`[Binance API] MARKET ${side} ${quantityStr} ${symbol} SUCCESS`, res.data.orderId);
-      return true;
+      
+      let avgPrice = 0;
+      let filledQty = parseFloat(res.data.executedQty || quantityStr);
+      let totalCommission = 0;
+      
+      if (res.data.fills && res.data.fills.length > 0) {
+          let totalValue = 0;
+          let totalQty = 0;
+          res.data.fills.forEach((f: any) => {
+              const p = parseFloat(f.price);
+              const q = parseFloat(f.qty);
+              totalValue += p * q;
+              totalQty += q;
+              totalCommission += parseFloat(f.commission || '0');
+          });
+          avgPrice = totalQty > 0 ? totalValue / totalQty : 0;
+          filledQty = totalQty;
+      } else {
+          avgPrice = parseFloat(res.data.avgPrice || currentPrice.toString());
+          totalCommission = avgPrice * filledQty * 0.0005; // Default 0.05% taker fee
+      }
+
+      return { success: true, avgPrice, filledQty, totalCommission };
     } catch (e: any) {
       console.error(`[Binance API] MARKET ${side} failed for ${symbol}:`, e.response?.data || e.message);
-      return false;
+      return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
     }
   }
 
-  async closeMarketOrder(symbol: string, side: 'BUY' | 'SELL'): Promise<boolean> {
+  async closeMarketOrder(symbol: string, side: 'BUY' | 'SELL', currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
       // Need to fetch current position amount to close it fully
-      if (!this.apiKey || !this.apiSecret) return true;
+      if (!this.apiKey || !this.apiSecret) {
+          return { success: true, avgPrice: currentPrice, filledQty: 0, totalCommission: 0 };
+      }
       try {
           const timestamp = Date.now();
           const query = `symbol=${symbol}&timestamp=${timestamp}`;
@@ -470,17 +496,40 @@ export class BinanceClient {
 
                   const closeQuery = `symbol=${symbol}&side=${closeSide}&type=MARKET&quantity=${posAmtStr}&reduceOnly=true&timestamp=${Date.now()}`;
                   const closeSig = this.sign(closeQuery);
-                  await axios.post(`${BASE_URL}/fapi/v1/order?${closeQuery}&signature=${closeSig}`, null, {
+                  const res = await axios.post(`${BASE_URL}/fapi/v1/order?${closeQuery}&signature=${closeSig}`, null, {
                       headers: { 'X-MBX-APIKEY': this.apiKey }
                   });
                   console.log(`[Binance API] CLOSED POSITION ${symbol}`);
-                  return true;
+                  
+                  let avgPrice = 0;
+                  let filledQty = parseFloat(res.data.executedQty || posAmtStr);
+                  let totalCommission = 0;
+                  
+                  if (res.data.fills && res.data.fills.length > 0) {
+                      let totalValue = 0;
+                      let totalQty = 0;
+                      res.data.fills.forEach((f: any) => {
+                          const p = parseFloat(f.price);
+                          const q = parseFloat(f.qty);
+                          totalValue += p * q;
+                          totalQty += q;
+                          totalCommission += parseFloat(f.commission || '0');
+                      });
+                      avgPrice = totalQty > 0 ? totalValue / totalQty : 0;
+                      filledQty = totalQty;
+                  } else {
+                      avgPrice = parseFloat(res.data.avgPrice || currentPrice.toString() || '0');
+                      if (avgPrice === 0) avgPrice = currentPrice;
+                      totalCommission = avgPrice * filledQty * 0.0005; // Default taker
+                  }
+
+                  return { success: true, avgPrice, filledQty, totalCommission };
               }
           }
-          return false;
+          return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
       } catch (e: any) {
           console.error(`[Binance API] Close failed for ${symbol}:`, e.response?.data || e.message);
-          return false;
+          return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
       }
   }
 }
