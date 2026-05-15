@@ -119,6 +119,16 @@ export class BotRunner {
                 if (realBalance !== null) {
                     this.capital = realBalance;
                 }
+                
+                // Sync positions to fix PNL and Entry Price reporting discrepancy
+                const activeBinancePos = await this.binance.getActivePositions();
+                for (const bPos of activeBinancePos) {
+                    const sym = bPos.symbol;
+                    if (this.openPositions[sym]) {
+                        // Guncel ortalama giris fiyatini Binance ten aliyoruz (Gercek slipaj ve ucretleri de kapar)
+                        this.openPositions[sym].entry = parseFloat(bPos.entryPrice);
+                    }
+                }
             }
             
             const currentPrices = await this.binance.getAllPrices();
@@ -149,36 +159,6 @@ export class BotRunner {
                 if (netPnlUsd >= USER_CONFIG.target_profit) {
                     await this.closePosition(sym, 'TAKE_PROFIT');
                     continue;
-                }
-                // Removed static cut_loss check
-                
-                // Trend Reversal Check (Cut Loss)
-                const c1h = this.binance.klinesCache[sym]?.['1h'];
-                if (c1h && c1h.length >= 4) {
-                    const cl = c1h.slice(0, -1).slice(-3);
-                    if (cl.length === 3) {
-                        const is3Red = cl.every(c => c.c < c.o);
-                        const is3Green = cl.every(c => c.c > c.o);
-                        if (pos.side === 'LONG' && is3Red) {
-                            await this.closePosition(sym, 'TREND_SHIFT_3RED');
-                            continue;
-                        }
-                        if (pos.side === 'SHORT' && is3Green) {
-                            await this.closePosition(sym, 'TREND_SHIFT_3GREEN');
-                            continue;
-                        }
-                    }
-                    const str = calcSupertrend(c1h.slice(0, -1));
-                    if (str) {
-                        if (pos.side === 'LONG' && str.trend === -1) {
-                            await this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_DOWN');
-                            continue;
-                        }
-                        if (pos.side === 'SHORT' && str.trend === 1) {
-                            await this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_UP');
-                            continue;
-                        }
-                    }
                 }
             }
 
@@ -321,6 +301,13 @@ export class BotRunner {
                             const size = USER_CONFIG.margin;
                             if (size > (this.capital - this.reservedCapital)) {
                                 this.logToFile(`[${sym}] REJECT: Insufficient Margin (Required: ${size}, Available: ${this.capital - this.reservedCapital})`);
+                                continue;
+                            }
+
+                            const maxLev = await this.binance.getMaxLeverage(sym);
+                            if (maxLev < USER_CONFIG.lev) {
+                                this.logToFile(`[${sym}] REJECT: ${USER_CONFIG.lev}x desteklenmiyor (max: ${maxLev}x)`);
+                                this.addLog(`[${sym}] REJECT: Leverage ${USER_CONFIG.lev}x desteklenmiyor (max: ${maxLev}x)`, 'error');
                                 continue;
                             }
 

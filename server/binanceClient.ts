@@ -283,13 +283,32 @@ export class BinanceClient {
     return crypto.createHmac('sha256', this.apiSecret).update(queryString).digest('hex');
   }
 
-  async setupMarginAndLeverage(symbol: string, lev: number): Promise<void> {
-    if (!this.apiKey || !this.apiSecret) return;
+  async getMaxLeverage(symbol: string): Promise<number> {
+    if (!this.apiKey || !this.apiSecret) return 20;
+    try {
+      const timestamp = Date.now();
+      const query = `symbol=${symbol}&timestamp=${timestamp}`;
+      const sig = this.sign(query);
+      const res = await axios.get(`${BASE_URL}/fapi/v1/leverageBracket?${query}&signature=${sig}`, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      if (res.data && res.data.length > 0 && res.data[0].brackets && res.data[0].brackets.length > 0) {
+        return parseInt(res.data[0].brackets[0].initialLeverage);
+      }
+      return 20;
+    } catch (e: any) {
+      console.error(`[Binance] Failed to fetch leverage bracket for ${symbol}:`, e.response?.data || e.message);
+      return 20;
+    }
+  }
+
+  async setupMarginAndLeverage(symbol: string, lev: number): Promise<boolean> {
+    if (!this.apiKey || !this.apiSecret) return true;
     try {
       const timestamp = Date.now();
       
-      // Set to ISOLATED margin type
-      const marginQuery = `symbol=${symbol}&marginType=ISOLATED&timestamp=${timestamp}`;
+      // Set to CROSSED margin type
+      const marginQuery = `symbol=${symbol}&marginType=CROSSED&timestamp=${timestamp}`;
       const marginSig = this.sign(marginQuery);
       try {
         await axios.post(`${BASE_URL}/fapi/v1/marginType?${marginQuery}&signature=${marginSig}`, null, {
@@ -298,18 +317,23 @@ export class BinanceClient {
       } catch (e: any) {
         // Code -4046 means 'No need to change margin type' which is totally fine
         if (e.response?.data?.code !== -4046) {
-           console.error(`[Binance API] Failed to set Isolated Margin for ${symbol}`);
+           console.error(`[Binance API] Failed to set CROSSED Margin for ${symbol}`);
         }
       }
 
       // Set Leverage
-      const levQuery = `symbol=${symbol}&leverage=${lev}&timestamp=${Date.now()}`;
+      const maxLev = await this.getMaxLeverage(symbol);
+      const finalLev = Math.min(lev, maxLev);
+
+      const levQuery = `symbol=${symbol}&leverage=${finalLev}&timestamp=${Date.now()}`;
       const levSig = this.sign(levQuery);
       await axios.post(`${BASE_URL}/fapi/v1/leverage?${levQuery}&signature=${levSig}`, null, {
         headers: { 'X-MBX-APIKEY': this.apiKey }
       });
+      return true;
     } catch (e: any) {
       console.error(`[Binance API] Setup Leverge error for ${symbol}:`, e.response?.data || e.message);
+      return false;
     }
   }
 
@@ -336,6 +360,26 @@ export class BinanceClient {
     }
   }
 
+  async getActivePositions(): Promise<any[]> {
+    if (!this.apiKey || !this.apiSecret) return [];
+    try {
+      const timestamp = Date.now();
+      const query = `timestamp=${timestamp}`;
+      const sig = this.sign(query);
+      const res = await axios.get(`${BASE_URL}/fapi/v2/positionRisk?${query}&signature=${sig}`, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      // Return only positions with amount != 0
+      if (Array.isArray(res.data)) {
+        return res.data.filter((pos: any) => parseFloat(pos.positionAmt) !== 0);
+      }
+      return [];
+    } catch (e: any) {
+      console.error('[Binance API] Failed to fetch positions:', e.response?.data || e.message);
+      return [];
+    }
+  }
+
   async getExchangeInfo() {
     if (this.exchangeInfoCache) return this.exchangeInfoCache;
     try {
@@ -355,7 +399,12 @@ export class BinanceClient {
     }
     
     try {
-      await this.setupMarginAndLeverage(symbol, lev);
+      const setupOk = await this.setupMarginAndLeverage(symbol, lev);
+      if (!setupOk) {
+        console.error(`[Binance API] Order canceled because setupMarginAndLeverage failed for ${symbol}`);
+        return false;
+      }
+      
       const exInfo = await this.getExchangeInfo();
       
       let quantityStr = '0';
