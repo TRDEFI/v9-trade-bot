@@ -122,27 +122,56 @@ export class BotRunner {
                 
                 // Sync positions to fix PNL and Entry Price reporting discrepancy
                 const activeBinancePos = await this.binance.getActivePositions();
+                let updatedReservedCapital = 0;
+                const activeBinanceSyms = new Set(activeBinancePos.map((p: any) => p.symbol));
+
                 for (const bPos of activeBinancePos) {
                     const sym = bPos.symbol;
-                    if (this.openPositions[sym]) {
-                        // Guncel ortalama giris fiyatini Binance ten aliyoruz
-                        const entryPrice = parseFloat(bPos.entryPrice);
-                        const posAmt = Math.abs(parseFloat(bPos.positionAmt));
-                        const lev = parseFloat(bPos.leverage);
-                        const estNotional = posAmt * entryPrice;
+                    const entryPrice = parseFloat(bPos.entryPrice);
+                    const posAmt = parseFloat(bPos.positionAmt);
+                    const absPosAmt = Math.abs(posAmt);
+                    const lev = parseFloat(bPos.leverage);
+                    const estNotional = absPosAmt * entryPrice;
+                    const actualMarginUsd = estNotional / lev;
 
+                    if (!this.openPositions[sym]) {
+                        // Bot baslatildiginda onceden acik olan pozisyonlari yukle
+                        this.openPositions[sym] = {
+                            sym,
+                            side: posAmt > 0 ? 'LONG' : 'SHORT',
+                            entry: entryPrice,
+                            size: actualMarginUsd,
+                            filledQty: absPosAmt,
+                            lev: lev,
+                            strat: 'RESTORED',
+                            opened_at: Date.now(),
+                            openCommission: estNotional * 0.0005 // Tahmini komisyon (0.05% taker)
+                        };
+                    } else {
+                        // Mevcut pozisyonu guncelle
                         this.openPositions[sym].entry = entryPrice;
                         this.openPositions[sym].lev = lev;
-                        this.openPositions[sym].unRealizedProfit = parseFloat(bPos.unRealizedProfit);
-                        this.openPositions[sym].filledQty = posAmt;
-                        this.openPositions[sym].size = estNotional / lev; // Sync actual USD margin
+                        this.openPositions[sym].filledQty = absPosAmt;
+                        this.openPositions[sym].size = actualMarginUsd; // Sync actual USD margin
                         
                         // Eger openCommission local'de yoksa, tahmin et (0.05% taker):
                         if (!this.openPositions[sym].openCommission) {
                             this.openPositions[sym].openCommission = estNotional * 0.0005; 
                         }
                     }
+                    this.openPositions[sym].unRealizedProfit = parseFloat(bPos.unRealizedProfit);
+                    updatedReservedCapital += actualMarginUsd;
                 }
+                
+                // Binance tarafinda manuel kapatilmis pozisyonlari local'den temizle
+                for (const openSym of Object.keys(this.openPositions)) {
+                    if (!activeBinanceSyms.has(openSym)) {
+                        delete this.openPositions[openSym];
+                    }
+                }
+                
+                // Toplam capital (Kasa) ve Reserved (Kullanilan) Margin'i kalibre et
+                this.reservedCapital = updatedReservedCapital;
             }
             
             const currentPrices = await this.binance.getAllPrices();
@@ -184,12 +213,12 @@ export class BotRunner {
                 }
             }
 
-            // Dynamic Margin Level Check
-            const freeMargin = this.capital + currentTotalNetPnl;
-            const idleMargin = freeMargin - this.reservedCapital;
-            const marginThreshold = idleMargin * 0.80;
+            // Dynamic Margin Level & Drawdown Check
+            // Toplam 'Free Balance'in (capital - reservedCapital) %80'ine ulasirsa net zarar, kasayi rahatlatmak icin islem kapatir.
+            const freeBalance = this.capital - this.reservedCapital;
+            const maxDrawdownUsd = freeBalance * 0.80;
 
-            if (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= marginThreshold && Object.keys(this.openPositions).length > 0) {
+            if (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd && Object.keys(this.openPositions).length > 0) {
                 let targetSym: string | null = null;
                 let smallestLoss = -Infinity;
 
@@ -210,7 +239,7 @@ export class BotRunner {
 
                 if (targetSym) {
                     const absLoss = Math.abs(currentTotalNetPnl);
-                    const logMsg = `[${targetSym}] Kritik Margin Seviyesi! Toplam Zarar ($${absLoss.toFixed(2)}) >= Limit ($${marginThreshold.toFixed(2)}). Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
+                    const logMsg = `[${targetSym}] Kritik Kasa Zarar Limiti! Toplam PNL ($${absLoss.toFixed(2)}) >= Limit ($${maxDrawdownUsd.toFixed(2)}). Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
                     this.addLog(logMsg, 'error');
                     console.log(logMsg);
                     await this.closePosition(targetSym, 'MARGIN_CALL_LIQUIDATION');
@@ -322,8 +351,12 @@ export class BotRunner {
                             }
 
                             const configMarginUsd = USER_CONFIG.margin;
-                            if (configMarginUsd > (this.capital - this.reservedCapital)) {
-                                this.logToFile(`[${sym}] REJECT: Insufficient Margin (Required: ${configMarginUsd}, Available: ${this.capital - this.reservedCapital})`);
+                            const freeMarginForNew = this.capital + currentTotalNetPnl - this.reservedCapital;
+                            const currentFreeBalance = this.capital - this.reservedCapital;
+                            const maxDrawdownUsd = currentFreeBalance * 0.80;
+
+                            if (configMarginUsd > freeMarginForNew || (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd)) {
+                                this.logToFile(`[${sym}] REJECT: Insufficient Free Margin or Max Drawdown Block (Required: ${configMarginUsd}, Available: ${freeMarginForNew})`);
                                 continue;
                             }
 
