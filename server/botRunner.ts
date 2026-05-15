@@ -47,6 +47,7 @@ export class BotRunner {
     pairIndex = 0;
     lastKlineCheck: Record<string, number> = {};
     lastReversalCheck: Record<string, number> = {};
+    lastBalanceCheck: number = 0;
     
     loopInterval: NodeJS.Timeout | null = null;
     startTimeStr: number = Date.now();
@@ -110,6 +111,16 @@ export class BotRunner {
     private async loop() {
         try {
             const now = Date.now();
+            
+            // Sync real balance directly from Binance every 10 seconds
+            if (now - this.lastBalanceCheck > 10000) {
+                this.lastBalanceCheck = now;
+                const realBalance = await this.binance.getFuturesBalance();
+                if (realBalance !== null) {
+                    this.capital = realBalance;
+                }
+            }
+            
             const currentPrices = await this.binance.getAllPrices();
 
             let currentTotalNetPnl = 0;
@@ -136,7 +147,7 @@ export class BotRunner {
                 currentTotalNetPnl += netPnlUsd;
 
                 if (netPnlUsd >= USER_CONFIG.target_profit) {
-                    this.closePosition(sym, 'TAKE_PROFIT');
+                    await this.closePosition(sym, 'TAKE_PROFIT');
                     continue;
                 }
                 // Removed static cut_loss check
@@ -149,22 +160,22 @@ export class BotRunner {
                         const is3Red = cl.every(c => c.c < c.o);
                         const is3Green = cl.every(c => c.c > c.o);
                         if (pos.side === 'LONG' && is3Red) {
-                            this.closePosition(sym, 'TREND_SHIFT_3RED');
+                            await this.closePosition(sym, 'TREND_SHIFT_3RED');
                             continue;
                         }
                         if (pos.side === 'SHORT' && is3Green) {
-                            this.closePosition(sym, 'TREND_SHIFT_3GREEN');
+                            await this.closePosition(sym, 'TREND_SHIFT_3GREEN');
                             continue;
                         }
                     }
                     const str = calcSupertrend(c1h.slice(0, -1));
                     if (str) {
                         if (pos.side === 'LONG' && str.trend === -1) {
-                            this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_DOWN');
+                            await this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_DOWN');
                             continue;
                         }
                         if (pos.side === 'SHORT' && str.trend === 1) {
-                            this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_UP');
+                            await this.closePosition(sym, 'TREND_SHIFT_SUPERTREND_UP');
                             continue;
                         }
                     }
@@ -199,7 +210,7 @@ export class BotRunner {
                     const logMsg = `[${targetSym}] Kritik Margin Seviyesi! Toplam Zarar ($${absLoss.toFixed(2)}) >= Limit ($${marginThreshold.toFixed(2)}). Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
                     this.addLog(logMsg, 'error');
                     console.log(logMsg);
-                    this.closePosition(targetSym, 'MARGIN_CALL_LIQUIDATION');
+                    await this.closePosition(targetSym, 'MARGIN_CALL_LIQUIDATION');
                     
                     currentTotalNetPnl -= smallestLoss;
                 }
@@ -317,7 +328,14 @@ export class BotRunner {
 
                             // Send actual API request
                             const apiSide = sig.side === 'LONG' ? 'BUY' : 'SELL';
-                            await this.binance.placeMarketOrder(sym, apiSide, size, USER_CONFIG.lev, price);
+                            const success = await this.binance.placeMarketOrder(sym, apiSide, size, USER_CONFIG.lev, price);
+                            
+                            // BUG #1 FIX: Check if API order was successful before saving position
+                            if (!success) {
+                                this.logToFile(`[${sym}] REJECT: API placeMarketOrder failed.`);
+                                this.addLog(`[${sym}] OPEN BASARISIZ! API reddetti.`, 'error');
+                                continue; 
+                            }
 
                             this.openPositions[sym] = {
                                 sym, 
@@ -356,7 +374,7 @@ export class BotRunner {
         this.loopInterval = setTimeout(() => this.loop(), 500);
     }
 
-    public closePosition(sym: string, reason: string, currentPrices?: Record<string, number>) {
+    public async closePosition(sym: string, reason: string, currentPrices?: Record<string, number>) {
         const pos = this.openPositions[sym];
         if (!pos) return;
 
@@ -376,7 +394,13 @@ export class BotRunner {
 
         // Execute API close real order
         const closeSide = pos.side === 'LONG' ? 'SELL' : 'BUY';
-        this.binance.closeMarketOrder(sym, closeSide).catch(e => console.error(e));
+        
+        // BUG #2 FIX: Verify actual closing
+        const success = await this.binance.closeMarketOrder(sym, closeSide);
+        if (!success) {
+            this.addLog(`[${sym}] KAPATMA BASARISIZ! API reddetti. 10sn sonra tekrar denenecek. Nedeni: ${reason}`, 'error');
+            return; // Pozisyonu dashboard'da acik birakmaya devam et!
+        }
 
         this.totalRealizedPnl += netPnlUsd;
         this.capital += netPnlUsd;

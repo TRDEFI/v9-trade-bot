@@ -315,6 +315,27 @@ export class BinanceClient {
 
   public exchangeInfoCache: any = null;
 
+  async getFuturesBalance(): Promise<number | null> {
+    if (!this.apiKey || !this.apiSecret) return null;
+    try {
+      const timestamp = Date.now();
+      const query = `timestamp=${timestamp}`;
+      const sig = this.sign(query);
+      const res = await axios.get(`${BASE_URL}/fapi/v2/balance?${query}&signature=${sig}`, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      // Find USDT balance
+      const usdtAsset = res.data.find((a: any) => a.asset === 'USDT');
+      if (usdtAsset) {
+        return parseFloat(usdtAsset.balance);
+      }
+      return null;
+    } catch (e: any) {
+      console.error('[Binance API] Failed to fetch balance:', e.response?.data || e.message);
+      return null;
+    }
+  }
+
   async getExchangeInfo() {
     if (this.exchangeInfoCache) return this.exchangeInfoCache;
     try {
@@ -393,7 +414,12 @@ export class BinanceClient {
                   // If position is long, we SELL to close. If position is short, we BUY to close.
                   const closeSide = parseFloat(pos.positionAmt) > 0 ? 'SELL' : 'BUY';
 
-                  const closeQuery = `symbol=${symbol}&side=${closeSide}&type=MARKET&quantity=${positionAmt}&reduceOnly=true&timestamp=${Date.now()}`;
+                  let posAmtStr = positionAmt.toString();
+                  if (posAmtStr.includes('e')) {
+                      posAmtStr = positionAmt.toFixed(10).replace(/\.?0+$/, '');
+                  }
+
+                  const closeQuery = `symbol=${symbol}&side=${closeSide}&type=MARKET&quantity=${posAmtStr}&reduceOnly=true&timestamp=${Date.now()}`;
                   const closeSig = this.sign(closeQuery);
                   await axios.post(`${BASE_URL}/fapi/v1/order?${closeQuery}&signature=${closeSig}`, null, {
                       headers: { 'X-MBX-APIKEY': this.apiKey }
