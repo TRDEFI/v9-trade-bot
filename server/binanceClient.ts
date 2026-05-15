@@ -1,5 +1,9 @@
 import axios from 'axios';
 import WebSocket from 'ws';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const BASE_URL = 'https://fapi.binance.com';
 const WS_URL = 'wss://fstream.binance.com/ws/!ticker@arr';
@@ -263,5 +267,145 @@ export class BinanceClient {
     }
     
     return this.klinesCache[symbol][interval] || [];
+  }
+
+  // --- LIVE TRADING FUNCTIONS ---
+
+  get apiKey() {
+    return process.env.BINANCE_API_KEY || '';
+  }
+
+  get apiSecret() {
+    return process.env.BINANCE_API_SECRET || '';
+  }
+
+  private sign(queryString: string): string {
+    return crypto.createHmac('sha256', this.apiSecret).update(queryString).digest('hex');
+  }
+
+  async setupMarginAndLeverage(symbol: string, lev: number): Promise<void> {
+    if (!this.apiKey || !this.apiSecret) return;
+    try {
+      const timestamp = Date.now();
+      
+      // Set to ISOLATED margin type
+      const marginQuery = `symbol=${symbol}&marginType=ISOLATED&timestamp=${timestamp}`;
+      const marginSig = this.sign(marginQuery);
+      try {
+        await axios.post(`${BASE_URL}/fapi/v1/marginType?${marginQuery}&signature=${marginSig}`, null, {
+          headers: { 'X-MBX-APIKEY': this.apiKey }
+        });
+      } catch (e: any) {
+        // Code -4046 means 'No need to change margin type' which is totally fine
+        if (e.response?.data?.code !== -4046) {
+           console.error(`[Binance API] Failed to set Isolated Margin for ${symbol}`);
+        }
+      }
+
+      // Set Leverage
+      const levQuery = `symbol=${symbol}&leverage=${lev}&timestamp=${Date.now()}`;
+      const levSig = this.sign(levQuery);
+      await axios.post(`${BASE_URL}/fapi/v1/leverage?${levQuery}&signature=${levSig}`, null, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+    } catch (e: any) {
+      console.error(`[Binance API] Setup Leverge error for ${symbol}:`, e.response?.data || e.message);
+    }
+  }
+
+  public exchangeInfoCache: any = null;
+
+  async getExchangeInfo() {
+    if (this.exchangeInfoCache) return this.exchangeInfoCache;
+    try {
+      const resp = await axios.get(`${BASE_URL}/fapi/v1/exchangeInfo`);
+      this.exchangeInfoCache = resp.data;
+      return this.exchangeInfoCache;
+    } catch (e) {
+      console.error('[Binance API] Failed to fetch exchange info', e);
+      return null;
+    }
+  }
+
+  async placeMarketOrder(symbol: string, side: 'BUY' | 'SELL', marginUsd: number, lev: number, currentPrice: number): Promise<boolean> {
+    if (!this.apiKey || !this.apiSecret) {
+      console.log('[Binance SIMULATION] Order simulated due to missing API keys.');
+      return true;
+    }
+    
+    try {
+      await this.setupMarginAndLeverage(symbol, lev);
+      const exInfo = await this.getExchangeInfo();
+      
+      let quantityStr = '0';
+      if (exInfo) {
+          const symInfo = exInfo.symbols.find((s: any) => s.symbol === symbol);
+          if (symInfo) {
+              const lotSizeFilter = symInfo.filters.find((f: any) => f.filterType === 'LOT_SIZE');
+              const stepSize = parseFloat(lotSizeFilter?.stepSize || '0.001');
+              
+              // Calculate notional in base asset
+              const notional = marginUsd * lev;
+              const rawQuantity = notional / currentPrice;
+              
+              // Round down to nearest stepSize
+              const precision = Math.max(0, -Math.floor(Math.log10(stepSize)));
+              const qty = Math.floor(rawQuantity / stepSize) * stepSize;
+              quantityStr = qty.toFixed(precision);
+          }
+      }
+      
+      if (parseFloat(quantityStr) <= 0) {
+          console.error(`[Binance API] Quantity calculated as <= 0 for ${symbol}`);
+          return false;
+      }
+
+      const timestamp = Date.now();
+      const query = `symbol=${symbol}&side=${side}&type=MARKET&quantity=${quantityStr}&timestamp=${timestamp}`;
+      const sig = this.sign(query);
+
+      const res = await axios.post(`${BASE_URL}/fapi/v1/order?${query}&signature=${sig}`, null, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      console.log(`[Binance API] MARKET ${side} ${quantityStr} ${symbol} SUCCESS`, res.data.orderId);
+      return true;
+    } catch (e: any) {
+      console.error(`[Binance API] MARKET ${side} failed for ${symbol}:`, e.response?.data || e.message);
+      return false;
+    }
+  }
+
+  async closeMarketOrder(symbol: string, side: 'BUY' | 'SELL'): Promise<boolean> {
+      // Need to fetch current position amount to close it fully
+      if (!this.apiKey || !this.apiSecret) return true;
+      try {
+          const timestamp = Date.now();
+          const query = `symbol=${symbol}&timestamp=${timestamp}`;
+          const sig = this.sign(query);
+          const posRes = await axios.get(`${BASE_URL}/fapi/v2/positionRisk?${query}&signature=${sig}`, {
+              headers: { 'X-MBX-APIKEY': this.apiKey }
+          });
+          
+          if (Array.isArray(posRes.data) && posRes.data.length > 0) {
+              const pos = posRes.data[0];
+              const positionAmt = Math.abs(parseFloat(pos.positionAmt));
+              if (positionAmt > 0) {
+                  // If position is long, we SELL to close. If position is short, we BUY to close.
+                  const closeSide = parseFloat(pos.positionAmt) > 0 ? 'SELL' : 'BUY';
+
+                  const closeQuery = `symbol=${symbol}&side=${closeSide}&type=MARKET&quantity=${positionAmt}&reduceOnly=true&timestamp=${Date.now()}`;
+                  const closeSig = this.sign(closeQuery);
+                  await axios.post(`${BASE_URL}/fapi/v1/order?${closeQuery}&signature=${closeSig}`, null, {
+                      headers: { 'X-MBX-APIKEY': this.apiKey }
+                  });
+                  console.log(`[Binance API] CLOSED POSITION ${symbol}`);
+                  return true;
+              }
+          }
+          return false;
+      } catch (e: any) {
+          console.error(`[Binance API] Close failed for ${symbol}:`, e.response?.data || e.message);
+          return false;
+      }
   }
 }

@@ -315,6 +315,10 @@ export class BotRunner {
 
                             this.logToFile(`[${sym}] OPENED: side=${sig.side} price=${price} strat=${sig.name}`);
 
+                            // Send actual API request
+                            const apiSide = sig.side === 'LONG' ? 'BUY' : 'SELL';
+                            await this.binance.placeMarketOrder(sym, apiSide, size, USER_CONFIG.lev, price);
+
                             this.openPositions[sym] = {
                                 sym, 
                                 side: sig.side,
@@ -369,6 +373,10 @@ export class BotRunner {
             : ((pos.entry - price) / pos.entry);
         const grossUsd = notionalValue * pnlRaw;
         const netPnlUsd = grossUsd - commissionUsd;
+
+        // Execute API close real order
+        const closeSide = pos.side === 'LONG' ? 'SELL' : 'BUY';
+        this.binance.closeMarketOrder(sym, closeSide).catch(e => console.error(e));
 
         this.totalRealizedPnl += netPnlUsd;
         this.capital += netPnlUsd;
