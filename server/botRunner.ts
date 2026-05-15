@@ -351,12 +351,11 @@ export class BotRunner {
                             }
 
                             const configMarginUsd = USER_CONFIG.margin;
-                            const freeMarginForNew = this.capital + currentTotalNetPnl - this.reservedCapital;
-                            const currentFreeBalance = this.capital - this.reservedCapital;
-                            const maxDrawdownUsd = currentFreeBalance * 0.80;
+                            const freeBalance = this.capital - this.reservedCapital;
+                            const maxDrawdownUsd = freeBalance * 0.80;
 
-                            if (configMarginUsd > freeMarginForNew || (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd)) {
-                                this.logToFile(`[${sym}] REJECT: Insufficient Free Margin or Max Drawdown Block (Required: ${configMarginUsd}, Available: ${freeMarginForNew})`);
+                            if (configMarginUsd > freeBalance || (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd)) {
+                                this.logToFile(`[${sym}] REJECT: Insufficient Free Margin or Max Drawdown Block (Required: ${configMarginUsd}, Available: ${freeBalance})`);
                                 continue;
                             }
 
