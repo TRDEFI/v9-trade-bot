@@ -272,11 +272,18 @@ export class BinanceClient {
   // --- LIVE TRADING FUNCTIONS ---
 
   get apiKey() {
-    return process.env.BINANCE_API_KEY || '';
+    // LIVE_MODE: use LIVE keys if available, otherwise fall back to SANDBOX keys
+    if (process.env.LIVE_API_KEY) return process.env.LIVE_API_KEY;
+    return process.env.SANDBOX_API_KEY || '';
   }
 
   get apiSecret() {
-    return process.env.BINANCE_API_SECRET || '';
+    if (process.env.LIVE_API_KEY && process.env.LIVE_API_SECRET) return process.env.LIVE_API_SECRET;
+    return process.env.SANDBOX_API_SECRET || '';
+  }
+
+  get isSimulation() {
+    return process.env.SIMULATION_MODE === 'true' || !this.apiKey || !this.apiSecret;
   }
 
   private sign(queryString: string): string {
@@ -284,7 +291,7 @@ export class BinanceClient {
   }
 
   async getMaxLeverage(symbol: string): Promise<number> {
-    if (!this.apiKey || !this.apiSecret) return 20;
+    if (this.isSimulation) return 20;
     try {
       const timestamp = Date.now();
       const query = `symbol=${symbol}&timestamp=${timestamp}`;
@@ -303,7 +310,7 @@ export class BinanceClient {
   }
 
   async setupMarginAndLeverage(symbol: string, lev: number): Promise<boolean> {
-    if (!this.apiKey || !this.apiSecret) return true;
+    if (this.isSimulation) return true;
     try {
       const timestamp = Date.now();
       
@@ -340,7 +347,7 @@ export class BinanceClient {
   public exchangeInfoCache: any = null;
 
   async getFuturesBalance(): Promise<number | null> {
-    if (!this.apiKey || !this.apiSecret) return null;
+    if (this.isSimulation) return null;
     try {
       const timestamp = Date.now();
       const query = `timestamp=${timestamp}`;
@@ -361,7 +368,7 @@ export class BinanceClient {
   }
 
   async getActivePositions(): Promise<any[]> {
-    if (!this.apiKey || !this.apiSecret) return [];
+    if (this.isSimulation) return [];
     try {
       const timestamp = Date.now();
       const query = `timestamp=${timestamp}`;
@@ -393,8 +400,8 @@ export class BinanceClient {
   }
 
   async placeMarketOrder(symbol: string, side: 'BUY' | 'SELL', marginUsd: number, lev: number, currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
-    if (!this.apiKey || !this.apiSecret) {
-      console.log('[Binance SIMULATION] Order simulated due to missing API keys.');
+    if (this.isSimulation) {
+      console.log('[Binance SIMULATION] Order simulated.');
       const qty = (marginUsd * lev) / currentPrice;
       const commission = qty * currentPrice * 0.0005;
       return { success: true, avgPrice: currentPrice, filledQty: qty, totalCommission: commission };
@@ -470,9 +477,10 @@ export class BinanceClient {
   }
 
   async closeMarketOrder(symbol: string, side: 'BUY' | 'SELL', currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
-      // Need to fetch current position amount to close it fully
-      if (!this.apiKey || !this.apiSecret) {
-          return { success: true, avgPrice: currentPrice, filledQty: 0, totalCommission: 0 };
+      if (this.isSimulation) {
+          // Simulation: use current price as close price, estimate commission
+          const commission = currentPrice * 0.0005;
+          return { success: true, avgPrice: currentPrice, filledQty: 0, totalCommission: commission };
       }
       try {
           const timestamp = Date.now();

@@ -83,8 +83,8 @@ export function Dashboard() {
     .sort((a,b) => b.pnl - a.pnl)
     .slice(0, 10); // top 10
 
-  const marginBalance = data.capital + data.unrealized_pnl;
-  const freeMargin = marginBalance - data.used_capital;
+  const marginBalance = data.capital;
+  const freeMargin = data.capital - data.used_capital;
   const marginRatio = marginBalance > 0 ? (data.used_capital / marginBalance) * 100 : 0;
 
   return (

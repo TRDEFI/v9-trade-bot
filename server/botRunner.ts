@@ -129,8 +129,16 @@ export class BotRunner {
                 }
                 
                 if (activeBinancePos.length === 0) {
-                    // No active positions from Binance - skip sync to avoid deleting local positions
-                    this.reservedCapital = 0;
+                    // No active positions from Binance (simulation mode or API error)
+                    // Calculate reservedCapital from local openPositions instead of setting to 0
+                    let updatedReservedCapital = 0;
+                    for (const sym of Object.keys(this.openPositions)) {
+                        const pos = this.openPositions[sym];
+                        if (pos && pos.size) {
+                            updatedReservedCapital += pos.size;
+                        }
+                    }
+                    this.reservedCapital = updatedReservedCapital;
                 } else {
                     let updatedReservedCapital = 0;
                     const activeBinanceSyms = new Set(activeBinancePos.map((p: any) => p.symbol));
