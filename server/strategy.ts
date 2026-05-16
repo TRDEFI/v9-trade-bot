@@ -166,6 +166,8 @@ export interface Signal {
   score: number;
   avg_move: number;
   side: 'LONG' | 'SHORT';
+  tp_target?: number;  // Take profit price target (optional)
+  sl_target?: number;   // Stop loss price target (optional)
 }
 
 // 1H Strategy
@@ -177,6 +179,7 @@ export function getSignal(klines: Kline[]): Signal | null {
   const ma20 = calcMa(klines, 20);
   const ema9 = calcEma(klines, 9);
   const ema21 = calcEma(klines, 21);
+  const ema50 = calcEma(klines, 50);  // 1H trend filter
   const vr   = calcVolumeRatio(klines, 20);
   
   // Replace avg move with ATR for a better volatility metric
@@ -196,22 +199,42 @@ export function getSignal(klines: Kline[]): Signal | null {
   if (dev < -2.5 && rsi < 40) sigs.push({ name: 'MA10_BOUNCE', score: 0.88, side: 'LONG', avg_move: avg });
   if (dev > 2.5  && rsi > 60) sigs.push({ name: 'MA10_REJECT',  score: 0.88, side: 'SHORT', avg_move: avg });
 
-  // Add EMA crossover strategy
-  if (ema9 > ema21 && p > ema9 && rsi < 60) {
+  // Add EMA crossover strategy — only on crossover (not continuous)
+  // Use closed klines (excluding current unfinished candle) for accurate crossover detection
+  const klinesClosed = klines.slice(0, -1);
+  const ema9Curr = calcEma(klines, 9);
+  const ema21Curr = calcEma(klines, 21);
+  
+  let ema9Prev = ema9Curr, ema21Prev = ema21Curr;
+  if (klinesClosed.length >= 21) {
+    const prevKlines = klinesClosed.slice(0, -1);
+    if (prevKlines.length >= 21) {
+      ema9Prev = calcEma(prevKlines, 9);
+      ema21Prev = calcEma(prevKlines, 21);
+    }
+  }
+  
+  // Detect crossover: previous candle EMA9 was below/equal EMA21, now EMA9 is above
+  const justCrossedUp = ema9Prev <= ema21Prev && ema9Curr > ema21Curr;
+  const justCrossedDn = ema9Prev >= ema21Prev && ema9Curr < ema21Curr;
+  
+  if (justCrossedUp && vr > 1.3 && rsi < 65) {
       sigs.push({ name: 'EMA_CROSS_UP', score: 0.86, side: 'LONG', avg_move: avg });
   }
-  if (ema9 < ema21 && p < ema9 && rsi > 40) {
+  if (justCrossedDn && vr > 1.3 && rsi > 35) {
       sigs.push({ name: 'EMA_CROSS_DN', score: 0.86, side: 'SHORT', avg_move: avg });
   }
 
-  // Add Bollinger Bands reversion strategy
-  if (bb) {
-      if (p <= bb.lower && rsi < 35) {
-          sigs.push({ name: 'BB_REVERSION_LONG', score: 0.89, side: 'LONG', avg_move: avg });
-      }
-      if (p >= bb.upper && rsi > 65) {
-          sigs.push({ name: 'BB_REVERSION_SHORT', score: 0.89, side: 'SHORT', avg_move: avg });
-      }
+  // Mean Reversion - Bollinger Band reversion with dynamic TP/SL
+  // LONG: price near lower BB with volume confirmation
+  if (bb && p < bb.lower * 1.002 && rsi < 35 && vr > 1.3) {
+      sigs.push({ name: 'BB_REVERSION_LONG', score: 0.87, side: 'LONG', avg_move: atr,
+                  tp_target: bb.middle, sl_target: bb.lower * 0.997 });
+  }
+  // SHORT: price near upper BB with volume confirmation  
+  if (bb && p > bb.upper * 0.998 && rsi > 65 && vr > 1.3) {
+      sigs.push({ name: 'BB_REVERSION_SHORT', score: 0.87, side: 'SHORT', avg_move: atr,
+                  tp_target: bb.middle, sl_target: bb.upper * 1.003 });
   }
 
   if (ma10 > ma20 && dev < -1.5 && rsi < 50) {
@@ -226,6 +249,39 @@ export function getSignal(klines: Kline[]): Signal | null {
   }
   if (vr > 2.5 && p < ma10 && rsi > 40) {
     sigs.push({ name: 'VOL_BREAKDN', score: 0.82, side: 'SHORT', avg_move: avg });
+  }
+
+  // Momentum + Volume Confirmed Entry
+  // Requires: VR > 2.0, 3 consecutive candles same direction, trend aligned with EMA50
+  if (vr > 2.0 && klines.length >= 3) {
+    const c1 = klines[klines.length - 3];
+    const c2 = klines[klines.length - 2];
+    const c3 = klines[klines.length - 1];
+    
+    // Check 3 consecutive candles same direction
+    const dir1 = c1.c > c1.o ? 1 : -1; // 1=bullish, -1=bearish
+    const dir2 = c2.c > c2.o ? 1 : -1;
+    const dir3 = c3.c > c3.o ? 1 : -1;
+    const momentumConfirmed = (dir1 === dir2 && dir2 === dir3);
+    
+    if (momentumConfirmed) {
+      const isBullish = dir3 === 1; // current candle direction
+      
+      // LONG: bullish + price above EMA50
+      if (isBullish && p > ema50 && rsi < 60) {
+        const tp = p + atr * 1.5;
+        const sl = p - atr * 0.7;
+        sigs.push({ name: 'MOMENTUM_LONG', score: 0.84, side: 'LONG', avg_move: atr,
+                    tp_target: tp, sl_target: sl });
+      }
+      // SHORT: bearish + price below EMA50
+      if (!isBullish && p < ema50 && rsi > 40) {
+        const tp = p - atr * 1.5;
+        const sl = p + atr * 0.7;
+        sigs.push({ name: 'MOMENTUM_SHORT', score: 0.84, side: 'SHORT', avg_move: atr,
+                    tp_target: tp, sl_target: sl });
+      }
+    }
   }
 
   if (vr < 0.5) {

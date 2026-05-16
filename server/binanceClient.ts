@@ -389,6 +389,15 @@ export class BinanceClient {
     }
   }
 
+  async getTickSize(symbol: string): Promise<number> {
+    const exInfo = await this.getExchangeInfo();
+    if (!exInfo) return 0.0001; // default
+    const symInfo = exInfo.symbols.find((s: any) => s.symbol === symbol);
+    if (!symInfo) return 0.0001;
+    const priceFilter = symInfo.filters.find((f: any) => f.filterType === 'PRICE_FILTER');
+    return parseFloat(priceFilter?.tickSize || '0.0001');
+  }
+
   async getExchangeInfo() {
     if (this.exchangeInfoCache) return this.exchangeInfoCache;
     try {
@@ -474,6 +483,97 @@ export class BinanceClient {
       return { success: true, avgPrice, filledQty, totalCommission };
     } catch (e: any) {
       console.error(`[Binance API] MARKET ${side} failed for ${symbol}:`, e.response?.data || e.message);
+      return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
+    }
+  }
+
+  async placeLimitOrder(symbol: string, side: 'BUY' | 'SELL', marginUsd: number, lev: number, currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
+    if (this.isSimulation) {
+      // Simulation: limit order at tick offset, maker commission (0.02%)
+      const tickSize = await this.getTickSize(symbol);
+      const limitPrice = side === 'BUY'
+        ? currentPrice + tickSize  // Aggressive limit: 1 tick above bid
+        : currentPrice - tickSize; // 1 tick below ask
+      const qty = (marginUsd * lev) / limitPrice;
+      const commission = qty * limitPrice * 0.0002; // Maker fee: 0.02%
+      console.log(`[Binance SIMULATION] LIMIT ${side} ${symbol} @ ${limitPrice.toFixed(8)}`);
+      return { success: true, avgPrice: limitPrice, filledQty: qty, totalCommission: commission };
+    }
+
+    try {
+      const setupOk = await this.setupMarginAndLeverage(symbol, lev);
+      if (!setupOk) {
+        console.error(`[Binance API] LIMIT order canceled: setupMarginAndLeverage failed for ${symbol}`);
+        return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
+      }
+
+      const tickSize = await this.getTickSize(symbol);
+      const limitPrice = side === 'BUY'
+        ? currentPrice + tickSize
+        : currentPrice - tickSize;
+
+      const exInfo = await this.getExchangeInfo();
+      let quantityStr = '0';
+
+      if (exInfo) {
+        const symInfo = exInfo.symbols.find((s: any) => s.symbol === symbol);
+        if (symInfo) {
+          const lotSizeFilter = symInfo.filters.find((f: any) => f.filterType === 'LOT_SIZE');
+          const stepSize = parseFloat(lotSizeFilter?.stepSize || '0.001');
+
+          const notional = marginUsd * lev;
+          const rawQuantity = notional / limitPrice;
+
+          const precision = Math.max(0, -Math.floor(Math.log10(stepSize)));
+          const qty = Math.floor(rawQuantity / stepSize) * stepSize;
+          quantityStr = qty.toFixed(precision);
+        }
+      }
+
+      if (parseFloat(quantityStr) <= 0) {
+        console.error(`[Binance API] Quantity calculated as <= 0 for ${symbol}`);
+        return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
+      }
+
+      // Format price to match tickSize precision
+      const pricePrecision = Math.max(0, -Math.floor(Math.log10(tickSize)));
+      const formattedPrice = limitPrice.toFixed(pricePrecision);
+
+      const timestamp = Date.now();
+      // GTX = Good Till Crossing = Post-Only (won't cross spread)
+      const query = `symbol=${symbol}&side=${side}&type=LIMIT&quantity=${quantityStr}&price=${formattedPrice}&timeInForce=GTX&timestamp=${timestamp}`;
+      const sig = this.sign(query);
+
+      const res = await axios.post(`${BASE_URL}/fapi/v1/order?${query}&signature=${sig}`, null, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      console.log(`[Binance API] LIMIT ${side} ${quantityStr} ${symbol} @ ${formattedPrice} SUCCESS`);
+
+      let avgPrice = 0;
+      let filledQty = parseFloat(res.data.executedQty || quantityStr);
+      let totalCommission = 0;
+
+      if (res.data.fills && res.data.fills.length > 0) {
+        let totalValue = 0;
+        let totalQty = 0;
+        res.data.fills.forEach((f: any) => {
+          const p = parseFloat(f.price);
+          const q = parseFloat(f.qty);
+          totalValue += p * q;
+          totalQty += q;
+          totalCommission += parseFloat(f.commission || '0');
+        });
+        avgPrice = totalQty > 0 ? totalValue / totalQty : 0;
+        filledQty = totalQty;
+      } else {
+        // Maker fee: 0.02% on filled amount
+        avgPrice = parseFloat(res.data.avgPrice || formattedPrice);
+        totalCommission = avgPrice * filledQty * 0.0002;
+      }
+
+      return { success: true, avgPrice, filledQty, totalCommission };
+    } catch (e: any) {
+      console.error(`[Binance API] LIMIT ${side} failed for ${symbol}:`, e.response?.data || e.message);
       return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
     }
   }

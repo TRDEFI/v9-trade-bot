@@ -369,6 +369,26 @@ export class BotRunner {
                                 continue;
                             }
 
+                            // 1h EMA50 trend filtresi — trend'e karşı pozisyon açma
+                            const c1h = this.binance.klinesCache[sym]?.['1h'];
+                            if (c1h && c1h.length >= 51) {
+                                const closed1h = c1h.slice(0, -1); // exclude current
+                                const ema50_1h = calcEma(closed1h, 50);
+                                const price1h = c1h[c1h.length - 2]?.c; // last closed candle close
+                                
+                                if (price1h) {
+                                    const trend1h = price1h > ema50_1h ? 'UP' : 'DOWN';
+                                    if (sig.side === 'LONG' && trend1h === 'DOWN') {
+                                        this.logToFile(`[${sym}] SKIP: 1h trend DOWN, LONG açılmaz`);
+                                        continue;
+                                    }
+                                    if (sig.side === 'SHORT' && trend1h === 'UP') {
+                                        this.logToFile(`[${sym}] SKIP: 1h trend UP, SHORT açılmaz`);
+                                        continue;
+                                    }
+                                }
+                            }
+
                             const configMarginUsd = USER_CONFIG.margin;
                             const freeBalance = this.capital - this.reservedCapital;
                             const maxDrawdownUsd = freeBalance * 0.80;
@@ -387,9 +407,9 @@ export class BotRunner {
 
                             this.logToFile(`[${sym}] OPENED: side=${sig.side} price=${price} strat=${sig.name}`);
 
-                            // Send actual API request
+                            // Aggressive limit order (maker fee: 0.02%)
                             const apiSide = sig.side === 'LONG' ? 'BUY' : 'SELL';
-                            const result = await this.binance.placeMarketOrder(sym, apiSide, configMarginUsd, USER_CONFIG.lev, price);
+                            const result = await this.binance.placeLimitOrder(sym, apiSide, configMarginUsd, USER_CONFIG.lev, price);
                             
                             // BUG #1 FIX: Check if API order was successful before saving position
                             if (!result.success) {
