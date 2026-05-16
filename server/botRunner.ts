@@ -453,7 +453,7 @@ export class BotRunner {
         const closeSide = pos.side === 'LONG' ? 'SELL' : 'BUY';
         
         // BUG #2 FIX: Verify actual closing
-        const closeResult = await this.binance.closeMarketOrder(sym, closeSide, price);
+        const closeResult = await this.binance.closeMarketOrder(pos, sym, closeSide, price);
         if (!closeResult.success) {
             this.addLog(`[${sym}] KAPATMA BASARISIZ! API reddetti. 10sn sonra tekrar denenecek. Nedeni: ${reason}`, 'error');
             return; // Pozisyonu dashboard'da acik birakmaya devam et!

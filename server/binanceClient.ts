@@ -478,11 +478,11 @@ export class BinanceClient {
     }
   }
 
-  async closeMarketOrder(symbol: string, side: 'BUY' | 'SELL', currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
+  async closeMarketOrder(pos: { size: number; lev: number; side: string }, symbol: string, side: 'BUY' | 'SELL', currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
       if (this.isSimulation) {
           // Simulation: use current price as close price, estimate commission
-          const commission = currentPrice * 0.0005;
-          return { success: true, avgPrice: currentPrice, filledQty: 0, totalCommission: commission };
+          const commission = pos.size * pos.lev * 0.0005; // Both sides (open + close) = 0.1% total
+          return { success: true, avgPrice: currentPrice, filledQty: pos.size, totalCommission: commission };
       }
       try {
           const timestamp = Date.now();
