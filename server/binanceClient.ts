@@ -283,7 +283,9 @@ export class BinanceClient {
   }
 
   get isSimulation() {
-    return process.env.SIMULATION_MODE === 'true' || !this.apiKey || !this.apiSecret;
+    // Simulation mode only when NO API key is configured
+    // If SANDBOX_API_KEY is set, use real Binance API (read-only mode)
+    return !this.apiKey || !this.apiSecret;
   }
 
   private sign(queryString: string): string {
