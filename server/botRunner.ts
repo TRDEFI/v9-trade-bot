@@ -493,7 +493,8 @@ export class BotRunner {
             this.reversalCooldown[sym] = Date.now() + USER_CONFIG.cooldown_min * 60000;
         }
 
-        console.log('  CLOSED ' + reason + ' ' + sym + ' PNL=' + netPnlUsd.toFixed(2));
+        this.logToFile(`[${sym}] CLOSED: side=${pos.side} entry=${pos.entry} close=${closePrice} pnl=${netPnlUsd.toFixed(2)} reason=${reason}`);
+        console.log('  CLOSED ' + reason + ' ' + sym + ' ENTRY=' + pos.entry + ' CLOSE=' + closePrice + ' PNL=' + netPnlUsd.toFixed(2));
     }
 
     getDashboardData() {
