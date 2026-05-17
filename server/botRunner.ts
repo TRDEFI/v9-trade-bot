@@ -278,12 +278,12 @@ export class BotRunner {
                 
                 if (this.openingPosition) {
                     this.logToFile(`[BOT] SKIP: Opening mutex locked`);
-                }
-                if (openCount < USER_CONFIG.max_open && !this.openingPosition) {
+                } else if (openCount < USER_CONFIG.max_open) {
                     this.openingPosition = true;  // mutex lock
-                    let checked = 0;
-                    let processed = 0;
-                    while (checked < this.activePairs.length) {
+                    try {
+                        let checked = 0;
+                        let processed = 0;
+                        while (checked < this.activePairs.length) {
                         const sym = this.activePairs[this.pairIndex % this.activePairs.length];
                         this.pairIndex++;
                         checked++;
