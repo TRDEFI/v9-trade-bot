@@ -12,13 +12,10 @@ export function calcRsi(klines: Kline[], period: number = 14): number {
   let avgLoss = losses / period;
   for (let i = period + 1; i < klines.length; i++) {
     const diff = klines[i].c - klines[i - 1].c;
-    if (diff > 0) {
-      avgGain = (avgGain * (period - 1) + diff) / period;
-      avgLoss = (avgLoss * (period - 1)) / period;
-    } else {
-      avgGain = (avgGain * (period - 1)) / period;
-      avgLoss = (avgLoss * (period - 1) - diff) / period;
-    }
+    const gain = diff > 0 ? diff : 0;
+    const loss = diff < 0 ? -diff : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
   }
   if (avgLoss === 0) return 100;
   return 100 - (100 / (1 + avgGain / avgLoss));
@@ -32,8 +29,9 @@ export function calcMa(klines: Kline[], period: number): number {
 export function calcEma(klines: Kline[], period: number): number {
   if (klines.length < period) return 0;
   const k = 2 / (period + 1);
-  let ema = klines[0].c;
-  for (let i = 1; i < klines.length; i++) {
+  // Seed with SMA of first 'period' candles (standard EMA method)
+  let ema = klines.slice(0, period).reduce((s, kline) => s + kline.c, 0) / period;
+  for (let i = period; i < klines.length; i++) {
     ema = (klines[i].c - ema) * k + ema;
   }
   return ema;

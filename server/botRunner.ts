@@ -20,6 +20,8 @@ export interface SystemLog {
 
 export class BotRunner {
     isScanning = false;
+    openingPosition = false;  // mutex — race condition on multi-signal entry
+    marginCallCooldown = 0;  // 5dk yeni pozisyon yok margin call sonrası
     binance = new BinanceClient();
     private fileLogStream = fs.createWriteStream('bot_scan.log', { flags: 'a' });
     
@@ -239,13 +241,13 @@ export class BotRunner {
 
             if (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd && Object.keys(this.openPositions).length > 0) {
                 let targetSym: string | null = null;
-                let smallestLoss = -Infinity;
+                let largestLoss = 0;  // en buyuk negatif = en cok zarar eden
 
                 for (const sym of Object.keys(this.openPositions)) {
                     const pos = this.openPositions[sym];
-                    // -100 is > -400, so we want the maximum value that is still negative
-                    if (pos.netPnlUsd !== undefined && pos.netPnlUsd < 0 && pos.netPnlUsd > smallestLoss) {
-                        smallestLoss = pos.netPnlUsd;
+                    // En buyuk negatif degeri bul (en cok zarar eden pozisyon)
+                    if (pos.netPnlUsd !== undefined && pos.netPnlUsd < largestLoss) {
+                        largestLoss = pos.netPnlUsd;
                         targetSym = sym;
                     }
                 }
@@ -253,17 +255,20 @@ export class BotRunner {
                 // If somehow there are no negative positions, just close any to free margin
                 if (!targetSym && Object.keys(this.openPositions).length > 0) {
                     targetSym = Object.keys(this.openPositions)[0];
-                    smallestLoss = this.openPositions[targetSym].netPnlUsd || 0;
+                    largestLoss = this.openPositions[targetSym].netPnlUsd || 0;
                 }
 
                 if (targetSym) {
                     const absLoss = Math.abs(currentTotalNetPnl);
-                    const logMsg = `[${targetSym}] Kritik Kasa Zarar Limiti! Toplam PNL ($${absLoss.toFixed(2)}) >= Limit ($${maxDrawdownUsd.toFixed(2)}). Kasayi rahatlatmak icin en az zarar eden pozisyon kapatiliyor! (${smallestLoss.toFixed(2)}$)`;
+                    const logMsg = `[${targetSym}] Kritik Kasa Zarar Limiti! Toplam PNL ($${absLoss.toFixed(2)}) >= Limit ($${maxDrawdownUsd.toFixed(2)}). Kasayi rahatlatmak icin en cok zarar eden pozisyon kapatiliyor! (${largestLoss.toFixed(2)}$)`;
                     this.addLog(logMsg, 'error');
                     console.log(logMsg);
                     await this.closePosition(targetSym, 'MARGIN_CALL_LIQUIDATION');
                     
-                    currentTotalNetPnl -= smallestLoss;
+                    // Margin call sonrası 5 dk yeni pozisyon YOK
+                    this.marginCallCooldown = Date.now() + 5 * 60 * 1000;
+                    
+                    currentTotalNetPnl -= largestLoss;
                 }
             }
 
@@ -271,8 +276,11 @@ export class BotRunner {
             if (this.isScanning && this.activePairs.length > 0) {
                 const openCount = Object.keys(this.openPositions).length;
                 
-                if (openCount < USER_CONFIG.max_open) {
-                    let checked = 0;
+                if (this.openingPosition) {
+                    this.logToFile(`[BOT] SKIP: Opening mutex locked`);
+                }
+                if (openCount < USER_CONFIG.max_open && !this.openingPosition) {
+                    this.openingPosition = true;  // mutex lock
                     let processed = 0;
                     while (checked < this.activePairs.length) {
                         const sym = this.activePairs[this.pairIndex % this.activePairs.length];
@@ -280,6 +288,13 @@ export class BotRunner {
                         checked++;
 
                         if (this.openPositions[sym]) continue;
+                        
+                        // Margin call sonrası 5 dk yeni pozisyon YOK
+                        if (Date.now() < this.marginCallCooldown) {
+                            this.logToFile(`[${sym}] REJECT: Margin call cooldown aktif (${((this.marginCallCooldown - Date.now()) / 60000).toFixed(1)} dk kaldi)`);
+                            continue;
+                        }
+                        
                         if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) {
                             // Sadece cooldown yeni basladiginda spam yapmamak icin sessizce gec, ama her pair icin 5sn gecikmeden sonra logla ki cok sismesin
                             continue;
@@ -444,6 +459,8 @@ export class BotRunner {
 
                         } catch (e: any) {
                              // silently skip on error
+                        } finally {
+                             this.openingPosition = false;  // mutex unlock
                         }
 
                         // Process up to 10 valid pair signal checks per tick to speed up 300-pair scan
@@ -538,7 +555,7 @@ export class BotRunner {
                 pnl_usd: p.netPnlUsd || 0,
                 opened: p.opened_at,
             })),
-            closed: this.closedPositions.slice(-50).map(p => ({
+            closed: this.closedPositions.slice(-1000).map(p => ({
                 sym: p.sym, side: p.side, entry: p.entry,
                 closed_price: p.closed_price, pnl: p.pnl,
                 strat: p.strat, reason: p.reason,
