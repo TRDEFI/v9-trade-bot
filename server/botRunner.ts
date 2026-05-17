@@ -281,6 +281,7 @@ export class BotRunner {
                 }
                 if (openCount < USER_CONFIG.max_open && !this.openingPosition) {
                     this.openingPosition = true;  // mutex lock
+                    let checked = 0;
                     let processed = 0;
                     while (checked < this.activePairs.length) {
                         const sym = this.activePairs[this.pairIndex % this.activePairs.length];
