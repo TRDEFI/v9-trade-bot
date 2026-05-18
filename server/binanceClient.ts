@@ -157,7 +157,7 @@ export class BinanceClient {
     });
   }
 
-  async getTop300VolumePairs(): Promise<string[]> {
+  async getTop300VolumePairs(limit: number = 300): Promise<string[]> {
     try {
       const response = await axios.get(`${BASE_URL}/fapi/v1/ticker/24hr`, { timeout: 8000 });
       if (Array.isArray(response.data)) {
@@ -165,7 +165,7 @@ export class BinanceClient {
           .filter((t: any) => t.symbol.endsWith('USDT'))
           .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
           .map((t: any) => t.symbol)
-          .slice(0, 300);
+          .slice(0, limit);
       }
       return [];
     } catch (e) {

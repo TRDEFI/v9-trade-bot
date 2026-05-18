@@ -7,10 +7,35 @@ export const USER_CONFIG = {
     lev:           20,
     max_open:      4,
     margin:        250,     // Amount used per position
-    target_profit: 1,       // Net target profit in USD
+    top_pairs:     150,
+    target_profit: 3,       // Default net target profit in USD
+    strong_target_profit: 5,
     cut_loss:      -200,    // Net max loss per position in USD
-    cooldown_min:  5
+    cooldown_min:  5,
+    min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
+    strong_atr_pct: 0.30,
+    max_atr_pct:   4.00,
+    time_stop_soft_min: 120,
+    time_stop_hard_min: 240,
+    time_stop_min_favorable: 1,
+    time_stop_loss_usd: -50
 };
+
+const MEAN_REVERSION_STRATS = new Set([
+    'RSI_OVERSOLD',
+    'RSI_OVERBOUGHT',
+    'BB_REVERSION_LONG',
+    'BB_REVERSION_SHORT',
+    'SQUEEZE_LONG',
+    'SQUEEZE_SHORT',
+    'MA10_BOUNCE',
+    'MA10_REJECT'
+]);
+
+const STRICT_TREND_STRATS = new Set([
+    'EMA_CROSS_UP',
+    'RSI_OVERBOUGHT'
+]);
 
 export interface SystemLog {
     time: string;
@@ -72,9 +97,9 @@ export class BotRunner {
         this.isScanning = true;
         this.sessionStart = Date.now();
         if (!this.startTimeStr) this.startTimeStr = Date.now();
-        console.log('[Bot] Fetching Top 300 Volume Pairs...');
+        console.log(`[Bot] Fetching Top ${USER_CONFIG.top_pairs} Volume Pairs...`);
         
-        this.activePairs = await this.binance.getTop300VolumePairs();
+        this.activePairs = await this.binance.getTop300VolumePairs(USER_CONFIG.top_pairs);
         if (this.activePairs.length === 0) {
             console.error('[Bot] Failed to loaded pairs. Fallback to BTCUSDT');
             this.activePairs = ['BTCUSDT'];
@@ -225,11 +250,30 @@ export class BotRunner {
 
                 pos.netPnlUsd = netPnlUsd;
                 pos.pnlPct = (netPnlUsd / pos.size) * 100;
+                pos.maxNetPnlUsd = Math.max(pos.maxNetPnlUsd ?? netPnlUsd, netPnlUsd);
+                pos.minNetPnlUsd = Math.min(pos.minNetPnlUsd ?? netPnlUsd, netPnlUsd);
                 
                 currentTotalNetPnl += netPnlUsd;
 
-                if (netPnlUsd >= USER_CONFIG.target_profit) {
+                const targetProfit = pos.targetProfit || USER_CONFIG.target_profit;
+                if (netPnlUsd >= targetProfit) {
                     await this.closePosition(sym, 'TAKE_PROFIT');
+                    continue;
+                }
+
+                const ageMin = (now - pos.opened_at) / 60000;
+                const bestSeen = pos.maxNetPnlUsd ?? netPnlUsd;
+                if (
+                    ageMin >= USER_CONFIG.time_stop_soft_min &&
+                    netPnlUsd <= USER_CONFIG.time_stop_loss_usd &&
+                    bestSeen < USER_CONFIG.time_stop_min_favorable
+                ) {
+                    await this.closePosition(sym, 'TIME_STOP_NO_BOUNCE');
+                    continue;
+                }
+
+                if (ageMin >= USER_CONFIG.time_stop_hard_min && netPnlUsd < 0) {
+                    await this.closePosition(sym, 'TIME_STOP_HARD');
                     continue;
                 }
             }
@@ -291,7 +335,6 @@ export class BotRunner {
                         
                         // Margin call sonrası 5 dk yeni pozisyon YOK
                         if (Date.now() < this.marginCallCooldown) {
-                            this.logToFile(`[${sym}] REJECT: Margin call cooldown aktif (${((this.marginCallCooldown - Date.now()) / 60000).toFixed(1)} dk kaldi)`);
                             continue;
                         }
                         
@@ -319,9 +362,8 @@ export class BotRunner {
                         }
 
                         try {
-                            const c15m = await this.binance.getKlines(sym, '15m', 50);
-                            if (!c15m || c15m.length < 20) {
-                                this.logToFile(`[${sym}] REJECT: c15m data not sufficient (${c15m ? c15m.length : 0})`);
+                            const c15m = await this.binance.getKlines(sym, '15m', 80);
+                            if (!c15m || c15m.length < 55) {
                                 continue;
                             }
 
@@ -337,7 +379,6 @@ export class BotRunner {
                             
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.70) {
-                                this.logToFile(`[${sym}] REJECT: No signal or score < 0.70`);
                                 continue;
                             }
 
@@ -348,7 +389,12 @@ export class BotRunner {
 
                             // Fresh Signal: Valid for 7 minutes (15m strategy)
                             if (candleAgeMs > 7 * 60 * 1000) {
-                                this.logToFile(`[${sym}] REJECT: Signal too old (Age: ${(candleAgeMs / 60000).toFixed(1)} mins)`);
+                                continue;
+                            }
+
+                            const atrPct = (sig.avg_move / sigClosePrice) * 100;
+                            if (atrPct < USER_CONFIG.min_atr_pct || atrPct > USER_CONFIG.max_atr_pct) {
+                                this.logToFile(`[${sym}] REJECT: ATR% out of scalp range (${atrPct.toFixed(2)}%)`);
                                 continue;
                             }
 
@@ -384,23 +430,51 @@ export class BotRunner {
                                 continue;
                             }
 
-                            // 1h EMA50 trend filtresi — trend'e karşı pozisyon açma
-                            const c1h = this.binance.klinesCache[sym]?.['1h'];
-                            if (c1h && c1h.length >= 51) {
-                                const closed1h = c1h.slice(0, -1); // exclude current
+                            const ema50_15m = calcEma(closed15m, 50);
+                            const trend15m = sigClosePrice > ema50_15m ? 'UP' : 'DOWN';
+                            const trendDistance15mPct = ema50_15m > 0 ? Math.abs((sigClosePrice - ema50_15m) / ema50_15m) * 100 : 0;
+
+                            // 1h EMA50 trend filtresi — history REST ile initialize edilir.
+                            const c1h = await this.binance.getKlines(sym, '1h', 80);
+                            let trend1h: 'UP' | 'DOWN' | 'UNKNOWN' = 'UNKNOWN';
+                            if (c1h && c1h.length >= 55) {
+                                const closed1h = c1h.slice(0, -1);
                                 const ema50_1h = calcEma(closed1h, 50);
-                                const price1h = c1h[c1h.length - 2]?.c; // last closed candle close
-                                
-                                if (price1h) {
-                                    const trend1h = price1h > ema50_1h ? 'UP' : 'DOWN';
-                                    if (sig.side === 'LONG' && trend1h === 'DOWN') {
-                                        this.logToFile(`[${sym}] SKIP: 1h trend DOWN, LONG açılmaz`);
-                                        continue;
-                                    }
-                                    if (sig.side === 'SHORT' && trend1h === 'UP') {
-                                        this.logToFile(`[${sym}] SKIP: 1h trend UP, SHORT açılmaz`);
-                                        continue;
-                                    }
+                                const price1h = closed1h[closed1h.length - 1]?.c;
+                                if (price1h && ema50_1h > 0) {
+                                    trend1h = price1h > ema50_1h ? 'UP' : 'DOWN';
+                                }
+                            }
+
+                            if (trend1h !== 'UNKNOWN') {
+                                if (sig.side === 'LONG' && trend1h === 'DOWN') {
+                                    this.logToFile(`[${sym}] REJECT: 1h trend DOWN, LONG blocked`);
+                                    continue;
+                                }
+                                if (sig.side === 'SHORT' && trend1h === 'UP') {
+                                    this.logToFile(`[${sym}] REJECT: 1h trend UP, SHORT blocked`);
+                                    continue;
+                                }
+                            }
+
+                            const isMeanReversion = MEAN_REVERSION_STRATS.has(sig.name);
+                            if (isMeanReversion && trendDistance15mPct > 0.20) {
+                                if (sig.side === 'LONG' && trend15m === 'DOWN') {
+                                    this.logToFile(`[${sym}] REJECT: strong 15m DOWN trend blocks mean-reversion LONG (${trendDistance15mPct.toFixed(2)}%)`);
+                                    continue;
+                                }
+                                if (sig.side === 'SHORT' && trend15m === 'UP') {
+                                    this.logToFile(`[${sym}] REJECT: strong 15m UP trend blocks mean-reversion SHORT (${trendDistance15mPct.toFixed(2)}%)`);
+                                    continue;
+                                }
+                            }
+
+                            if (STRICT_TREND_STRATS.has(sig.name)) {
+                                const aligned15m = (sig.side === 'LONG' && trend15m === 'UP') || (sig.side === 'SHORT' && trend15m === 'DOWN');
+                                const aligned1h = trend1h === 'UNKNOWN' || (sig.side === 'LONG' && trend1h === 'UP') || (sig.side === 'SHORT' && trend1h === 'DOWN');
+                                if (!aligned15m || !aligned1h) {
+                                    this.logToFile(`[${sym}] REJECT: strict trend filter for ${sig.name} failed (15m=${trend15m}, 1h=${trend1h})`);
+                                    continue;
                                 }
                             }
 
@@ -434,6 +508,9 @@ export class BotRunner {
                             }
 
                             const actualMarginUsd = (result.filledQty * result.avgPrice) / USER_CONFIG.lev;
+                            const targetProfit = sig.score >= 0.88 && atrPct >= USER_CONFIG.strong_atr_pct
+                                ? USER_CONFIG.strong_target_profit
+                                : USER_CONFIG.target_profit;
 
                             this.openPositions[sym] = {
                                 sym, 
@@ -443,12 +520,19 @@ export class BotRunner {
                                 filledQty: result.filledQty, // store base asset quantity
                                 lev: USER_CONFIG.lev,
                                 strat: sig.name,
+                                signalScore: sig.score,
+                                atrPct,
+                                trend15m,
+                                trend1h,
+                                targetProfit,
                                 opened_at: now,
-                                openCommission: result.totalCommission
+                                openCommission: result.totalCommission,
+                                maxNetPnlUsd: -result.totalCommission,
+                                minNetPnlUsd: -result.totalCommission
                             };
                             this.reservedCapital += actualMarginUsd;
                             
-                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + result.avgPrice.toFixed(4) + ' [' + sig.name + '] sz=' + actualMarginUsd.toFixed(2);
+                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + result.avgPrice.toFixed(4) + ' [' + sig.name + '] sz=' + actualMarginUsd.toFixed(2) + ' tp=' + targetProfit.toFixed(2) + ' atr=' + atrPct.toFixed(2) + '% t15=' + trend15m + ' t1h=' + trend1h;
                             this.addLog(`[${sym}] ${logMsg}`, 'info');
                             console.log('  ' + logMsg);
 
@@ -552,6 +636,12 @@ export class BotRunner {
                 size: p.size,
                 pnl_pct: p.pnlPct || 0,
                 pnl_usd: p.netPnlUsd || 0,
+                target_profit: p.targetProfit || USER_CONFIG.target_profit,
+                max_pnl_usd: p.maxNetPnlUsd || 0,
+                min_pnl_usd: p.minNetPnlUsd || 0,
+                atr_pct: p.atrPct || 0,
+                trend_15m: p.trend15m || 'UNKNOWN',
+                trend_1h: p.trend1h || 'UNKNOWN',
                 opened: p.opened_at,
             })),
             closed: this.closedPositions.slice(-1000).map(p => ({
