@@ -227,12 +227,12 @@ export function getSignal(klines: Kline[]): Signal | null {
   // LONG: price near lower BB with volume confirmation
   if (bb && p < bb.lower * 1.002 && rsi < 35 && vr > 1.3) {
       sigs.push({ name: 'BB_REVERSION_LONG', score: 0.87, side: 'LONG', avg_move: atr,
-                  tp_target: bb.middle, sl_target: bb.lower * 0.997 });
+                  tp_target: bb.sma, sl_target: bb.lower * 0.997 });
   }
   // SHORT: price near upper BB with volume confirmation  
   if (bb && p > bb.upper * 0.998 && rsi > 65 && vr > 1.3) {
       sigs.push({ name: 'BB_REVERSION_SHORT', score: 0.87, side: 'SHORT', avg_move: atr,
-                  tp_target: bb.middle, sl_target: bb.upper * 1.003 });
+                  tp_target: bb.sma, sl_target: bb.upper * 1.003 });
   }
 
   if (ma10 > ma20 && dev < -1.5 && rsi < 50) {

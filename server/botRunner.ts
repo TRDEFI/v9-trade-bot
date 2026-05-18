@@ -1,5 +1,5 @@
 import { BinanceClient } from './binanceClient.js';
-import { getSignal, calcRsi, calcSupertrend } from './strategy.js';
+import { getSignal, calcRsi, calcSupertrend, calcEma } from './strategy.js';
 import fs from 'fs';
 
 export const USER_CONFIG = {
@@ -280,10 +280,9 @@ export class BotRunner {
                     this.logToFile(`[BOT] SKIP: Opening mutex locked`);
                 } else if (openCount < USER_CONFIG.max_open) {
                     this.openingPosition = true;  // mutex lock
-                    try {
-                        let checked = 0;
-                        let processed = 0;
-                        while (checked < this.activePairs.length) {
+                    let checked = 0;
+                    let processed = 0;
+                    while (checked < this.activePairs.length) {
                         const sym = this.activePairs[this.pairIndex % this.activePairs.length];
                         this.pairIndex++;
                         checked++;
@@ -460,15 +459,14 @@ export class BotRunner {
 
                         } catch (e: any) {
                              // silently skip on error
-                        } finally {
-                             this.openingPosition = false;  // mutex unlock
                         }
 
-                        // Process up to 10 valid pair signal checks per tick to speed up 300-pair scan
+                        // Process up to 10 valid pair signal checks per tick
                         processed++;
                         if (processed >= 10) break;
-                    }
-                }
+                    }  // end while
+                    this.openingPosition = false;  // mutex unlock AFTER while loop
+                }  // end else if
             }
         } catch (e) {
             console.error('Bot Loop Error:', e);
