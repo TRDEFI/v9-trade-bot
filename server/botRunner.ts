@@ -383,8 +383,8 @@ export class BotRunner {
                             continue;
                         }
 
-                        // Startup protection: Wait 5 seconds so websocket cache loads, preventing stale signals
-                        if (now - this.sessionStart < 5000) {
+                        // Startup protection: Wait 1 second so websocket cache loads, preventing stale signals
+                        if (now - this.sessionStart < 1000) {
                             this.logToFile(`[${sym}] REJECT: Startup protection active`);
                             continue;
                         }
