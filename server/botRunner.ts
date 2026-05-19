@@ -462,7 +462,8 @@ export class BotRunner {
                             const trend15m = sigClosePrice > ema50_15m ? 'UP' : 'DOWN';
                             const trendDistance15mPct = ema50_15m > 0 ? Math.abs((sigClosePrice - ema50_15m) / ema50_15m) * 100 : 0;
 
-                            // 1h EMA50 trend filtresi — history REST ile initialize edilir.
+                            // 1h EMA50 trend filtresi — SADECE STRICT_TREND_STRATS icin (EMA_CROSS_UP, RSI_OVERBOUGHT)
+                            // Mean-reversion stratejileri trend tersine calisir, 1h filtresi onlari korumaz
                             const c1h = await this.binance.getKlines(sym, '1h', 80);
                             let trend1h: 'UP' | 'DOWN' | 'UNKNOWN' = 'UNKNOWN';
                             if (c1h && c1h.length >= 55) {
@@ -471,29 +472,6 @@ export class BotRunner {
                                 const price1h = closed1h[closed1h.length - 1]?.c;
                                 if (price1h && ema50_1h > 0) {
                                     trend1h = price1h > ema50_1h ? 'UP' : 'DOWN';
-                                }
-                            }
-
-                            if (trend1h !== 'UNKNOWN') {
-                                if (sig.side === 'LONG' && trend1h === 'DOWN') {
-                                    this.logToFile(`[${sym}] REJECT: 1h trend DOWN, LONG blocked`);
-                                    continue;
-                                }
-                                if (sig.side === 'SHORT' && trend1h === 'UP') {
-                                    this.logToFile(`[${sym}] REJECT: 1h trend UP, SHORT blocked`);
-                                    continue;
-                                }
-                            }
-
-                            const isMeanReversion = MEAN_REVERSION_STRATS.has(sig.name);
-                            if (isMeanReversion && trendDistance15mPct > 0.20) {
-                                if (sig.side === 'LONG' && trend15m === 'DOWN') {
-                                    this.logToFile(`[${sym}] REJECT: strong 15m DOWN trend blocks mean-reversion LONG (${trendDistance15mPct.toFixed(2)}%)`);
-                                    continue;
-                                }
-                                if (sig.side === 'SHORT' && trend15m === 'UP') {
-                                    this.logToFile(`[${sym}] REJECT: strong 15m UP trend blocks mean-reversion SHORT (${trendDistance15mPct.toFixed(2)}%)`);
-                                    continue;
                                 }
                             }
 
