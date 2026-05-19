@@ -74,7 +74,7 @@ export class BotRunner {
         this.loop();
     }
     
-    sessionStart = Date.now();
+    sessionStart = 0;  // FIX: start() içinde set edilecek, constructor'da değil
     sessionNum = 1;
     capital = USER_CONFIG.budget;
     reservedCapital = 0;
@@ -383,8 +383,8 @@ export class BotRunner {
                             continue;
                         }
 
-                        // Startup protection: Wait 15 seconds so websocket cache loads, preventing stale signals
-                        if (now - this.sessionStart < 15000) {
+                        // Startup protection: Wait 5 seconds so websocket cache loads, preventing stale signals
+                        if (now - this.sessionStart < 5000) {
                             this.logToFile(`[${sym}] REJECT: Startup protection active`);
                             continue;
                         }
