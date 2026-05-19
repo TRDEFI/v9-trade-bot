@@ -15,10 +15,11 @@ export const USER_CONFIG = {
     min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
     strong_atr_pct: 0.30,
     max_atr_pct:   4.00,
-    time_stop_soft_min: 120,
-    time_stop_hard_min: 240,
+    time_stop_soft_min: 30,   // FIX: 120 -> 30 min (scalping için 2 saat çok uzun)
+    time_stop_hard_min: 60,   // FIX: 240 -> 60 min
     time_stop_min_favorable: 1,
-    time_stop_loss_usd: -50
+    time_stop_loss_usd: -50,
+    max_trades_per_sym: 3     // FIX: Aynı sembole max 3 trade/session (spam engelleme)
 };
 
 const MEAN_REVERSION_STRATS = new Set([
@@ -49,10 +50,23 @@ export class BotRunner {
     marginCallCooldown = 0;  // 5dk yeni pozisyon yok margin call sonrası
     binance = new BinanceClient();
     private fileLogStream = fs.createWriteStream('bot_scan.log', { flags: 'a' });
+    private logLineCount = 0;
+    private readonly MAX_LOG_LINES = 50000;  // FIX: ~5MB log, sonra rotate
     
     private logToFile(msg: string) {
         const time = new Date().toISOString();
         this.fileLogStream.write(`[${time}] ${msg}\n`);
+        this.logLineCount++;
+        
+        // FIX: Log rotation - 50K satırdan sonra dosyayı sıfırla
+        if (this.logLineCount >= this.MAX_LOG_LINES) {
+            this.fileLogStream.end();
+            const oldPath = `bot_scan.log.${Date.now()}.bak`;
+            fs.renameSync('bot_scan.log', oldPath);
+            this.fileLogStream = fs.createWriteStream('bot_scan.log', { flags: 'a' });
+            this.logLineCount = 0;
+            this.addLog(`Log rotated: ${oldPath}`, 'info');
+        }
     }
 
     constructor() {
@@ -70,6 +84,7 @@ export class BotRunner {
     openPositions: Record<string, any> = {};
     closedPositions: any[] = [];
     reversalCooldown: Record<string, number> = {};
+    tradesPerSymbol: Record<string, number> = {};  // FIX: Aynı sembole spam açılış sayacı
     
     pairIndex = 0;
     lastKlineCheck: Record<string, number> = {};
@@ -261,6 +276,12 @@ export class BotRunner {
                     continue;
                 }
 
+                // FIX: Hard stop-loss per position (USER_CONFIG.cut_loss = -200)
+                if (netPnlUsd <= USER_CONFIG.cut_loss) {
+                    await this.closePosition(sym, 'HARD_STOP_LOSS');
+                    continue;
+                }
+
                 const ageMin = (now - pos.opened_at) / 60000;
                 const bestSeen = pos.maxNetPnlUsd ?? netPnlUsd;
                 if (
@@ -279,9 +300,9 @@ export class BotRunner {
             }
 
             // Dynamic Margin Level & Drawdown Check
-            // Toplam 'Free Balance'in (capital - reservedCapital) %80'ine ulasirsa net zarar, kasayi rahatlatmak icin islem kapatir.
+            // FIX: %80 -> %40 (daha erken koruma, GENIUS/BANANAS gibi felaketleri önler)
             const freeBalance = this.capital - this.reservedCapital;
-            const maxDrawdownUsd = freeBalance * 0.80;
+            const maxDrawdownUsd = freeBalance * 0.40;
 
             if (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd && Object.keys(this.openPositions).length > 0) {
                 let targetSym: string | null = null;
@@ -355,6 +376,13 @@ export class BotRunner {
                              continue;
                         }
 
+                        // FIX: Aynı sembole max trade limit kontrolü (PLAYUSDT 8x spam gibi)
+                        const symTradeCount = this.tradesPerSymbol[sym] || 0;
+                        if (symTradeCount >= USER_CONFIG.max_trades_per_sym) {
+                            this.logToFile(`[${sym}] REJECT: Max trades per session reached (${symTradeCount}/${USER_CONFIG.max_trades_per_sym})`);
+                            continue;
+                        }
+
                         // Startup protection: Wait 15 seconds so websocket cache loads, preventing stale signals
                         if (now - this.sessionStart < 15000) {
                             this.logToFile(`[${sym}] REJECT: Startup protection active`);
@@ -378,7 +406,7 @@ export class BotRunner {
                             const closed5m = c5m.slice(0, -1);
                             
                             const sig = getSignal(closed15m); // ONLY use closed candles
-                            if (!sig || sig.score < 0.70) {
+                            if (!sig || sig.score < 0.75) {  // FIX: 0.70 -> 0.75 (daha kaliteli sinyaller)
                                 continue;
                             }
 
@@ -398,13 +426,13 @@ export class BotRunner {
                                 continue;
                             }
 
-                            // Pullback Control (0.3% allowed slippage)
-                            if (sig.side === 'LONG' && price > sigClosePrice * 1.003) {
-                                this.logToFile(`[${sym}] REJECT: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.003})`);
+                            // Pullback Control (0.5% allowed slippage) FIX: 0.3% -> 0.5%
+                            if (sig.side === 'LONG' && price > sigClosePrice * 1.005) {
+                                this.logToFile(`[${sym}] REJECT: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.005})`);
                                 continue;
                             }
-                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) {
-                                this.logToFile(`[${sym}] REJECT: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.997})`);
+                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.995) {
+                                this.logToFile(`[${sym}] REJECT: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.995})`);
                                 continue;
                             }
 
@@ -480,7 +508,7 @@ export class BotRunner {
 
                             const configMarginUsd = USER_CONFIG.margin;
                             const freeBalance = this.capital - this.reservedCapital;
-                            const maxDrawdownUsd = freeBalance * 0.80;
+                            const maxDrawdownUsd = freeBalance * 0.40;  // FIX: %80 -> %40
 
                             if (configMarginUsd > freeBalance || (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd)) {
                                 this.logToFile(`[${sym}] REJECT: Insufficient Free Margin or Max Drawdown Block (Required: ${configMarginUsd}, Available: ${freeBalance})`);
@@ -608,10 +636,13 @@ export class BotRunner {
         this.reservedCapital -= pos.size;
         delete this.openPositions[sym];
         
-        // Sadece zarar edilen islemlerde cooldown (5 dakika) beklemesi yap
-        if (netPnlUsd < 0) {
-            this.reversalCooldown[sym] = Date.now() + USER_CONFIG.cooldown_min * 60000;
-        }
+        // FIX: Her trade sonrası cooldown (sadece kayıp değil, kazanç sonrası da)
+        // Kazanç: 3 dk, Kayıp: 5 dk cooldown
+        const cooldownSec = netPnlUsd < 0 ? USER_CONFIG.cooldown_min : 3;
+        this.reversalCooldown[sym] = Date.now() + cooldownSec * 60000;
+        
+        // FIX: Same-symbol trade counter increment
+        this.tradesPerSymbol[sym] = (this.tradesPerSymbol[sym] || 0) + 1;
 
         this.logToFile(`[${sym}] CLOSED: side=${pos.side} entry=${pos.entry} close=${closePrice} pnl=${netPnlUsd.toFixed(2)} reason=${reason}`);
         console.log('  CLOSED ' + reason + ' ' + sym + ' ENTRY=' + pos.entry + ' CLOSE=' + closePrice + ' PNL=' + netPnlUsd.toFixed(2));
