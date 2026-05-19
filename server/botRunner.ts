@@ -10,15 +10,15 @@ export const USER_CONFIG = {
     top_pairs:     150,
     target_profit: 3,       // Default net target profit in USD
     strong_target_profit: 5,
-    cut_loss:      -200,    // Net max loss per position in USD
+    cut_loss:      -75,    // Net max loss per position in USD
     cooldown_min:  5,
     min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
     strong_atr_pct: 0.30,
     max_atr_pct:   4.00,
     time_stop_soft_min: 30,   // FIX: 120 -> 30 min (scalping için 2 saat çok uzun)
     time_stop_hard_min: 60,   // FIX: 240 -> 60 min
-    time_stop_min_favorable: 1,
-    time_stop_loss_usd: -50,
+    time_stop_min_favorable: 3,
+    time_stop_loss_usd: -30,
     max_trades_per_sym: 3     // FIX: Aynı sembole max 3 trade/session (spam engelleme)
 };
 
