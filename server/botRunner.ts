@@ -539,9 +539,23 @@ export class BotRunner {
                             }
 
                             const actualMarginUsd = (result.filledQty * result.avgPrice) / USER_CONFIG.lev;
-                            const targetProfit = sig.score >= 0.88 && atrPct >= USER_CONFIG.strong_atr_pct
-                                ? USER_CONFIG.strong_target_profit
-                                : USER_CONFIG.target_profit;
+                            const notionalValue = actualMarginUsd * USER_CONFIG.lev;
+                            
+                            // DYNAMIC TP: Strategy TP → ATR-based → Fallback $3
+                            let targetProfit = USER_CONFIG.target_profit; // Default $3
+                            
+                            if (sig.tp_target) {
+                                // Strategy belirlediği fiyat hedefini kullan (BB, Momentum vb.)
+                                const tpDistance = Math.abs(sig.tp_target - result.avgPrice);
+                                const tpPct = tpDistance / result.avgPrice;
+                                targetProfit = notionalValue * tpPct;
+                                this.logToFile(`[${sym}] TP: Strategy-based $${targetProfit.toFixed(2)} (price target: ${sig.tp_target})`);
+                            } else {
+                                // ATR bazlı dinamik TP
+                                const atrTarget = (atrPct / 100) * notionalValue * 0.5; // ATR'nin yarısı
+                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(10, atrTarget));
+                                this.logToFile(`[${sym}] TP: ATR-based $${targetProfit.toFixed(2)} (ATR%: ${atrPct.toFixed(2)}%)`);
+                            }
 
                             this.openPositions[sym] = {
                                 sym, 
