@@ -276,13 +276,21 @@ export class BotRunner {
                     continue;
                 }
 
-                // FIX: Hard stop-loss per position (USER_CONFIG.cut_loss = -200)
+                // FIX: Hard stop-loss per position (USER_CONFIG.cut_loss = -75)
                 if (netPnlUsd <= USER_CONFIG.cut_loss) {
                     await this.closePosition(sym, 'HARD_STOP_LOSS');
                     continue;
                 }
 
+                // TIME_DECAY TP: After 10min, close if >= 60% of target reached
+                // Prevents waiting forever for aggressive strategy-based TPs (e.g. BB SMA)
+                // while still giving the trade time to run during initial momentum
                 const ageMin = (now - pos.opened_at) / 60000;
+                if (ageMin >= 10 && netPnlUsd >= targetProfit * 0.6) {
+                    await this.closePosition(sym, 'TAKE_PROFIT_TIME_DECAY');
+                    continue;
+                }
+
                 const bestSeen = pos.maxNetPnlUsd ?? netPnlUsd;
                 if (
                     ageMin >= USER_CONFIG.time_stop_soft_min &&
