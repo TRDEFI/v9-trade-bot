@@ -524,6 +524,9 @@ export class BotRunner {
 
                             this.logToFile(`[${sym}] OPENED: side=${sig.side} price=${price} strat=${sig.name}`);
 
+                            // FIX: Increment trade counter ON OPEN (not on close) to prevent spam
+                            this.tradesPerSymbol[sym] = (this.tradesPerSymbol[sym] || 0) + 1;
+
                             // Aggressive limit order (maker fee: 0.02%)
                             const apiSide = sig.side === 'LONG' ? 'BUY' : 'SELL';
                             const result = await this.binance.placeLimitOrder(sym, apiSide, configMarginUsd, USER_CONFIG.lev, price);
@@ -640,9 +643,6 @@ export class BotRunner {
         // Kazanç: 3 dk, Kayıp: 5 dk cooldown
         const cooldownSec = netPnlUsd < 0 ? USER_CONFIG.cooldown_min : 3;
         this.reversalCooldown[sym] = Date.now() + cooldownSec * 60000;
-        
-        // FIX: Same-symbol trade counter increment
-        this.tradesPerSymbol[sym] = (this.tradesPerSymbol[sym] || 0) + 1;
 
         this.logToFile(`[${sym}] CLOSED: side=${pos.side} entry=${pos.entry} close=${closePrice} pnl=${netPnlUsd.toFixed(2)} reason=${reason}`);
         console.log('  CLOSED ' + reason + ' ' + sym + ' ENTRY=' + pos.entry + ' CLOSE=' + closePrice + ' PNL=' + netPnlUsd.toFixed(2));
