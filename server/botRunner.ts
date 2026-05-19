@@ -383,11 +383,11 @@ export class BotRunner {
                             continue;
                         }
 
-                        // Startup protection: Wait 1 second so websocket cache loads, preventing stale signals
-                        if (now - this.sessionStart < 1000) {
-                            this.logToFile(`[${sym}] REJECT: Startup protection active`);
-                            continue;
-                        }
+                        // Startup protection removed - websocket cache loads fast enough
+                        // if (now - this.sessionStart < 1000) {
+                        //     this.logToFile(`[${sym}] REJECT: Startup protection active`);
+                        //     continue;
+                        // }
 
                         try {
                             const c15m = await this.binance.getKlines(sym, '15m', 80);
