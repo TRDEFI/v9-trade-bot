@@ -298,8 +298,7 @@ export class BotRunner {
                 const bestSeen = pos.maxNetPnlUsd ?? netPnlUsd;
                 if (
                     ageMin >= USER_CONFIG.time_stop_soft_min &&
-                    netPnlUsd <= USER_CONFIG.time_stop_loss_usd &&
-                    bestSeen < USER_CONFIG.time_stop_min_favorable
+                    netPnlUsd <= USER_CONFIG.time_stop_loss_usd
                 ) {
                     await this.closePosition(sym, 'TIME_STOP_NO_BOUNCE');
                     continue;
@@ -575,6 +574,20 @@ export class BotRunner {
                                 minNetPnlUsd: -result.totalCommission
                             };
                             this.reservedCapital += actualMarginUsd;
+
+                            // SERVER-SIDE STOP-LOSS: Place STOP_MARKET order on Binance
+                            // Calculate stop price from cut_loss (-$150)
+                            const stopLossPct = Math.abs(USER_CONFIG.cut_loss) / notionalValue;
+                            const stopPrice = sig.side === 'LONG'
+                                ? result.avgPrice * (1 - stopLossPct)
+                                : result.avgPrice * (1 + stopLossPct);
+                            const slSide = sig.side === 'LONG' ? 'SELL' : 'BUY';
+                            const slResult = await this.binance.placeStopLossOrder(sym, slSide, stopPrice, result.avgPrice);
+                            if (slResult.success) {
+                                this.logToFile(`[${sym}] STOP_MARKET placed @ ${stopPrice.toFixed(8)} (cut_loss: ${USER_CONFIG.cut_loss})`);
+                            } else {
+                                this.logToFile(`[${sym}] WARNING: STOP_MARKET failed, relying on polling fallback`);
+                            }
                             
                             const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + result.avgPrice.toFixed(4) + ' [' + sig.name + '] sz=' + actualMarginUsd.toFixed(2) + ' tp=' + targetProfit.toFixed(2) + ' atr=' + atrPct.toFixed(2) + '% t15=' + trend15m + ' t1h=' + trend1h;
                             this.addLog(`[${sym}] ${logMsg}`, 'info');
@@ -606,6 +619,9 @@ export class BotRunner {
     public async closePosition(sym: string, reason: string, currentPrices?: Record<string, number>) {
         const pos = this.openPositions[sym];
         if (!pos) return;
+
+        // Cancel server-side stop-loss order before closing
+        await this.binance.cancelStopLossOrder(sym);
 
         let price = pos.currentPrice || pos.entry;
         if (currentPrices && currentPrices[sym]) {

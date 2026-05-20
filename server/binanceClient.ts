@@ -578,6 +578,44 @@ export class BinanceClient {
     }
   }
 
+  async placeStopLossOrder(symbol: string, side: 'BUY' | 'SELL', stopPrice: number, currentPrice: number): Promise<{ success: boolean; orderId: number; stopPrice: number; }> {
+    if (this.isSimulation) {
+      console.log(`[Binance SIMULATION] STOP_MARKET ${side} ${symbol} @ ${stopPrice.toFixed(8)}`);
+      return { success: true, orderId: 0, stopPrice };
+    }
+    try {
+      const timestamp = Date.now();
+      const query = `symbol=${symbol}&side=${side}&type=STOP_MARKET&stopPrice=${stopPrice}&reduceOnly=true&closePosition=true&workingType=MARK_PRICE&timestamp=${timestamp}`;
+      const sig = this.sign(query);
+      const res = await axios.post(`${BASE_URL}/fapi/v1/order?${query}&signature=${sig}`, null, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      console.log(`[Binance API] STOP_MARKET ${side} ${symbol} @ ${stopPrice} SUCCESS, orderId=${res.data.orderId}`);
+      return { success: true, orderId: res.data.orderId, stopPrice };
+    } catch (e: any) {
+      console.error(`[Binance API] STOP_MARKET failed for ${symbol}:`, e.response?.data || e.message);
+      return { success: false, orderId: 0, stopPrice };
+    }
+  }
+
+  async cancelStopLossOrder(symbol: string): Promise<boolean> {
+    if (this.isSimulation) return true;
+    try {
+      const timestamp = Date.now();
+      const query = `symbol=${symbol}&timestamp=${timestamp}`;
+      const sig = this.sign(query);
+      // Cancel all open orders for the symbol
+      const res = await axios.delete(`${BASE_URL}/fapi/v1/allOpenOrders?symbol=${symbol}&timestamp=${timestamp}&signature=${sig}`, {
+        headers: { 'X-MBX-APIKEY': this.apiKey }
+      });
+      console.log(`[Binance API] Cancelled all orders for ${symbol}: ${res.data.length} orders`);
+      return true;
+    } catch (e: any) {
+      console.error(`[Binance API] Cancel orders failed for ${symbol}:`, e.response?.data || e.message);
+      return false;
+    }
+  }
+
   async closeMarketOrder(pos: { size: number; lev: number; side: string }, symbol: string, side: 'BUY' | 'SELL', currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
       if (this.isSimulation) {
           // Simulation: use current price as close price, estimate commission

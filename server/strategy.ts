@@ -224,13 +224,14 @@ export function getSignal(klines: Kline[]): Signal | null {
   }
 
   // Mean Reversion - Bollinger Band reversion with dynamic TP/SL
-  // LONG: price near lower BB with volume confirmation
-  if (bb && p < bb.lower * 1.002 && rsi < 35 && vr > 1.3) {
+  // TREND FILTER: Only enter if 15m trend aligns with reversion direction
+  // LONG: price near lower BB + trend must be UP (pullback in uptrend)
+  if (bb && p < bb.lower * 1.002 && rsi < 35 && vr > 1.3 && ema50 > 0 && p > ema50 * 0.995) {
       sigs.push({ name: 'BB_REVERSION_LONG', score: 0.87, side: 'LONG', avg_move: atr,
                   tp_target: bb.sma, sl_target: bb.lower * 0.997 });
   }
-  // SHORT: price near upper BB with volume confirmation  
-  if (bb && p > bb.upper * 0.998 && rsi > 65 && vr > 1.3) {
+  // SHORT: price near upper BB + trend must be DOWN (pullback in downtrend)
+  if (bb && p > bb.upper * 0.998 && rsi > 65 && vr > 1.3 && ema50 > 0 && p < ema50 * 1.005) {
       sigs.push({ name: 'BB_REVERSION_SHORT', score: 0.87, side: 'SHORT', avg_move: atr,
                   tp_target: bb.sma, sl_target: bb.upper * 1.003 });
   }
