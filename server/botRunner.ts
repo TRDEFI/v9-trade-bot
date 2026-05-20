@@ -1,5 +1,5 @@
 import { BinanceClient } from './binanceClient.js';
-import { getSignal, getSignal3m, getSignal15m, calcRsi, calcSupertrend, calcEma } from './strategy.js';
+import { getSignal, calcRsi, calcSupertrend, calcEma } from './strategy.js';
 import fs from 'fs';
 
 export const USER_CONFIG = {
@@ -11,12 +11,12 @@ export const USER_CONFIG = {
     target_profit: 3,       // Default net target profit in USD
     strong_target_profit: 5,
     cut_loss:      -75,    // Net max loss per position in USD
-    cooldown_min:  2,      // FIX: 5 -> 2 min (hybrid mode faster cycle)
-    min_atr_pct:   0.08,    // FIX: 0.15 -> 0.08 (3m ATR smaller)
+    cooldown_min:  5,
+    min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
     strong_atr_pct: 0.30,
     max_atr_pct:   4.00,
-    time_stop_soft_min: 10,   // FIX: 30 -> 10 min (hybrid mode)
-    time_stop_hard_min: 20,   // FIX: 60 -> 20 min
+    time_stop_soft_min: 30,   // FIX: 120 -> 30 min (scalping için 2 saat çok uzun)
+    time_stop_hard_min: 60,   // FIX: 240 -> 60 min
     time_stop_min_favorable: 3,
     time_stop_loss_usd: -20,
     max_trades_per_sym: 3     // FIX: Aynı sembole max 3 trade/session (spam engelleme)
@@ -130,7 +130,7 @@ export class BotRunner {
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
-        this.binance.subscribeKlines(this.activePairs, ['1m', '3m', '5m', '15m', '1h']);
+        this.binance.subscribeKlines(this.activePairs, ['5m', '15m', '1h']);
     }
 
     stop() {
@@ -403,57 +403,28 @@ export class BotRunner {
                         // }
 
                         try {
-                            // HYBRID MODE: 3m signal + 15m trend filter + 1m entry confirmation
-                            const c3m = await this.binance.getKlines(sym, '3m', 80);
-                            if (!c3m || c3m.length < 55) {
-                                continue;
-                            }
-                            const closed3m = c3m.slice(0, -1);
-                            
                             const c15m = await this.binance.getKlines(sym, '15m', 80);
                             if (!c15m || c15m.length < 55) {
                                 continue;
                             }
+
                             const closed15m = c15m.slice(0, -1);
                             
-                            const c1m = await this.binance.getKlines(sym, '1m', 15);
-                            if (!c1m || c1m.length < 11) {
-                                this.logToFile(`[${sym}] REJECT: c1m data not sufficient`);
+                            const c5m = await this.binance.getKlines(sym, '5m', 15);
+                            if (!c5m || c5m.length < 11) {
+                                this.logToFile(`[${sym}] REJECT: c5m data not sufficient (${c5m ? c5m.length : 0})`);
                                 continue;
                             }
-                            const closed1m = c1m.slice(0, -1);
-                            const active1m = c1m[c1m.length - 1];
-
-                            // Step 1: 3m Fast Signal
-                            const sig3m = getSignal3m(closed3m);
-                            if (!sig3m || sig3m.score < 0.82) {
-                                continue;
-                            }
-
-                            if (DISABLED_STRATS.has(sig3m.name)) {
-                                continue;
-                            }
-
-                            // Step 2: 15m Trend Filter (confirm direction alignment)
-                            const sig15m = getSignal15m(closed15m);
-                            const ema50_15m = calcEma(closed15m, 50);
-                            const price15m = closed15m[closed15m.length - 1]?.c;
-                            const trend15m = price15m > ema50_15m ? 'UP' : 'DOWN';
                             
-                            // 3m signal must align with 15m trend OR be a strong mean-reversion
-                            const isMeanReversion = ['RSI_OVERSOLD', 'RSI_OVERBOUGHT', 'SQUEEZE_LONG', 'SQUEEZE_SHORT'].includes(sig3m.name);
-                            const trendAligned = (sig3m.side === 'LONG' && trend15m === 'UP') || 
-                                                 (sig3m.side === 'SHORT' && trend15m === 'DOWN');
+                            const closed5m = c5m.slice(0, -1);
                             
-                            if (!isMeanReversion && !trendAligned) {
-                                this.logToFile(`[${sym}] REJECT: 3m signal ${sig3m.name} not aligned with 15m trend (${trend15m})`);
+                            const sig = getSignal(closed15m); // ONLY use closed candles
+                            if (!sig || sig.score < 0.75) {  // FIX: 0.70 -> 0.75 (daha kaliteli sinyaller)
                                 continue;
                             }
 
-                            // Use 3m signal as primary, boost if 15m confirms
-                            const sig = sig3m;
-                            if (sig15m && sig15m.side === sig.side) {
-                                sig.score = Math.min(sig.score + 0.05, 1.0);
+                            if (DISABLED_STRATS.has(sig.name)) {
+                                continue;
                             }
 
                             // Boost score for most profitable strategies
@@ -461,51 +432,78 @@ export class BotRunner {
                                 sig.score = Math.min(sig.score + 0.05, 1.0);
                             }
 
-                            // Step 3: 1m Entry Confirmation (pullback check)
-                            const rsi1m = calcRsi(closed1m, 9);
-                            if (sig.side === 'LONG' && rsi1m > 75) {
-                                this.logToFile(`[${sym}] REJECT: LONG 1m RSI overbought (${rsi1m.toFixed(2)})`);
-                                continue;
-                            }
-                            if (sig.side === 'SHORT' && rsi1m < 25) {
-                                this.logToFile(`[${sym}] REJECT: SHORT 1m RSI oversold (${rsi1m.toFixed(2)})`);
-                                continue;
-                            }
-
-                            // 1m candle direction check
-                            if (sig.side === 'LONG' && active1m.c < active1m.o * 0.995) {
-                                this.logToFile(`[${sym}] REJECT: LONG 1m candle dropping`);
-                                continue;
-                            }
-                            if (sig.side === 'SHORT' && active1m.c > active1m.o * 1.005) {
-                                this.logToFile(`[${sym}] REJECT: SHORT 1m candle rising`);
-                                continue;
-                            }
-
-                            const sigCandle = closed3m[closed3m.length - 1];
+                            const sigCandle = closed15m[closed15m.length - 1];
                             const sigClosePrice = sigCandle.c;
-                            const sigCloseTime = sigCandle.t + 3 * 60 * 1000;
+                            const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // Fresh Signal: Valid for 3 minutes (3m strategy)
-                            if (candleAgeMs > 3 * 60 * 1000) {
+                            // Fresh Signal: Valid for 7 minutes (15m strategy)
+                            if (candleAgeMs > 7 * 60 * 1000) {
                                 continue;
                             }
 
                             const atrPct = (sig.avg_move / sigClosePrice) * 100;
                             if (atrPct < USER_CONFIG.min_atr_pct || atrPct > USER_CONFIG.max_atr_pct) {
-                                this.logToFile(`[${sym}] REJECT: ATR% out of range (${atrPct.toFixed(2)}%)`);
+                                this.logToFile(`[${sym}] REJECT: ATR% out of scalp range (${atrPct.toFixed(2)}%)`);
                                 continue;
                             }
 
-                            // Pullback Control (0.3% allowed slippage for 3m)
-                            if (sig.side === 'LONG' && price > sigClosePrice * 1.003) {
-                                this.logToFile(`[${sym}] REJECT: LONG Price too high`);
+                            // Pullback Control (0.5% allowed slippage) FIX: 0.3% -> 0.5%
+                            if (sig.side === 'LONG' && price > sigClosePrice * 1.005) {
+                                this.logToFile(`[${sym}] REJECT: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.005})`);
                                 continue;
                             }
-                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.997) {
-                                this.logToFile(`[${sym}] REJECT: SHORT Price too low`);
+                            if (sig.side === 'SHORT' && price < sigClosePrice * 0.995) {
+                                this.logToFile(`[${sym}] REJECT: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.995})`);
                                 continue;
+                            }
+
+                            // Alt zaman momentum (esnetildi)
+                            const rsi5m = calcRsi(closed5m, 14);
+                            if (sig.side === 'LONG' && rsi5m > 80) {
+                                this.logToFile(`[${sym}] REJECT: LONG RSI5m too high (${rsi5m.toFixed(2)})`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && rsi5m < 20) {
+                                this.logToFile(`[${sym}] REJECT: SHORT RSI5m too low (${rsi5m.toFixed(2)})`);
+                                continue;
+                            }
+
+                            // Anlik hareket kontrolu
+                            const active5m = c5m[c5m.length - 1];
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.99) {
+                                this.logToFile(`[${sym}] REJECT: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.01) {
+                                this.logToFile(`[${sym}] REJECT: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
+                                continue;
+                            }
+
+                            const ema50_15m = calcEma(closed15m, 50);
+                            const trend15m = sigClosePrice > ema50_15m ? 'UP' : 'DOWN';
+                            const trendDistance15mPct = ema50_15m > 0 ? Math.abs((sigClosePrice - ema50_15m) / ema50_15m) * 100 : 0;
+
+                            // 1h EMA50 trend filtresi — SADECE STRICT_TREND_STRATS icin (EMA_CROSS_UP, RSI_OVERBOUGHT)
+                            // Mean-reversion stratejileri trend tersine calisir, 1h filtresi onlari korumaz
+                            const c1h = await this.binance.getKlines(sym, '1h', 80);
+                            let trend1h: 'UP' | 'DOWN' | 'UNKNOWN' = 'UNKNOWN';
+                            if (c1h && c1h.length >= 55) {
+                                const closed1h = c1h.slice(0, -1);
+                                const ema50_1h = calcEma(closed1h, 50);
+                                const price1h = closed1h[closed1h.length - 1]?.c;
+                                if (price1h && ema50_1h > 0) {
+                                    trend1h = price1h > ema50_1h ? 'UP' : 'DOWN';
+                                }
+                            }
+
+                            if (STRICT_TREND_STRATS.has(sig.name)) {
+                                const aligned15m = (sig.side === 'LONG' && trend15m === 'UP') || (sig.side === 'SHORT' && trend15m === 'DOWN');
+                                const aligned1h = trend1h === 'UNKNOWN' || (sig.side === 'LONG' && trend1h === 'UP') || (sig.side === 'SHORT' && trend1h === 'DOWN');
+                                if (!aligned15m || !aligned1h) {
+                                    this.logToFile(`[${sym}] REJECT: strict trend filter for ${sig.name} failed (15m=${trend15m}, 1h=${trend1h})`);
+                                    continue;
+                                }
                             }
 
                             const configMarginUsd = USER_CONFIG.margin;
@@ -563,14 +561,14 @@ export class BotRunner {
                                 sym, 
                                 side: sig.side,
                                 entry: result.avgPrice, 
-                                size: actualMarginUsd,
-                                filledQty: result.filledQty,
+                                size: actualMarginUsd, // actual USD margin used based on filled quote quantity
+                                filledQty: result.filledQty, // store base asset quantity
                                 lev: USER_CONFIG.lev,
                                 strat: sig.name,
                                 signalScore: sig.score,
                                 atrPct,
                                 trend15m,
-                                trend1h: 'HYBRID',
+                                trend1h,
                                 targetProfit,
                                 opened_at: now,
                                 openCommission: result.totalCommission,
@@ -579,7 +577,7 @@ export class BotRunner {
                             };
                             this.reservedCapital += actualMarginUsd;
                             
-                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + result.avgPrice.toFixed(4) + ' [' + sig.name + '] HYBRID sz=' + actualMarginUsd.toFixed(2) + ' tp=' + targetProfit.toFixed(2) + ' atr=' + atrPct.toFixed(2) + '% t15=' + trend15m;
+                            const logMsg = 'OPEN ' + sig.side + ' ' + sym + ' @ ' + result.avgPrice.toFixed(4) + ' [' + sig.name + '] sz=' + actualMarginUsd.toFixed(2) + ' tp=' + targetProfit.toFixed(2) + ' atr=' + atrPct.toFixed(2) + '% t15=' + trend15m + ' t1h=' + trend1h;
                             this.addLog(`[${sym}] ${logMsg}`, 'info');
                             console.log('  ' + logMsg);
 
