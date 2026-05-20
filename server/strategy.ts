@@ -168,8 +168,70 @@ export interface Signal {
   sl_target?: number;   // Stop loss price target (optional)
 }
 
-// 1H Strategy
-export function getSignal(klines: Kline[]): Signal | null {
+// HYBRID MODE: 3m Fast Signal (RSI, EMA Cross, Squeeze, Vol Break)
+export function getSignal3m(klines: Kline[]): Signal | null {
+  if (!klines || klines.length < 20) return null;
+
+  const rsi = calcRsi(klines, 9);
+  const ma10 = calcMa(klines, 10);
+  const ma20 = calcMa(klines, 20);
+  const ema5 = calcEma(klines, 5);
+  const ema13 = calcEma(klines, 13);
+  const ema34 = calcEma(klines, 34);
+  const vr   = calcVolumeRatio(klines, 20);
+  const atr = calcAtr(klines, 14);
+  const avg = atr; 
+  const p    = klines[klines.length - 1].c;
+  const dev  = ((p - ma10) / ma10) * 100;
+  const bb = calcBollingerBands(klines, 20, 2);
+
+  const sigs: Signal[] = [];
+
+  if (rsi < 25) sigs.push({ name: 'RSI_OVERSOLD', score: 0.92, side: 'LONG', avg_move: avg });
+  if (rsi > 75) sigs.push({ name: 'RSI_OVERBOUGHT', score: 0.92, side: 'SHORT', avg_move: avg });
+
+  const klinesClosed = klines.slice(0, -1);
+  const ema5Curr = calcEma(klines, 5);
+  const ema13Curr = calcEma(klines, 13);
+  let ema5Prev = ema5Curr, ema13Prev = ema13Curr;
+  if (klinesClosed.length >= 13) {
+    const prevKlines = klinesClosed.slice(0, -1);
+    if (prevKlines.length >= 13) {
+      ema5Prev = calcEma(prevKlines, 5);
+      ema13Prev = calcEma(prevKlines, 13);
+    }
+  }
+  
+  const justCrossedUp = ema5Prev <= ema13Prev && ema5Curr > ema13Curr;
+  const justCrossedDn = ema5Prev >= ema13Prev && ema5Curr < ema13Curr;
+  
+  if (justCrossedUp && vr > 1.5 && rsi < 65) {
+      sigs.push({ name: 'EMA_CROSS_UP', score: 0.88, side: 'LONG', avg_move: avg });
+  }
+  if (justCrossedDn && vr > 1.5 && rsi > 35) {
+      sigs.push({ name: 'EMA_CROSS_DN', score: 0.88, side: 'SHORT', avg_move: avg });
+  }
+
+  if (vr < 0.4) {
+    if (rsi < 35) sigs.push({ name: 'SQUEEZE_LONG',  score: 0.82, side: 'LONG', avg_move: avg });
+    if (rsi > 65) sigs.push({ name: 'SQUEEZE_SHORT', score: 0.82, side: 'SHORT', avg_move: avg });
+  }
+
+  if (vr > 3.5 && p > ma10 && rsi < 60) {
+    sigs.push({ name: 'VOL_BREAKUP', score: 0.84, side: 'LONG', avg_move: avg });
+  }
+  if (vr > 3.5 && p < ma10 && rsi > 40) {
+    sigs.push({ name: 'VOL_BREAKDN', score: 0.84, side: 'SHORT', avg_move: avg });
+  }
+
+  const min_score = 0.82;
+  const valid = sigs.filter(s => s.score >= min_score);
+  if (valid.length === 0) return null;
+  return valid.sort((a, b) => b.score - a.score)[0];
+}
+
+// 15m Trend Signal (TREND, MA10, BB Reversion, Momentum)
+export function getSignal15m(klines: Kline[]): Signal | null {
   if (!klines || klines.length < 20) return null;
 
   const rsi = calcRsi(klines, 14);
@@ -177,16 +239,12 @@ export function getSignal(klines: Kline[]): Signal | null {
   const ma20 = calcMa(klines, 20);
   const ema9 = calcEma(klines, 9);
   const ema21 = calcEma(klines, 21);
-  const ema50 = calcEma(klines, 50);  // 1H trend filter
+  const ema50 = calcEma(klines, 50);
   const vr   = calcVolumeRatio(klines, 20);
-  
-  // Replace avg move with ATR for a better volatility metric
   const atr = calcAtr(klines, 14);
   const avg = atr; 
-  
   const p    = klines[klines.length - 1].c;
   const dev  = ((p - ma10) / ma10) * 100;
-  
   const bb = calcBollingerBands(klines, 20, 2);
 
   const sigs: Signal[] = [];
@@ -291,4 +349,9 @@ export function getSignal(klines: Kline[]): Signal | null {
   const valid = sigs.filter(s => s.score >= min_score);
   if (valid.length === 0) return null;
   return valid.sort((a, b) => b.score - a.score)[0];
+}
+
+// Backward compatible wrapper — uses 15m signal
+export function getSignal(klines: Kline[]): Signal | null {
+  return getSignal15m(klines);
 }
