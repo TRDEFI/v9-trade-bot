@@ -10,7 +10,7 @@ export const USER_CONFIG = {
     top_pairs:     150,
     target_profit: 3,       // Default net target profit in USD
     strong_target_profit: 5,
-    cut_loss:      -75,    // Net max loss per position in USD
+    cut_loss:      -150,    // Net max loss per position in USD
     cooldown_min:  5,
     min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
     strong_atr_pct: 0.30,
