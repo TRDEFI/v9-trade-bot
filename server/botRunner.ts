@@ -34,8 +34,7 @@ const MEAN_REVERSION_STRATS = new Set([
 ]);
 
 const DISABLED_STRATS = new Set([
-    'VOL_BREAKDN',
-    'MA10_BOUNCE'
+    'VOL_BREAKDN'
 ]);
 
 const STRICT_TREND_STRATS = new Set([
