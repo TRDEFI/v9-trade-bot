@@ -18,7 +18,7 @@ export const USER_CONFIG = {
     time_stop_soft_min: 30,   // FIX: 120 -> 30 min (scalping için 2 saat çok uzun)
     time_stop_hard_min: 60,   // FIX: 240 -> 60 min
     time_stop_min_favorable: 3,
-    time_stop_loss_usd: -30,
+    time_stop_loss_usd: -20,
     max_trades_per_sym: 3     // FIX: Aynı sembole max 3 trade/session (spam engelleme)
 };
 
@@ -31,6 +31,11 @@ const MEAN_REVERSION_STRATS = new Set([
     'SQUEEZE_SHORT',
     'MA10_BOUNCE',
     'MA10_REJECT'
+]);
+
+const DISABLED_STRATS = new Set([
+    'VOL_BREAKDN',
+    'MA10_BOUNCE'
 ]);
 
 const STRICT_TREND_STRATS = new Set([
@@ -416,6 +421,15 @@ export class BotRunner {
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.75) {  // FIX: 0.70 -> 0.75 (daha kaliteli sinyaller)
                                 continue;
+                            }
+
+                            if (DISABLED_STRATS.has(sig.name)) {
+                                continue;
+                            }
+
+                            // Boost score for most profitable strategies
+                            if (sig.name === 'TREND_LONG' || sig.name === 'MA10_REJECT') {
+                                sig.score = Math.min(sig.score + 0.05, 1.0);
                             }
 
                             const sigCandle = closed15m[closed15m.length - 1];
