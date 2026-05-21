@@ -21,13 +21,13 @@
 | `top_pairs` | 150 | Hacim sıralı takip edilen pair |
 | `target_profit` | $3 | Varsayılan net TP |
 | `strong_target_profit` | $5 | Güçlü TP |
-| `cut_loss` | **-$150** | Hard stop-loss (server-side + polling fallback) |
+| `cut_loss` | **-$25** | Hard stop-loss (server-side + polling fallback) |
 | `cooldown_min` | 5 | Kayıp sonrası cooldown (dk) |
 | `min_atr_pct` | 0.15% | Min volatilite |
 | `max_atr_pct` | 4.00% | Max volatilite |
 | `time_stop_soft_min` | 30 | Soft time-stop süresi (dk) |
 | `time_stop_hard_min` | 60 | Hard time-stop süresi (dk) |
-| `time_stop_loss_usd` | **-$20** | Time-stop zarar eşiği |
+| `time_stop_loss_usd` | **-$25** | Time-stop zarar eşiği |
 | `max_trades_per_sym` | 3 | Session başı max trade/sembol |
 
 ---
@@ -73,15 +73,15 @@ loop() → 500ms bekle → loop()
 
 ### 2.4 Pozisyon Açma
 1. **Limit Order (GTX)** — maker fee 0.02%
-2. **Server-side STOP_MARKET** — `cut_loss` (-$150) fiyatına, `MARK_PRICE` trigger
+2. **Server-side STOP_MARKET** — `cut_loss` (-$25) fiyatına, `MARK_PRICE` trigger
 3. Pozisyon objesi kaydedilir, `reservedCapital` güncellenir
 
 ### 2.5 Pozisyon Kapatma (Öncelik Sırası)
 | Condition | Tetiklenme | Açıklama |
 |-----------|------------|----------|
 | **TAKE_PROFIT** | `netPnlUsd >= targetProfit` | Hedef kâra ulaşınca |
-| **HARD_STOP_LOSS** | `netPnlUsd <= -150` | Server-side STOP_MARKET tetikler, polling fallback |
-| **TIME_STOP_NO_BOUNCE** | `age >= 30dk && netPnl <= -20` | 30dk geçti, bounce olmadı |
+| **HARD_STOP_LOSS** | `netPnlUsd <= -25` | Server-side STOP_MARKET tetikler, polling fallback |
+| **TIME_STOP_NO_BOUNCE** | `age >= 30dk && netPnl <= -25` | 30dk geçti, bounce olmadı |
 | **TIME_STOP_HARD** | `age >= 60dk && netPnl < 0` | 60dk geçti, hâlâ zararda |
 | **TIME_DECAY** | `age >= 10dk && netPnl >= target * 0.6` | 10dk geçti, %60 TP'ye ulaştı |
 | **MARGIN_CALL** | `totalNetPnl < -40% freeBalance` | En zararlı pozisyon kapatılır, 5dk cooldown |
@@ -186,10 +186,10 @@ truncate -s 0 bot_scan.log
 
 ### v9.2 (2026-05-20)
 - **Server-side STOP_MARKET** emri eklendi (MARK_PRICE trigger)
-- `cut_loss`: -$75 → **-$150** (server-side koruma ile güvenli)
+- `cut_loss`: -$75 → **-$25** (büyük kayıpları engelle)
 - `bestSeen < $3` koşulu time_stop'tan **kaldırıldı** (erken çıkış garantisi)
 - **BB_REVERSION 15m trend filtresi** eklendi (EMA50 yönüne uygun entry)
-- `time_stop_loss_usd`: -$30 → **-$20**
+- `time_stop_loss_usd`: -$30 → **-$25** (hard stop ile uyum)
 
 ### v9.1 (2026-05-20)
 - `VOL_BREAKDN` devre dışı bırakıldı
