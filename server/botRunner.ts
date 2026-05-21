@@ -10,7 +10,7 @@ export const USER_CONFIG = {
     top_pairs:     150,
     target_profit: 3,       // Default net target profit in USD
     strong_target_profit: 5,
-    cut_loss:      -150,    // Net max loss per position in USD
+    cut_loss:      -25,     // FIX: -150 → -25 (büyük kayıpları engelle)
     cooldown_min:  5,
     min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
     strong_atr_pct: 0.30,
@@ -18,7 +18,7 @@ export const USER_CONFIG = {
     time_stop_soft_min: 30,   // FIX: 120 -> 30 min (scalping için 2 saat çok uzun)
     time_stop_hard_min: 60,   // FIX: 240 -> 60 min
     time_stop_min_favorable: 3,
-    time_stop_loss_usd: -20,
+    time_stop_loss_usd: -25,     // FIX: -20 → -25 (hard stop ile uyum)
     max_trades_per_sym: 3     // FIX: Aynı sembole max 3 trade/session (spam engelleme)
 };
 
@@ -280,7 +280,7 @@ export class BotRunner {
                     continue;
                 }
 
-                // FIX: Hard stop-loss per position (USER_CONFIG.cut_loss = -75)
+                // Hard stop-loss per position
                 if (netPnlUsd <= USER_CONFIG.cut_loss) {
                     await this.closePosition(sym, 'HARD_STOP_LOSS');
                     continue;
@@ -576,15 +576,15 @@ export class BotRunner {
                             this.reservedCapital += actualMarginUsd;
 
                             // SERVER-SIDE STOP-LOSS: Place STOP_MARKET order on Binance
-                            // Calculate stop price from cut_loss (-$150)
-                            const stopLossPct = Math.abs(USER_CONFIG.cut_loss) / notionalValue;
+                            // Safety net only (3% fixed) — app-level hard stop (-$25) fires first via polling
+                            const stopLossPct = 0.03;
                             const stopPrice = sig.side === 'LONG'
                                 ? result.avgPrice * (1 - stopLossPct)
                                 : result.avgPrice * (1 + stopLossPct);
                             const slSide = sig.side === 'LONG' ? 'SELL' : 'BUY';
                             const slResult = await this.binance.placeStopLossOrder(sym, slSide, stopPrice, result.avgPrice);
                             if (slResult.success) {
-                                this.logToFile(`[${sym}] STOP_MARKET placed @ ${stopPrice.toFixed(8)} (cut_loss: ${USER_CONFIG.cut_loss})`);
+                                this.logToFile(`[${sym}] STOP_MARKET placed @ ${stopPrice.toFixed(8)} (safety net: ${stopLossPct * 100}%)`);
                             } else {
                                 this.logToFile(`[${sym}] WARNING: STOP_MARKET failed, relying on polling fallback`);
                             }
