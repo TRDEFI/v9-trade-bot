@@ -76,8 +76,8 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Esbuild bundles to dist/server.js — __dirname is the dist/ folder itself
-    const distPath = path.resolve(process.cwd(), 'dist');
+    // Esbuild bundles to dist/server.js — __dirname already points to the dist/ folder
+    const distPath = path.resolve(__dirname);
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
