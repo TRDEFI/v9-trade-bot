@@ -184,6 +184,14 @@ truncate -s 0 bot_scan.log
 
 ## 6. DEĞİŞİKLİK GEÇMİŞİ
 
+### v9.3 (2026-05-22)
+- **3'lü volatilite koruma sistemi eklendi:**
+  1. `max_atr_pct`: %4.0 → **%1.5** (15m ATR üst sınırı matematiksel olarak stop-loss'a bağlandı: $25 stop / $5000 notional = %0.5 × 3x güvenlik)
+  2. **Minimum fiyat filtresi**: `< $0.008` coinleri reddet (micro-cap tick/price oranı koruması)
+  3. **Mikro-volatilite filtresi**: son 10 kapalı 5m mumundaki max range `> %2.5` ise reddet (ani pump/dump koruması)
+- BUSDT özelinde yapılan analiz sonucu: 15m ATR düşük (%0.88) ama 1dk'da +%5 pump yiyen coinler için **çift katmanlı** filtre
+- SKYAIUSDT +$111 / 12sn anomalisi: ATR-based TP ($10 cap) üzerinde pozitif slippage — yeni ATR filtresi (%1.5) ile SKYAIUSDT gibi coinler elenir
+
 ### v9.2 (2026-05-20)
 - **Server-side STOP_MARKET** emri eklendi (MARK_PRICE trigger)
 - `cut_loss`: -$75 → **-$25** (büyük kayıpları engelle)
@@ -208,7 +216,7 @@ truncate -s 0 bot_scan.log
 
 | Dosya | Satır | Sorumluluk |
 |-------|-------|------------|
-| `server/botRunner.ts` | 732 | Ana bot mantığı, pozisyon yönetimi, risk kontrolleri |
+| `server/botRunner.ts` | 752 | Ana bot mantığı, pozisyon yönetimi, risk kontrolleri |
 | `server/strategy.ts` | 295 | Teknik indikatörler, sinyal üretimi |
 | `server/binanceClient.ts` | 680 | Binance API, WebSocket, order execution, stop-loss |
 | `server.ts` | 93 | Express API sunucusu |

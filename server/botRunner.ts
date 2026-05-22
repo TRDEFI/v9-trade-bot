@@ -14,7 +14,8 @@ export const USER_CONFIG = {
     cooldown_min:  5,
     min_atr_pct:   0.15,    // 15m ATR must be large enough to cover fees + target
     strong_atr_pct: 0.30,
-    max_atr_pct:   4.00,
+    max_atr_pct:   1.50,    // FIX: %4.0 -> %1.5 (stop -25$ @20x = %0.5, 3x guvenlik)
+    max_5m_range_pct: 2.50, // Maks 5m mum range % (ani pump/dump korumasi)
     time_stop_soft_min: 30,   // FIX: 120 -> 30 min (scalping için 2 saat çok uzun)
     time_stop_hard_min: 60,   // FIX: 240 -> 60 min
     time_stop_min_favorable: 3,
@@ -378,6 +379,12 @@ export class BotRunner {
                         const price = currentPrices[sym];
                         if (!price) continue;
 
+                        // Minimum price filter: micro-cap coinlerde 1 tick = cok buyuk %
+                        if (price < 0.008) {
+                            this.logToFile(`[${sym}] REJECT: Price too low (${price})`);
+                            continue;
+                        }
+
                         // 5-second cooldown per pair before re-checking klines to avoid API spam.
                         if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
                         this.lastKlineCheck[sym] = now;
@@ -415,7 +422,20 @@ export class BotRunner {
                             }
                             
                             const closed5m = c5m.slice(0, -1);
-                            
+
+                            // Mikro-volatilite: son 10 kapali 5m mumundaki max range kontrol
+                            let maxRange5mPct = 0;
+                            const lookback5m = Math.min(10, closed5m.length);
+                            for (let i = closed5m.length - lookback5m; i < closed5m.length; i++) {
+                                const m = closed5m[i];
+                                const range = (m.h - m.l) / m.l * 100;
+                                if (range > maxRange5mPct) maxRange5mPct = range;
+                            }
+                            if (maxRange5mPct > USER_CONFIG.max_5m_range_pct) {
+                                this.logToFile(`[${sym}] REJECT: 5m micro-volatility too high (max range ${maxRange5mPct.toFixed(2)}%)`);
+                                continue;
+                            }
+
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.75) {  // FIX: 0.70 -> 0.75 (daha kaliteli sinyaller)
                                 continue;
