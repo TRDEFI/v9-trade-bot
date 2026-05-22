@@ -1,0 +1,1064 @@
+﻿{
+    "session_start":  1779396464224,
+    "session_num":  1,
+    "is_active":  true,
+    "capital":  1865.3898781701582,
+    "total_trades":  72,
+    "total_wins":  43,
+    "total_losses":  29,
+    "total_pnl":  -134.61012182984223,
+    "opens":  [
+
+              ],
+    "closed":  [
+                   {
+                       "sym":  "UBUSDT",
+                       "side":  "LONG",
+                       "entry":  0.09154999999999999,
+                       "closed_price":  0.09185,
+                       "pnl":  12.884489350082394,
+                       "strat":  "SQUEEZE_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779396464828,
+                       "closed":  1779396526112
+                   },
+                   {
+                       "sym":  "1000CHEEMSUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.0007478000000000001,
+                       "closed_price":  0.0007514,
+                       "pnl":  -27.570607114201515,
+                       "strat":  "MA10_REJECT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779396464828,
+                       "closed":  1779396619714
+                   },
+                   {
+                       "sym":  "VIRTUALUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.757,
+                       "closed_price":  0.7548,
+                       "pnl":  11.031043593130645,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779396526102,
+                       "closed":  1779396718393
+                   },
+                   {
+                       "sym":  "OPUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.133,
+                       "closed_price":  0.1326,
+                       "pnl":  11.537593984962836,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779396464828,
+                       "closed":  1779396789358
+                   },
+                   {
+                       "sym":  "1000SHIBUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.005869,
+                       "closed_price":  0.005853,
+                       "pnl":  10.130942238882593,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779396464828,
+                       "closed":  1779396792111
+                   },
+                   {
+                       "sym":  "DOGSUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.000059,
+                       "closed_price":  0.00005882,
+                       "pnl":  11.75423728813516,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779396718386,
+                       "closed":  1779396792112
+                   },
+                   {
+                       "sym":  "ALGOUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.1153,
+                       "closed_price":  0.115,
+                       "pnl":  9.509540329574792,
+                       "strat":  "EMA_CROSS_DN",
+                       "reason":  "TAKE_PROFIT_TIME_DECAY",
+                       "opened":  1779396619707,
+                       "closed":  1779399163083
+                   },
+                   {
+                       "sym":  "WIFUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.2011,
+                       "closed_price":  0.2007,
+                       "pnl":  6.445300845350857,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT_TIME_DECAY",
+                       "opened":  1779399001659,
+                       "closed":  1779400581155
+                   },
+                   {
+                       "sym":  "HUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.22863,
+                       "closed_price":  0.2279,
+                       "pnl":  12.464659056117055,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779401704753,
+                       "closed":  1779401772995
+                   },
+                   {
+                       "sym":  "JTOUSDT",
+                       "side":  "LONG",
+                       "entry":  0.5212,
+                       "closed_price":  0.5227,
+                       "pnl":  10.889869531850124,
+                       "strat":  "TREND_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779401704753,
+                       "closed":  1779401878677
+                   },
+                   {
+                       "sym":  "HUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.22743,
+                       "closed_price":  0.22862,
+                       "pnl":  -29.66189596799008,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779401953285,
+                       "closed":  1779402120106
+                   },
+                   {
+                       "sym":  "JTOUSDT",
+                       "side":  "LONG",
+                       "entry":  0.5223,
+                       "closed_price":  0.5238,
+                       "pnl":  10.859563469271079,
+                       "strat":  "TREND_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779402059183,
+                       "closed":  1779402314541
+                   },
+                   {
+                       "sym":  "DRAMUSDT",
+                       "side":  "SHORT",
+                       "entry":  54.57,
+                       "closed_price":  54.67,
+                       "pnl":  -12.66254352208186,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TIME_STOP_HARD",
+                       "opened":  1779399001659,
+                       "closed":  1779402601757
+                   },
+                   {
+                       "sym":  "AIAUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.06374,
+                       "closed_price":  0.06356,
+                       "pnl":  10.619861939127674,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779402604693,
+                       "closed":  1779402614305
+                   },
+                   {
+                       "sym":  "BEATUSDT",
+                       "side":  "LONG",
+                       "entry":  0.7799,
+                       "closed_price":  0.783,
+                       "pnl":  16.37434286446975,
+                       "strat":  "VOL_BREAKUP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779402604693,
+                       "closed":  1779402621031
+                   },
+                   {
+                       "sym":  "LABUSDT",
+                       "side":  "SHORT",
+                       "entry":  4.5039,
+                       "closed_price":  4.4916,
+                       "pnl":  10.154832478518346,
+                       "strat":  "MA10_REJECT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779402604693,
+                       "closed":  1779402624086
+                   },
+                   {
+                       "sym":  "PROVEUSDT",
+                       "side":  "LONG",
+                       "entry":  0.33,
+                       "closed_price":  0.3285,
+                       "pnl":  -26.227272727272748,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779402604693,
+                       "closed":  1779402677406
+                   },
+                   {
+                       "sym":  "BEATUSDT",
+                       "side":  "LONG",
+                       "entry":  0.7811,
+                       "closed_price":  0.7889,
+                       "pnl":  46.42958648060446,
+                       "strat":  "VOL_BREAKUP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779402841926,
+                       "closed":  1779402842441
+                   },
+                   {
+                       "sym":  "PROVEUSDT",
+                       "side":  "LONG",
+                       "entry":  0.3293,
+                       "closed_price":  0.3276,
+                       "pnl":  -29.312329183115388,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779402977732,
+                       "closed":  1779403079750
+                   },
+                   {
+                       "sym":  "AIAUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.06351,
+                       "closed_price":  0.06382,
+                       "pnl":  -27.90560541647022,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779402794716,
+                       "closed":  1779403219273
+                   },
+                   {
+                       "sym":  "DOGSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.00005779,
+                       "closed_price":  0.00005795,
+                       "pnl":  10.343225471534735,
+                       "strat":  "TREND_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779404403079,
+                       "closed":  1779404775677
+                   },
+                   {
+                       "sym":  "BEATUSDT",
+                       "side":  "LONG",
+                       "entry":  0.7132999999999999,
+                       "closed_price":  0.7094,
+                       "pnl":  -30.837726061964837,
+                       "strat":  "MA10_BOUNCE",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779405303987,
+                       "closed":  1779405314657
+                   },
+                   {
+                       "sym":  "PLAYUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.08785,
+                       "closed_price":  0.08754,
+                       "pnl":  14.143710870801982,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779405302224,
+                       "closed":  1779405316185
+                   },
+                   {
+                       "sym":  "PLAYUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.08807000000000001,
+                       "closed_price":  0.08848,
+                       "pnl":  -26.776938798682508,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779405496425,
+                       "closed":  1779405508614
+                   },
+                   {
+                       "sym":  "ESPORTSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.6914,
+                       "closed_price":  0.6934,
+                       "pnl":  10.963407578825583,
+                       "strat":  "VOL_BREAKUP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779405302224,
+                       "closed":  1779405597918
+                   },
+                   {
+                       "sym":  "HYPEUSDT",
+                       "side":  "SHORT",
+                       "entry":  59.082,
+                       "closed_price":  58.882,
+                       "pnl":  13.425628787109684,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779406204226,
+                       "closed":  1779406289659
+                   },
+                   {
+                       "sym":  "DRAMUSDT",
+                       "side":  "SHORT",
+                       "entry":  54.63,
+                       "closed_price":  54.64,
+                       "pnl":  -4.415248032216549,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TIME_STOP_HARD",
+                       "opened":  1779402901824,
+                       "closed":  1779406502277
+                   },
+                   {
+                       "sym":  "HYPEUSDT",
+                       "side":  "SHORT",
+                       "entry":  58.983000000000004,
+                       "closed_price":  58.823,
+                       "pnl":  10.063230083244637,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779406469775,
+                       "closed":  1779406891710
+                   },
+                   {
+                       "sym":  "BUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.297,
+                       "closed_price":  0.2943,
+                       "pnl":  41.95454545454512,
+                       "strat":  "MOMENTUM_SHORT",
+                       "reason":  "TAKE_PROFIT_TIME_DECAY",
+                       "opened":  1779406204226,
+                       "closed":  1779406934323
+                   },
+                   {
+                       "sym":  "BILLUSDT",
+                       "side":  "LONG",
+                       "entry":  0.07467,
+                       "closed_price":  0.07498,
+                       "pnl":  17.258001874916616,
+                       "strat":  "TREND_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779407103631,
+                       "closed":  1779407126798
+                   },
+                   {
+                       "sym":  "BANANAS31USDT",
+                       "side":  "LONG",
+                       "entry":  0.012624999999999999,
+                       "closed_price":  0.012664,
+                       "pnl":  11.94554455445578,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779407103631,
+                       "closed":  1779407168967
+                   },
+                   {
+                       "sym":  "BILLUSDT",
+                       "side":  "LONG",
+                       "entry":  0.07476999999999999,
+                       "closed_price":  0.07499,
+                       "pnl":  11.211782800589267,
+                       "strat":  "TREND_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779407307073,
+                       "closed":  1779407353349
+                   },
+                   {
+                       "sym":  "XMRUSDT",
+                       "side":  "LONG",
+                       "entry":  391.96,
+                       "closed_price":  393.11,
+                       "pnl":  11.169864271864913,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779407103631,
+                       "closed":  1779407496878
+                   },
+                   {
+                       "sym":  "BANANAS31USDT",
+                       "side":  "LONG",
+                       "entry":  0.012667,
+                       "closed_price":  0.012612,
+                       "pnl":  -25.209955001183978,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779407349268,
+                       "closed":  1779407522262
+                   },
+                   {
+                       "sym":  "GUAUSDT",
+                       "side":  "SHORT",
+                       "entry":  1.2531,
+                       "closed_price":  1.2586,
+                       "pnl":  -25.44557497406367,
+                       "strat":  "MA10_REJECT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779408004183,
+                       "closed":  1779408038044
+                   },
+                   {
+                       "sym":  "SNDKUSDT",
+                       "side":  "SHORT",
+                       "entry":  1533.93,
+                       "closed_price":  1530.96,
+                       "pnl":  6.181015430951957,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779408004183,
+                       "closed":  1779408084262
+                   },
+                   {
+                       "sym":  "OPENUSDT",
+                       "side":  "LONG",
+                       "entry":  0.1974,
+                       "closed_price":  0.1965,
+                       "pnl":  -26.296352583586227,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779408004183,
+                       "closed":  1779408189354
+                   },
+                   {
+                       "sym":  "SNDKUSDT",
+                       "side":  "SHORT",
+                       "entry":  1538.22,
+                       "closed_price":  1535.4,
+                       "pnl":  5.666439130943351,
+                       "strat":  "SQUEEZE_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779408264494,
+                       "closed":  1779408434329
+                   },
+                   {
+                       "sym":  "GUAUSDT",
+                       "side":  "SHORT",
+                       "entry":  1.2708,
+                       "closed_price":  1.2665,
+                       "pnl":  13.418476550204481,
+                       "strat":  "MA10_REJECT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779408338397,
+                       "closed":  1779408448756
+                   },
+                   {
+                       "sym":  "SPCXUSDT",
+                       "side":  "SHORT",
+                       "entry":  207.49,
+                       "closed_price":  208.39,
+                       "pnl":  -25.18779218275525,
+                       "strat":  "EMA_CROSS_DN",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779408038036,
+                       "closed":  1779408968077
+                   },
+                   {
+                       "sym":  "XMRUSDT",
+                       "side":  "LONG",
+                       "entry":  386.17,
+                       "closed_price":  384.27,
+                       "pnl":  -28.100564518217805,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779409800966,
+                       "closed":  1779409904580
+                   },
+                   {
+                       "sym":  "PHAROSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.6746,
+                       "closed_price":  0.6768,
+                       "pnl":  12.805959086866142,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779409800966,
+                       "closed":  1779410153620
+                   },
+                   {
+                       "sym":  "LINKUSDT",
+                       "side":  "SHORT",
+                       "entry":  9.743,
+                       "closed_price":  9.725,
+                       "pnl":  5.737401211126286,
+                       "strat":  "EMA_CROSS_DN",
+                       "reason":  "TAKE_PROFIT_TIME_DECAY",
+                       "opened":  1779407103631,
+                       "closed":  1779410476970
+                   },
+                   {
+                       "sym":  "XMRUSDT",
+                       "side":  "LONG",
+                       "entry":  386.31,
+                       "closed_price":  384.25,
+                       "pnl":  -30.162524915223553,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779410204914,
+                       "closed":  1779410629767
+                   },
+                   {
+                       "sym":  "BUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.3035,
+                       "closed_price":  0.3014,
+                       "pnl":  31.09637561779227,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779410704943,
+                       "closed":  1779410711693
+                   },
+                   {
+                       "sym":  "IRYSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.035280000000000006,
+                       "closed_price":  0.03538,
+                       "pnl":  10.67233560090645,
+                       "strat":  "VOL_BREAKUP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779410704943,
+                       "closed":  1779410807946
+                   },
+                   {
+                       "sym":  "HYPEUSDT",
+                       "side":  "SHORT",
+                       "entry":  57.330000000000005,
+                       "closed_price":  57.582,
+                       "pnl":  -25.47802197802157,
+                       "strat":  "EMA_CROSS_DN",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779410704943,
+                       "closed":  1779410843994
+                   },
+                   {
+                       "sym":  "BUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.309,
+                       "closed_price":  0.3134,
+                       "pnl":  -74.6974110032365,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779410891701,
+                       "closed":  1779410959261
+                   },
+                   {
+                       "sym":  "VVVUSDT",
+                       "side":  "LONG",
+                       "entry":  18.204,
+                       "closed_price":  18.275,
+                       "pnl":  16.00120852559821,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779410704943,
+                       "closed":  1779410972963
+                   },
+                   {
+                       "sym":  "FIDAUSDT",
+                       "side":  "LONG",
+                       "entry":  0.038500000000000006,
+                       "closed_price":  0.03862,
+                       "pnl":  12.084415584414947,
+                       "strat":  "MA10_BOUNCE",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779411601170,
+                       "closed":  1779411671215
+                   },
+                   {
+                       "sym":  "BSBUSDT",
+                       "side":  "LONG",
+                       "entry":  0.9332199999999999,
+                       "closed_price":  0.92772,
+                       "pnl":  -32.96786395490854,
+                       "strat":  "SQUEEZE_LONG",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779411601170,
+                       "closed":  1779411704224
+                   },
+                   {
+                       "sym":  "FIGHTUSDT",
+                       "side":  "LONG",
+                       "entry":  0.005651,
+                       "closed_price":  0.005669,
+                       "pnl":  12.426384710671257,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779411601170,
+                       "closed":  1779411720465
+                   },
+                   {
+                       "sym":  "FIDAUSDT",
+                       "side":  "LONG",
+                       "entry":  0.038450000000000005,
+                       "closed_price":  0.03857,
+                       "pnl":  12.104681404420688,
+                       "strat":  "MA10_BOUNCE",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779411851427,
+                       "closed":  1779411854478
+                   },
+                   {
+                       "sym":  "BSBUSDT",
+                       "side":  "LONG",
+                       "entry":  0.92133,
+                       "closed_price":  0.92572,
+                       "pnl":  20.32425406748942,
+                       "strat":  "SQUEEZE_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779412004473,
+                       "closed":  1779412107723
+                   },
+                   {
+                       "sym":  "FIGHTUSDT",
+                       "side":  "LONG",
+                       "entry":  0.005644,
+                       "closed_price":  0.005612,
+                       "pnl":  -31.84868887313954,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779411900689,
+                       "closed":  1779412236261
+                   },
+                   {
+                       "sym":  "SKYAIUSDT",
+                       "side":  "LONG",
+                       "entry":  0.29418,
+                       "closed_price":  0.30096,
+                       "pnl":  111.7355700591476,
+                       "strat":  "RSI_OVERSOLD",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779413404779,
+                       "closed":  1779413416619
+                   },
+                   {
+                       "sym":  "NILUSDT",
+                       "side":  "LONG",
+                       "entry":  0.05729,
+                       "closed_price":  0.05758,
+                       "pnl":  21.809827194972822,
+                       "strat":  "MA10_BOUNCE",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779413404779,
+                       "closed":  1779413429948
+                   },
+                   {
+                       "sym":  "BILLUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.07903,
+                       "closed_price":  0.07879,
+                       "pnl":  11.684107301025186,
+                       "strat":  "MA10_REJECT",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779413429941,
+                       "closed":  1779413435689
+                   },
+                   {
+                       "sym":  "PLUMEUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.014660000000000001,
+                       "closed_price":  0.01473,
+                       "pnl":  -27.374488403819537,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779413404779,
+                       "closed":  1779413465261
+                   },
+                   {
+                       "sym":  "EDENUSDT",
+                       "side":  "LONG",
+                       "entry":  0.12853,
+                       "closed_price":  0.12787,
+                       "pnl":  -29.174939702792884,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779413476422,
+                       "closed":  1779413490139
+                   },
+                   {
+                       "sym":  "TRUTHUSDT",
+                       "side":  "LONG",
+                       "entry":  0.011443,
+                       "closed_price":  0.011388,
+                       "pnl":  -27.532159398758843,
+                       "strat":  "MA10_BOUNCE",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779413416611,
+                       "closed":  1779413706040
+                   },
+                   {
+                       "sym":  "EDENUSDT",
+                       "side":  "LONG",
+                       "entry":  0.12824000000000002,
+                       "closed_price":  0.12862,
+                       "pnl":  11.315970056144394,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779413790256,
+                       "closed":  1779413811580
+                   },
+                   {
+                       "sym":  "PLUMEUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.01465,
+                       "closed_price":  0.01472,
+                       "pnl":  -27.390784982935365,
+                       "strat":  "TREND_SHORT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779413765411,
+                       "closed":  1779413855784
+                   },
+                   {
+                       "sym":  "1000CHEEMSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.0007268,
+                       "closed_price":  0.00073,
+                       "pnl":  18.514309301045472,
+                       "strat":  "TREND_LONG",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779414304201,
+                       "closed":  1779414324320
+                   },
+                   {
+                       "sym":  "ETCUSDT",
+                       "side":  "LONG",
+                       "entry":  9.008999999999999,
+                       "closed_price":  9.024,
+                       "pnl":  4.825008325008641,
+                       "strat":  "EMA_CROSS_UP",
+                       "reason":  "TAKE_PROFIT_TIME_DECAY",
+                       "opened":  1779413404779,
+                       "closed":  1779414352282
+                   },
+                   {
+                       "sym":  "FIGHTUSDT",
+                       "side":  "SHORT",
+                       "entry":  0.005783,
+                       "closed_price":  0.005814,
+                       "pnl":  -30.302697561818935,
+                       "strat":  "MA10_REJECT",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779414352276,
+                       "closed":  1779414365060
+                   },
+                   {
+                       "sym":  "PHAROSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.6525,
+                       "closed_price":  0.6491,
+                       "pnl":  -29.553639846742982,
+                       "strat":  "TREND_LONG",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779414304201,
+                       "closed":  1779414384953
+                   },
+                   {
+                       "sym":  "BSBUSDT",
+                       "side":  "LONG",
+                       "entry":  0.9255099999999999,
+                       "closed_price":  0.92074,
+                       "pnl":  -29.26957569340116,
+                       "strat":  "SQUEEZE_LONG",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779414365054,
+                       "closed":  1779414385498
+                   },
+                   {
+                       "sym":  "PROVEUSDT",
+                       "side":  "LONG",
+                       "entry":  0.3049,
+                       "closed_price":  0.3058,
+                       "pnl":  11.258937356510527,
+                       "strat":  "MA10_BOUNCE",
+                       "reason":  "TAKE_PROFIT",
+                       "opened":  1779414384947,
+                       "closed":  1779414443923
+                   },
+                   {
+                       "sym":  "SPCXUSDT",
+                       "side":  "SHORT",
+                       "entry":  206.71,
+                       "closed_price":  207.62,
+                       "pnl":  -25.511513714866155,
+                       "strat":  "EMA_CROSS_DN",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779414304201,
+                       "closed":  1779414510460
+                   },
+                   {
+                       "sym":  "EDGEUSDT",
+                       "side":  "LONG",
+                       "entry":  1.4661,
+                       "closed_price":  1.4568,
+                       "pnl":  -35.21679967260032,
+                       "strat":  "TREND_LONG",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779414324311,
+                       "closed":  1779414676623
+                   },
+                   {
+                       "sym":  "PHAROSUSDT",
+                       "side":  "LONG",
+                       "entry":  0.6517999999999999,
+                       "closed_price":  0.6489,
+                       "pnl":  -25.74608775697992,
+                       "strat":  "TREND_LONG",
+                       "reason":  "HARD_STOP_LOSS",
+                       "opened":  1779414685250,
+                       "closed":  1779414823839
+                   }
+               ],
+    "system_logs":  [
+                        {
+                            "time":  "01:51:25",
+                            "msg":  "[PHAROSUSDT] OPEN LONG PHAROSUSDT @ 0.6518 [TREND_LONG] sz=250.00 tp=10.00 atr=1.59% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:46:24",
+                            "msg":  "[PROVEUSDT] OPEN LONG PROVEUSDT @ 0.3049 [MA10_BOUNCE] sz=250.00 tp=10.00 atr=2.80% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:46:05",
+                            "msg":  "[BSBUSDT] OPEN LONG BSBUSDT @ 0.9255 [SQUEEZE_LONG] sz=250.00 tp=10.00 atr=3.52% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:45:52",
+                            "msg":  "[FIGHTUSDT] OPEN SHORT FIGHTUSDT @ 0.0058 [MA10_REJECT] sz=250.00 tp=10.00 atr=1.74% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:45:24",
+                            "msg":  "[EDGEUSDT] OPEN LONG EDGEUSDT @ 1.4661 [TREND_LONG] sz=250.00 tp=10.00 atr=1.73% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:45:04",
+                            "msg":  "[1000CHEEMSUSDT] OPEN LONG 1000CHEEMSUSDT @ 0.0007 [TREND_LONG] sz=250.00 tp=10.00 atr=1.30% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:45:04",
+                            "msg":  "[PHAROSUSDT] OPEN LONG PHAROSUSDT @ 0.6525 [TREND_LONG] sz=250.00 tp=10.00 atr=1.59% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:45:04",
+                            "msg":  "[SPCXUSDT] OPEN SHORT SPCXUSDT @ 206.7100 [EMA_CROSS_DN] sz=250.00 tp=10.00 atr=0.97% t15=DOWN t1h=UNKNOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:36:30",
+                            "msg":  "[EDENUSDT] OPEN LONG EDENUSDT @ 0.1282 [EMA_CROSS_UP] sz=250.00 tp=10.00 atr=2.85% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:36:05",
+                            "msg":  "[PLUMEUSDT] OPEN SHORT PLUMEUSDT @ 0.0146 [TREND_SHORT] sz=250.00 tp=10.00 atr=1.77% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:31:16",
+                            "msg":  "[EDENUSDT] OPEN LONG EDENUSDT @ 0.1285 [EMA_CROSS_UP] sz=250.00 tp=10.00 atr=2.85% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:30:30",
+                            "msg":  "[BILLUSDT] OPEN SHORT BILLUSDT @ 0.0790 [MA10_REJECT] sz=250.00 tp=10.00 atr=2.56% t15=UP t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:30:16",
+                            "msg":  "[TRUTHUSDT] OPEN LONG TRUTHUSDT @ 0.0114 [MA10_BOUNCE] sz=250.00 tp=10.00 atr=1.06% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:30:05",
+                            "msg":  "[PLUMEUSDT] OPEN SHORT PLUMEUSDT @ 0.0147 [TREND_SHORT] sz=250.00 tp=10.00 atr=1.77% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:30:05",
+                            "msg":  "[ETCUSDT] OPEN LONG ETCUSDT @ 9.0090 [EMA_CROSS_UP] sz=250.00 tp=7.83 atr=0.31% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:30:04",
+                            "msg":  "[NILUSDT] OPEN LONG NILUSDT @ 0.0573 [MA10_BOUNCE] sz=250.00 tp=10.00 atr=1.74% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:30:04",
+                            "msg":  "[SKYAIUSDT] OPEN LONG SKYAIUSDT @ 0.2942 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=1.71% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:06:44",
+                            "msg":  "[BSBUSDT] OPEN LONG BSBUSDT @ 0.9213 [SQUEEZE_LONG] sz=250.00 tp=10.00 atr=3.74% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:05:00",
+                            "msg":  "[FIGHTUSDT] OPEN LONG FIGHTUSDT @ 0.0056 [EMA_CROSS_UP] sz=250.00 tp=10.00 atr=1.74% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:04:11",
+                            "msg":  "[FIDAUSDT] OPEN LONG FIDAUSDT @ 0.0385 [MA10_BOUNCE] sz=250.00 tp=10.00 atr=2.65% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:00:03",
+                            "msg":  "[FIDAUSDT] OPEN LONG FIDAUSDT @ 0.0385 [MA10_BOUNCE] sz=250.00 tp=10.00 atr=2.65% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:00:03",
+                            "msg":  "[BSBUSDT] OPEN LONG BSBUSDT @ 0.9332 [SQUEEZE_LONG] sz=250.00 tp=10.00 atr=3.74% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "01:00:03",
+                            "msg":  "[FIGHTUSDT] OPEN LONG FIGHTUSDT @ 0.0057 [EMA_CROSS_UP] sz=250.00 tp=10.00 atr=1.74% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:48:11",
+                            "msg":  "[BUSDT] OPEN SHORT BUSDT @ 0.3090 [TREND_SHORT] sz=250.00 tp=10.00 atr=1.40% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:45:05",
+                            "msg":  "[BUSDT] OPEN SHORT BUSDT @ 0.3035 [TREND_SHORT] sz=250.00 tp=10.00 atr=1.40% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:45:05",
+                            "msg":  "[VVVUSDT] OPEN LONG VVVUSDT @ 18.2040 [EMA_CROSS_UP] sz=250.00 tp=10.00 atr=1.35% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:45:05",
+                            "msg":  "[HYPEUSDT] OPEN SHORT HYPEUSDT @ 57.3300 [EMA_CROSS_DN] sz=250.00 tp=10.00 atr=0.97% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:45:05",
+                            "msg":  "[IRYSUSDT] OPEN LONG IRYSUSDT @ 0.0353 [VOL_BREAKUP] sz=250.00 tp=10.00 atr=0.97% t15=UP t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:36:44",
+                            "msg":  "[XMRUSDT] OPEN LONG XMRUSDT @ 386.3100 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=0.71% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:30:01",
+                            "msg":  "[XMRUSDT] OPEN LONG XMRUSDT @ 386.1700 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=0.71% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:30:01",
+                            "msg":  "[PHAROSUSDT] OPEN LONG PHAROSUSDT @ 0.6746 [EMA_CROSS_UP] sz=250.00 tp=10.00 atr=0.88% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:05:38",
+                            "msg":  "[GUAUSDT] OPEN SHORT GUAUSDT @ 1.2708 [MA10_REJECT] sz=250.00 tp=10.00 atr=1.77% t15=UP t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:04:24",
+                            "msg":  "[SNDKUSDT] OPEN SHORT SNDKUSDT @ 1538.2200 [SQUEEZE_SHORT] sz=250.00 tp=5.30 atr=0.21% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:00:38",
+                            "msg":  "[SPCXUSDT] OPEN SHORT SPCXUSDT @ 207.4900 [EMA_CROSS_DN] sz=250.00 tp=10.00 atr=0.95% t15=DOWN t1h=UNKNOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:00:05",
+                            "msg":  "[OPENUSDT] OPEN LONG OPENUSDT @ 0.1974 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=0.94% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:00:04",
+                            "msg":  "[SNDKUSDT] OPEN SHORT SNDKUSDT @ 1533.9300 [SQUEEZE_SHORT] sz=250.00 tp=5.30 atr=0.21% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "00:00:04",
+                            "msg":  "[GUAUSDT] OPEN SHORT GUAUSDT @ 1.2531 [MA10_REJECT] sz=250.00 tp=10.00 atr=1.77% t15=UP t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:49:09",
+                            "msg":  "[BANANAS31USDT] OPEN LONG BANANAS31USDT @ 0.0127 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=0.76% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:48:27",
+                            "msg":  "[BILLUSDT] OPEN LONG BILLUSDT @ 0.0748 [TREND_LONG] sz=250.00 tp=10.00 atr=2.48% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:45:04",
+                            "msg":  "[LINKUSDT] OPEN SHORT LINKUSDT @ 9.7430 [EMA_CROSS_DN] sz=250.00 tp=7.70 atr=0.31% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:45:04",
+                            "msg":  "[BILLUSDT] OPEN LONG BILLUSDT @ 0.0747 [TREND_LONG] sz=250.00 tp=10.00 atr=2.48% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:45:03",
+                            "msg":  "[BANANAS31USDT] OPEN LONG BANANAS31USDT @ 0.0126 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=0.76% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:45:03",
+                            "msg":  "[XMRUSDT] OPEN LONG XMRUSDT @ 391.9600 [RSI_OVERSOLD] sz=250.00 tp=10.00 atr=0.61% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:34:29",
+                            "msg":  "[HYPEUSDT] OPEN SHORT HYPEUSDT @ 58.9830 [TREND_SHORT] sz=250.00 tp=10.00 atr=1.21% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:30:04",
+                            "msg":  "[HYPEUSDT] OPEN SHORT HYPEUSDT @ 59.0820 [TREND_SHORT] sz=250.00 tp=10.00 atr=1.21% t15=UP t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:30:04",
+                            "msg":  "[BUSDT] OPEN SHORT BUSDT @ 0.2970 [MOMENTUM_SHORT] sz=250.00 tp=67.94 atr=0.93% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:18:16",
+                            "msg":  "[PLAYUSDT] OPEN SHORT PLAYUSDT @ 0.0881 [TREND_SHORT] sz=250.00 tp=10.00 atr=2.44% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:15:04",
+                            "msg":  "[BEATUSDT] OPEN LONG BEATUSDT @ 0.7133 [MA10_BOUNCE] sz=250.00 tp=10.00 atr=3.90% t15=DOWN t1h=UP",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:15:03",
+                            "msg":  "[ESPORTSUSDT] OPEN LONG ESPORTSUSDT @ 0.6914 [VOL_BREAKUP] sz=250.00 tp=10.00 atr=0.86% t15=UP t1h=DOWN",
+                            "level":  "info"
+                        },
+                        {
+                            "time":  "23:15:03",
+                            "msg":  "[PLAYUSDT] OPEN SHORT PLAYUSDT @ 0.0878 [TREND_SHORT] sz=250.00 tp=10.00 atr=2.44% t15=DOWN t1h=DOWN",
+                            "level":  "info"
+                        }
+                    ],
+    "server_time":  1779415448380,
+    "elapsed":  "5sa 16dk 24s",
+    "used_capital":  0,
+    "unrealized_pnl":  0,
+    "has_downloadable_log":  false
+}

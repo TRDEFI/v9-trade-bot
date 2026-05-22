@@ -76,9 +76,8 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Note: Use __dirname fallback for production (cjs) vs dev (esm)
-    // Esbuild will bundle path logic, CJS has __dirname, ESM requires the fallback above
-    const distPath = path.join(path.resolve(__dirname), 'dist');
+    // Esbuild bundles to dist/server.js — __dirname is the dist/ folder itself
+    const distPath = path.resolve(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
