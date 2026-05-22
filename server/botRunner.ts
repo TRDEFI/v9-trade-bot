@@ -228,9 +228,41 @@ export class BotRunner {
                     updatedReservedCapital += actualMarginUsd;
                 }
                 
-                // Binance tarafinda manuel kapatilmis pozisyonlari local'den temizle
+                // Binance tarafinda kapatilmis pozisyonlari local'den temizle ve PnL'i kaydet
                 for (const openSym of Object.keys(this.openPositions)) {
                     if (!activeBinanceSyms.has(openSym)) {
+                        const lostPos = this.openPositions[openSym];
+                        const estNotional = lostPos.size * lostPos.lev;
+                        const openCommission = lostPos.openCommission || (estNotional * 0.0005);
+                        const estCloseCommission = estNotional * 0.0005;
+                        const totalCommission = openCommission + estCloseCommission;
+
+                        let netPnl: number;
+                        if (lostPos.unRealizedProfit !== undefined) {
+                            netPnl = lostPos.unRealizedProfit - totalCommission;
+                        } else {
+                            const closePx = lostPos.currentPrice || lostPos.entry;
+                            const pnlRaw = lostPos.side === 'LONG'
+                                ? ((closePx - lostPos.entry) / lostPos.entry)
+                                : ((lostPos.entry - closePx) / lostPos.entry);
+                            netPnl = (estNotional * pnlRaw) - totalCommission;
+                        }
+
+                        this.totalRealizedPnl += netPnl;
+                        this.closedPositions.push({
+                            sym: lostPos.sym,
+                            side: lostPos.side,
+                            entry: lostPos.entry,
+                            closed_price: lostPos.currentPrice || lostPos.entry,
+                            pnl: netPnl,
+                            strat: lostPos.strat || 'UNKNOWN',
+                            reason: 'STOP_MARKET',
+                            lev: lostPos.lev,
+                            size: lostPos.size,
+                            opened: lostPos.opened_at,
+                            closed: Date.now()
+                        });
+
                         delete this.openPositions[openSym];
                     }
                 }
@@ -257,16 +289,11 @@ export class BotRunner {
                 const openCommission = pos.openCommission || (notionalValue * 0.0005);
                 const totalCommission = openCommission + estCloseCommission;
                 
-                let netPnlUsd = 0;
-                if (pos.unRealizedProfit !== undefined) {
-                    netPnlUsd = pos.unRealizedProfit - totalCommission; 
-                } else {
-                    const pnlRaw = pos.side === 'LONG' 
-                        ? ((price - pos.entry) / pos.entry) 
-                        : ((pos.entry - price) / pos.entry);
-                    const grossUsd = notionalValue * pnlRaw;
-                    netPnlUsd = grossUsd - totalCommission;
-                }
+                const pnlRaw = pos.side === 'LONG' 
+                    ? ((price - pos.entry) / pos.entry) 
+                    : ((pos.entry - price) / pos.entry);
+                const grossUsd = notionalValue * pnlRaw;
+                const netPnlUsd = grossUsd - totalCommission;
 
                 pos.netPnlUsd = netPnlUsd;
                 pos.pnlPct = (netPnlUsd / pos.size) * 100;
@@ -596,8 +623,9 @@ export class BotRunner {
                             this.reservedCapital += actualMarginUsd;
 
                             // SERVER-SIDE STOP-LOSS: Place STOP_MARKET order on Binance
-                            // Safety net only (3% fixed) — app-level hard stop (-$25) fires first via polling
-                            const stopLossPct = 0.03;
+                            // Primary protection at -$25 equivalent — triggers instantly via Binance engine, preventing MARKET-order slippage
+                            const stopNotional = actualMarginUsd * USER_CONFIG.lev;
+                            const stopLossPct = Math.max(0.002, Math.abs(USER_CONFIG.cut_loss) / stopNotional);
                             const stopPrice = sig.side === 'LONG'
                                 ? result.avgPrice * (1 - stopLossPct)
                                 : result.avgPrice * (1 + stopLossPct);
