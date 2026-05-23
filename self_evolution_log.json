@@ -4399,6 +4399,940 @@
         },
         "key_insight": "The bot's core problem is entering LONG positions against confirmed downtrends. 26 of 33 losses are HARD_STOP_LOSS averaging -$30.06 each. The trend data (t15=DOWN, t1h=DOWN) is logged at entry but not used as a filter. This is the highest-impact fix available."
       }
+    },
+    {
+      "timestamp": "2026-05-23T08:17:08.261785+00:00",
+      "capital": 2018.52,
+      "total_trades": 1,
+      "total_wins": 1,
+      "total_losses": 0,
+      "total_pnl": 18.52,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.85,
+          "slippage_usd": -1.85
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.069119102606219
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07147634174882
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.002016129032285
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_LONG",
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 42,
+          "wins": 25,
+          "losses": 17,
+          "win_pct": 59.5,
+          "total_pnl": -144.74
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        {
+          "strat": "MA10_BOUNCE",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      ],
+      "anomalies": [
+        "Capital drawdown: -100.0%"
+      ],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "capital_forecast_24h": 2615.24
+    },
+    {
+      "timestamp": "2026-05-23T08:18:43.381025+00:00",
+      "capital": 2018.52,
+      "total_trades": 1,
+      "total_wins": 1,
+      "total_losses": 0,
+      "total_pnl": 18.52,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.85,
+          "slippage_usd": -1.85
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.069119102606219
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07147634174882
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.002016129032285
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_LONG",
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 42,
+          "wins": 25,
+          "losses": 17,
+          "win_pct": 59.5,
+          "total_pnl": -144.74
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        {
+          "strat": "MA10_BOUNCE",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      ],
+      "anomalies": [
+        "Capital drawdown: -100.0%"
+      ],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "capital_forecast_24h": 2594.79
+    },
+    {
+      "timestamp": "2026-05-23T08:34:27.710220+00:00",
+      "capital": 2025.66,
+      "total_trades": 2,
+      "total_wins": 2,
+      "total_losses": 0,
+      "total_pnl": 25.66,
+      "new_trades": [
+        {
+          "sym": "AMDUSDT",
+          "side": "LONG",
+          "entry": 459.4,
+          "close": 460.24,
+          "pnl": 7.142359599477926,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT",
+          "opened": 1779524103877,
+          "closed": 1779524709557
+        }
+      ],
+      "open_positions": [],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "system_logs_last": [
+        {
+          "time": "08:18:17",
+          "msg": "Log rotated: bot_scan.log.1779524297220.bak",
+          "level": "info"
+        },
+        {
+          "time": "08:15:04",
+          "msg": "[AMDUSDT] OPEN LONG AMDUSDT @ 459.4000 [RSI_OVERSOLD] sz=250.00 tp=5.55 atr=0.22% t15=DOWN t1h=UP",
+          "level": "info"
+        },
+        {
+          "time": "07:32:28",
+          "msg": "[RIVERUSDT] OPEN LONG RIVERUSDT @ 6.8230 [TREND_LONG] sz=250.00 tp=15.00 atr=1.16% t15=DOWN t1h=UP",
+          "level": "info"
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "pnl_delta_15min": 7.14,
+      "trades_delta_15min": 1,
+      "cycle": 33
+    },
+    {
+      "timestamp": "2026-05-23T08:46:37.518954+00:00",
+      "capital": 2025.66,
+      "total_trades": 2,
+      "total_wins": 2,
+      "total_losses": 0,
+      "total_pnl": 25.66,
+      "new_trades": [],
+      "open_positions": [],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "system_logs_last": [
+        {
+          "time": "08:18:17",
+          "msg": "Log rotated: bot_scan.log.1779524297220.bak",
+          "level": "info"
+        },
+        {
+          "time": "08:15:04",
+          "msg": "[AMDUSDT] OPEN LONG AMDUSDT @ 459.4000 [RSI_OVERSOLD] sz=250.00 tp=5.55 atr=0.22% t15=DOWN t1h=UP",
+          "level": "info"
+        },
+        {
+          "time": "07:32:28",
+          "msg": "[RIVERUSDT] OPEN LONG RIVERUSDT @ 6.8230 [TREND_LONG] sz=250.00 tp=15.00 atr=1.16% t15=DOWN t1h=UP",
+          "level": "info"
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "No new trades this cycle - monitoring"
+      ],
+      "pnl_delta_15min": 0.0,
+      "trades_delta_15min": 0,
+      "cycle": 34
+    },
+    {
+      "timestamp": "2026-05-23T08:50:17.575891+00:00",
+      "capital": 2025.66,
+      "total_trades": 2,
+      "total_wins": 2,
+      "total_losses": 0,
+      "total_pnl": 25.66,
+      "new_trades": [],
+      "open_positions": [],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "system_logs_last": [],
+      "anomalies": [],
+      "suggestions": [
+        "STRATEGY: SQUEEZE_LONG unprofitable (24 trades, 45.8% WR, $-210.59) - tune or disable",
+        "STRATEGY: RSI_OVERSOLD unprofitable (43 trades, 60.5% WR, $-137.60) - tune or disable",
+        "STRATEGY: VOL_BREAKUP unprofitable (2 trades, 50.0% WR, $-19.25) - tune or disable",
+        "SLIPPAGE: ENAUSDT had -58.28 slippage - use limit orders or reduce size",
+        "SLIPPAGE: BCHUSDT had -28.07 slippage - use limit orders or reduce size"
+      ],
+      "pnl_delta_15min": 0.0,
+      "trades_delta_15min": 0,
+      "cycle": 34,
+      "report_type": "enhanced_analysis"
+    },
+    {
+      "timestamp": "2026-05-23T09:08:00.568400+00:00",
+      "capital": 2025.66,
+      "total_trades": 2,
+      "total_wins": 2,
+      "total_losses": 0,
+      "total_pnl": 25.66,
+      "new_trades_analyzed": 2,
+      "kline_autopsies": [
+        {
+          "sym": "RIVERUSDT",
+          "side": "LONG",
+          "entry": 6.823,
+          "close": 6.851,
+          "pnl": 18.52,
+          "strat": "TREND_LONG",
+          "reason": "TAKE_PROFIT",
+          "opened": "07:32",
+          "closed": "07:34",
+          "entry_candle_type": "green",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.010992,
+          "max_unfavorable_pct": -0.00044,
+          "slippage_usd": 0,
+          "autopsy_summary": "Entry on green candle. Pattern: none. PnL: $18.52"
+        },
+        {
+          "sym": "AMDUSDT",
+          "side": "LONG",
+          "entry": 459.4,
+          "close": 460.24,
+          "pnl": 7.14,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT",
+          "opened": "08:15",
+          "closed": "08:25",
+          "entry_candle_type": "green",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.002003,
+          "max_unfavorable_pct": -4.4e-05,
+          "slippage_usd": 0,
+          "autopsy_summary": "Entry on green candle. Pattern: none. PnL: $7.14"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.85,
+          "slippage_usd": -1.85
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.069119102606219
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07147634174882
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.002016129032285
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "TUNE or DISABLE SQUEEZE_LONG: 24 trades, 46% WR, $-210.59 PnL. Strategy is unprofitable."
+      ],
+      "capital_forecast_24h": 2076.06,
+      "pnl_delta_15min": 405.02,
+      "trades_delta_15min": -72,
+      "cycle": 32,
+      "open_positions": 0,
+      "open_pnl": 0
     }
   ]
 }
