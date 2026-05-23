@@ -7747,6 +7747,245 @@
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
+    },
+    {
+      "timestamp": "2026-05-23T21:14:13.772914+00:00",
+      "capital": 1906.5,
+      "total_trades": 9,
+      "total_wins": 3,
+      "total_losses": 6,
+      "total_pnl": -93.5,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -31.4303233482177,
+          "slippage_usd": -6.430323348217701
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.069119102606219
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07147634174882
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.002016129032285
+        },
+        {
+          "sym": "BTCUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.839659365134597,
+          "slippage_usd": -0.8396593651345974
+        },
+        {
+          "sym": "LINKUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.627966920846568,
+          "slippage_usd": -0.6279669208465677
+        },
+        {
+          "sym": "ZECUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.269488399183622,
+          "slippage_usd": -1.269488399183622
+        }
+      ],
+      "consecutive_losses": {
+        "TREND_LONG": 0,
+        "RSI_OVERSOLD": 0,
+        "MA10_REJECT": 0,
+        "TREND_SHORT": 1,
+        "EMA_CROSS_DN": 2,
+        "BB_REVERSION_SHORT": 3,
+        "VOL_BREAKUP": 1,
+        "SQUEEZE_SHORT": 5
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_LONG",
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 2,
+          "wins": 0,
+          "losses": 2,
+          "win_pct": 0.0,
+          "total_pnl": -48.02
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 6,
+          "wins": 3,
+          "losses": 3,
+          "win_pct": 50.0,
+          "total_pnl": -18.51
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 4,
+          "wins": 2,
+          "losses": 2,
+          "win_pct": 50.0,
+          "total_pnl": -12.56
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 8,
+          "wins": 3,
+          "losses": 5,
+          "win_pct": 37.5,
+          "total_pnl": -89.28
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        {
+          "strat": "MA10_BOUNCE",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        },
+        {
+          "strat": "MA10_REJECT",
+          "trades": 4,
+          "wins": 3,
+          "losses": 1,
+          "win_pct": 75.0,
+          "total_pnl": 34.92
+        },
+        {
+          "strat": "BB_REVERSION_SHORT",
+          "trades": 3,
+          "wins": 0,
+          "losses": 3,
+          "win_pct": 0.0,
+          "total_pnl": -75.02
+        }
+      ],
+      "anomalies": [
+        "Capital drawdown: -100.0%"
+      ],
+      "suggestions": [
+        "Disable BB_REVERSION_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1370.03,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
     }
   ],
   "last_updated": "2026-05-23T15:07:19.912347+00:00"
