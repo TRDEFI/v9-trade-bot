@@ -6235,6 +6235,83 @@
       "forecast_24h": 2308.66,
       "loop_running": true,
       "loop_crash_count": 0
+    },
+    {
+      "timestamp": "2026-05-23T12:03:02.500000+00:00",
+      "cycle": 38,
+      "capital": 2030.82,
+      "total_pnl": 30.82,
+      "pnl_delta_15min": -6.17,
+      "trades_delta_15min": 2,
+      "new_trades": [
+        {
+          "sym": "PLUMEUSDT",
+          "side": "SHORT",
+          "pnl": 17.33,
+          "strat": "TREND_SHORT",
+          "reason": "TAKE_PROFIT"
+        },
+        {
+          "sym": "SPCXUSDT",
+          "side": "SHORT",
+          "pnl": -23.51,
+          "strat": "EMA_CROSS_DN",
+          "reason": "HARD_STOP_LOSS"
+        }
+      ],
+      "open_positions": [],
+      "strategy_performance": {
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "pnl": 18.52,
+          "win_rate": 100
+        },
+        "RSI_OVERSOLD": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "pnl": 7.14,
+          "win_rate": 100
+        },
+        "MA10_REJECT": {
+          "trades": 4,
+          "wins": 3,
+          "losses": 1,
+          "pnl": 34.92,
+          "win_rate": 75
+        },
+        "TREND_SHORT": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "pnl": -6.25,
+          "win_rate": 50
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "pnl": -23.51,
+          "win_rate": 0
+        }
+      },
+      "risk_metrics": {
+        "avg_win": 16.98,
+        "avg_loss": -23.69,
+        "win_loss_ratio": 0.72,
+        "profit_factor": 1.43
+      },
+      "suggestions": [
+        "High slippage symbols: ENAUSDT (-58.28), BCHUSDT (-28.07), MEGAUSDT (-10.00). Consider reducing position sizes or using limit orders.",
+        "MA10_REJECT showing promise: 75% WR with +$34.92 PnL over 4 trades. Consider increasing allocation."
+      ],
+      "anomalies": [],
+      "hourly_rate": 6.83,
+      "forecast_24h": 2194.85,
+      "loop_running": true,
+      "loop_crash_count": 0
     }
   ]
 }
