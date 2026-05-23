@@ -5653,6 +5653,588 @@
       "trades_delta_15min": 0,
       "cycle": 34,
       "report_type": "enhanced_analysis"
+    },
+    {
+      "timestamp": "2026-05-23T10:18:08.864235+00:00",
+      "capital": 2036.39,
+      "total_trades": 5,
+      "total_wins": 4,
+      "total_losses": 1,
+      "total_pnl": 36.39,
+      "new_trades_analyzed": 3,
+      "kline_autopsies": [
+        {
+          "sym": "NILUSDT",
+          "side": "SHORT",
+          "entry": 0.05359,
+          "close": 0.05339,
+          "pnl": 16.66,
+          "strat": "MA10_REJECT",
+          "reason": "TAKE_PROFIT",
+          "opened": "10:00",
+          "closed": "10:01",
+          "entry_candle_type": "red",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.001679,
+          "max_unfavorable_pct": -0.004105,
+          "slippage_usd": 0,
+          "autopsy_summary": "Entry on red candle. Pattern: none. PnL: $16.66"
+        },
+        {
+          "sym": "SAHARAUSDT",
+          "side": "SHORT",
+          "entry": 0.034749999999999996,
+          "close": 0.0349,
+          "pnl": -23.58,
+          "strat": "TREND_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "10:00",
+          "closed": "10:03",
+          "entry_candle_type": "green",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.007482,
+          "max_unfavorable_pct": -0.002302,
+          "slippage_usd": 1.42,
+          "autopsy_summary": "Entry on green candle. Pattern: none. PnL: $-23.58"
+        },
+        {
+          "sym": "NILUSDT",
+          "side": "SHORT",
+          "entry": 0.05343,
+          "close": 0.05322,
+          "pnl": 17.65,
+          "strat": "MA10_REJECT",
+          "reason": "TAKE_PROFIT",
+          "opened": "10:04",
+          "closed": "10:09",
+          "entry_candle_type": "red",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.000561,
+          "max_unfavorable_pct": -0.007674,
+          "slippage_usd": 0,
+          "autopsy_summary": "Entry on red candle. Pattern: none. PnL: $17.65"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 1,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -8.27
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        },
+        "MA10_REJECT": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 34.31
+        }
+      },
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.85,
+          "slippage_usd": -1.85
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.069119102606219
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07147634174882
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.002016129032285
+        },
+        {
+          "sym": "SAHARAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -23.58,
+          "slippage_usd": 1.42
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "TUNE or DISABLE SQUEEZE_LONG: 24 trades, 46% WR, $-210.59 PnL. Strategy is unprofitable."
+      ],
+      "capital_forecast_24h": 2352.64,
+      "pnl_delta_15min": 10.73,
+      "trades_delta_15min": 3,
+      "cycle": 35,
+      "open_positions": 0,
+      "open_pnl": 0
+    },
+    {
+      "timestamp": "2026-05-23T10:18:20.861504+00:00",
+      "capital": 2036.39,
+      "total_trades": 5,
+      "total_wins": 4,
+      "total_losses": 1,
+      "total_pnl": 36.39,
+      "new_trades": [
+        {
+          "sym": "NILUSDT",
+          "side": "SHORT",
+          "entry": 0.05359,
+          "close": 0.05339,
+          "pnl": 16.660197798096547,
+          "strat": "MA10_REJECT",
+          "reason": "TAKE_PROFIT",
+          "opened": 1779530403581,
+          "closed": 1779530514223
+        },
+        {
+          "sym": "SAHARAUSDT",
+          "side": "SHORT",
+          "entry": 0.034749999999999996,
+          "close": 0.0349,
+          "pnl": -23.58273381295026,
+          "strat": "TREND_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": 1779530403581,
+          "closed": 1779530589860
+        },
+        {
+          "sym": "NILUSDT",
+          "side": "SHORT",
+          "entry": 0.05343,
+          "close": 0.05322,
+          "pnl": 17.651880965749104,
+          "strat": "MA10_REJECT",
+          "reason": "TAKE_PROFIT",
+          "opened": 1779530694466,
+          "closed": 1779530945997
+        }
+      ],
+      "open_positions": [],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 1,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -8.27
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        },
+        "MA10_REJECT": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 34.31
+        }
+      },
+      "system_logs_last": [
+        {
+          "time": "08:18:17",
+          "msg": "Log rotated: bot_scan.log.1779524297220.bak",
+          "level": "info"
+        },
+        {
+          "time": "08:15:04",
+          "msg": "[AMDUSDT] OPEN LONG AMDUSDT @ 459.4000 [RSI_OVERSOLD] sz=250.00 tp=5.55 atr=0.22% t15=DOWN t1h=UP",
+          "level": "info"
+        },
+        {
+          "time": "07:32:28",
+          "msg": "[RIVERUSDT] OPEN LONG RIVERUSDT @ 6.8230 [TREND_LONG] sz=250.00 tp=15.00 atr=1.16% t15=DOWN t1h=UP",
+          "level": "info"
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Strong winner NILUSDT (+$16.66) via MA10_REJECT - analyze what worked",
+        "Strong winner NILUSDT (+$17.65) via MA10_REJECT - analyze what worked"
+      ],
+      "pnl_delta_15min": 10.73,
+      "trades_delta_15min": 3,
+      "cycle": 35
+    },
+    {
+      "timestamp": "2026-05-23T10:32:01.461324+00:00",
+      "capital": 2012.4244554290365,
+      "total_trades": 6,
+      "total_wins": 4,
+      "total_losses": 2,
+      "total_pnl": 12.42,
+      "new_trades": 1,
+      "pnl_delta": -23.97,
+      "capital_delta": -23.97,
+      "hourly_rate": 4.15,
+      "forecast_24h": 2112.06,
+      "open_positions": 0,
+      "unrealized_pnl": 0,
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -8.27
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        },
+        "MA10_REJECT": {
+          "trades": 3,
+          "wins": 2,
+          "losses": 1,
+          "win_pct": 66.7,
+          "total_pnl": 10.35
+        }
+      },
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 1,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1,
+        "MA10_REJECT": 1
+      },
+      "anomalies": [
+        "SQUEEZE_LONG heavy losses: $-210.59",
+        "RSI_OVERSOLD heavy losses: $-137.60"
+      ],
+      "suggestions": [
+        "HIGH PRIORITY: SQUEEZE_LONG at 46% WR with $-210.59 PnL over 24 trades. Reduce position size from $250 to $100 or add trend-alignment filter.",
+        "RSI_OVERSOLD is most reliable at 60% WR (26W/17L). Consider increasing allocation to $300-350.",
+        "High slippage on: ENAUSDT, BCHUSDT, MEGAUSDT. Reduce position sizes or use limit orders.",
+        "EMA_CROSS_DN: only 1 trade (1 loss). Too early to judge \u2014 collect more data.",
+        "SQUEEZE_SHORT showing promise: 1W/0L $10.91 PnL. New strategy \u2014 monitor."
+      ],
+      "new_trade_details": [
+        {
+          "sym": "HUSDT",
+          "side": "SHORT",
+          "strat": "MA10_REJECT",
+          "reason": "HARD_STOP_LOSS",
+          "pnl": -23.97
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-23T10:54:32.285271+00:00",
+      "cycle": 36,
+      "capital": 2037.0,
+      "total_pnl": 37.0,
+      "pnl_delta_15min": 24.57,
+      "trades_delta_15min": 1,
+      "new_trades": [
+        {
+          "sym": "HUSDT",
+          "side": "SHORT",
+          "pnl": 24.57,
+          "strat": "MA10_REJECT",
+          "reason": "TAKE_PROFIT"
+        }
+      ],
+      "open_positions": [
+        {
+          "sym": "PLUMEUSDT",
+          "side": "SHORT",
+          "entry": 0.01293
+        }
+      ],
+      "strategy_performance": {
+        "MA10_REJECT": {
+          "trades": 4,
+          "wins": 3,
+          "losses": 1,
+          "pnl": 34.92,
+          "win_rate": 75
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "pnl": 18.52,
+          "win_rate": 100
+        },
+        "RSI_OVERSOLD": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "pnl": 7.14,
+          "win_rate": 100
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "pnl": -23.58,
+          "win_rate": 0
+        }
+      },
+      "risk_metrics": {
+        "avg_win": 16.91,
+        "avg_loss": -23.77,
+        "win_loss_ratio": 0.71,
+        "profit_factor": 1.78
+      },
+      "suggestions": [
+        "High slippage symbols: ENAUSDT (-58.28), BCHUSDT (-28.07), MEGAUSDT (-10.00). Consider reducing position sizes or using limit orders.",
+        "TREND_SHORT: Only 0W/1L with -23.58 PnL. Strategy may be entering against the trend. Add a higher-timeframe trend filter.",
+        "MA10_REJECT showing promise: 75% WR with +$34.92 PnL over 4 trades. Consider increasing allocation."
+      ],
+      "anomalies": [],
+      "hourly_rate": 11.32,
+      "forecast_24h": 2308.66,
+      "loop_running": true,
+      "loop_crash_count": 0
     }
   ]
 }
