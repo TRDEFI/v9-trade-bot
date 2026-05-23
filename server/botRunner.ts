@@ -35,13 +35,30 @@ const MEAN_REVERSION_STRATS = new Set([
 ]);
 
 const DISABLED_STRATS = new Set([
-    'VOL_BREAKDN'
+    'VOL_BREAKDN',
+    'SQUEEZE_LONG'
 ]);
 
-const STRICT_TREND_STRATS = new Set([
-    'EMA_CROSS_UP',
-    'RSI_OVERBOUGHT'
-]);
+interface TrendReq { align15m: 'UP' | 'DOWN' | 'ANY', align1h: 'UP' | 'DOWN' | 'ANY' }
+
+const TREND_MATRIX: Record<string, TrendReq> = {
+    'TREND_LONG':          { align15m: 'UP',   align1h: 'ANY'  },
+    'TREND_SHORT':         { align15m: 'DOWN', align1h: 'ANY'  },
+    'RSI_OVERSOLD':        { align15m: 'ANY',  align1h: 'ANY'  },
+    'RSI_OVERBOUGHT':      { align15m: 'DOWN', align1h: 'DOWN' },
+    'MA10_BOUNCE':         { align15m: 'UP',   align1h: 'ANY'  },
+    'MA10_REJECT':         { align15m: 'DOWN', align1h: 'ANY'  },
+    'BB_REVERSION_LONG':   { align15m: 'UP',   align1h: 'UP'   },
+    'BB_REVERSION_SHORT':  { align15m: 'DOWN', align1h: 'DOWN' },
+    'EMA_CROSS_UP':        { align15m: 'UP',   align1h: 'ANY'  },
+    'EMA_CROSS_DN':        { align15m: 'DOWN', align1h: 'ANY'  },
+    'MOMENTUM_LONG':       { align15m: 'UP',   align1h: 'ANY'  },
+    'MOMENTUM_SHORT':      { align15m: 'DOWN', align1h: 'ANY'  },
+    'VOL_BREAKUP':         { align15m: 'UP',   align1h: 'ANY'  },
+    'VOL_BREAKDN':         { align15m: 'DOWN', align1h: 'ANY'  },
+    'SQUEEZE_LONG':        { align15m: 'ANY',  align1h: 'ANY'  },
+    'SQUEEZE_SHORT':       { align15m: 'ANY',  align1h: 'ANY'  },
+};
 
 export interface SystemLog {
     time: string;
@@ -546,19 +563,25 @@ export class BotRunner {
                                 }
                             }
 
-                            if (STRICT_TREND_STRATS.has(sig.name)) {
-                                const aligned15m = (sig.side === 'LONG' && trend15m === 'UP') || (sig.side === 'SHORT' && trend15m === 'DOWN');
-                                const aligned1h = trend1h === 'UNKNOWN' || (sig.side === 'LONG' && trend1h === 'UP') || (sig.side === 'SHORT' && trend1h === 'DOWN');
-                                if (!aligned15m || !aligned1h) {
-                                    this.logToFile(`[${sym}] REJECT: strict trend filter for ${sig.name} failed (15m=${trend15m}, 1h=${trend1h})`);
+                            // TREND_MATRIX: per-strategy trend alignment filter
+                            const trendReq = TREND_MATRIX[sig.name];
+                            if (trendReq) {
+                                const ok15m = trendReq.align15m === 'ANY' || trendReq.align15m === trend15m;
+                                const ok1h = trendReq.align1h === 'ANY' || trend1h === 'UNKNOWN' || trendReq.align1h === trend1h;
+                                if (!ok15m || !ok1h) {
+                                    this.logToFile(`[${sym}] REJECT: ${sig.name} trend matrix requires 15m=${trendReq.align15m} (got ${trend15m}), 1h=${trendReq.align1h} (got ${trend1h})`);
                                     continue;
                                 }
                             }
 
                             // Universal trend filter: block LONG when BOTH 15m and 1h are DOWN
-                            // Prevents buying into strong downtrend on higher timeframes
+                            // Block SHORT when BOTH 15m and 1h are UP
                             if (sig.side === 'LONG' && trend15m === 'DOWN' && trend1h === 'DOWN') {
                                 this.logToFile(`[${sym}] REJECT: Universal trend filter blocked LONG (15m=DOWN, 1h=DOWN)`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && trend15m === 'UP' && trend1h === 'UP') {
+                                this.logToFile(`[${sym}] REJECT: Universal trend filter blocked SHORT (15m=UP, 1h=UP)`);
                                 continue;
                             }
 
