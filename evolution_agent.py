@@ -14,7 +14,7 @@ from typing import Dict, List, Any, Optional, Tuple
 # Configuration
 DASHBOARD_URL = "http://18.181.221.88:3000/api/data"
 BINANCE_KLINES_URL = "https://fapi.binance.com/fapi/v1/klines"
-LOG_FILE = "/workspace/self_evolution_log.json"
+LOG_FILE = "/workspace/v9-repo/self_evolution_log.json"
 STATE_FILE = "/workspace/monitor_state.json"
 
 # In-memory state (will be loaded from STATE_FILE)

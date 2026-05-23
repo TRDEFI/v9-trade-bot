@@ -3715,6 +3715,246 @@
       "hourly_pnl_rate": -28.45,
       "open_positions": 4,
       "session_elapsed_hours": 9.6
+    },
+    {
+      "timestamp": "2026-05-23T06:54:08.765658+00:00",
+      "capital": 1699.73746262909,
+      "total_trades": 67,
+      "total_wins": 39,
+      "total_losses": 28,
+      "total_pnl": -300.26253737091037,
+      "new_trades_analyzed": 1,
+      "kline_autopsies": [
+        {
+          "sym": "LITUSDT",
+          "side": "LONG",
+          "entry": 1.1299,
+          "close": 1.1246,
+          "pnl": -26.95340295601319,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "1779517805378",
+          "closed": "1779518054930"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 3,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "TREND_LONG": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 35,
+          "wins": 23,
+          "losses": 12,
+          "win_pct": 65.7,
+          "total_pnl": -65.64
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.26
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "anomalies": [
+        "Large open loss: SUIUSDT $-20.00",
+        "4 open LONG positions against DOWN/DOWN trend, unrealized PnL: $-45.48",
+        "High stop loss count in recent trades: 6 in last 10",
+        "Large loss: LITUSDT $-26.95",
+        "Large open loss: TONUSDT $-13.70"
+      ],
+      "suggestions": [
+        {
+          "priority": "CRITICAL",
+          "suggestion": "Capital drawdown at -15.0% ($-300.26 from $2000 start). Consider reducing position sizes by 50% or pausing all trading until strategies are re-evaluated.",
+          "estimated_impact": "Preserves remaining capital"
+        },
+        {
+          "priority": "CRITICAL",
+          "suggestion": "DISABLE RSI_OVERSOLD immediately - 3 consecutive losses, $-65.64 total PnL. Resume only after manual review.",
+          "estimated_impact": "Prevents further losses from RSI_OVERSOLD (currently $-65.64)"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "Review LITUSDT execution: large loss $-26.95 on RSI_OVERSOLD. Check if slippage contributed.",
+          "estimated_impact": "Review entry/exit quality for LITUSDT"
+        },
+        {
+          "priority": "HIGH",
+          "suggestion": "Add trend filter: Block LONG entries when trend_15m=DOWN and trend_1h=DOWN. Currently 4 open LONG positions against DOWN/DOWN trend.",
+          "estimated_impact": "Prevents trend-adverse entries"
+        }
+      ],
+      "capital_forecast_24h": -887.46
+    },
+    {
+      "timestamp": "2026-05-23T07:02:56.714438+00:00",
+      "capital": 1672.9455371632519,
+      "total_trades": 68,
+      "total_wins": 39,
+      "total_losses": 29,
+      "total_pnl": -327.0544628367485,
+      "new_trades_analyzed": 1,
+      "kline_autopsies": [
+        {
+          "sym": "SUIUSDT",
+          "side": "LONG",
+          "entry": 1.0304,
+          "close": 1.0256,
+          "pnl": -26.791925465838098,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "1779517804480",
+          "closed": "1779519314325"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 4,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "TREND_LONG": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 36,
+          "wins": 23,
+          "losses": 13,
+          "win_pct": 63.9,
+          "total_pnl": -92.44
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.26
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "anomalies": [
+        "Large open loss: ALLOUSDT $-16.78",
+        "4 open LONG positions against DOWN/DOWN trend, unrealized PnL: $-39.28",
+        "High stop loss count in recent trades: 6 in last 10",
+        "Large loss: SUIUSDT $-26.79",
+        "Large open loss: TONUSDT $-10.12"
+      ],
+      "suggestions": [
+        {
+          "priority": "CRITICAL",
+          "suggestion": "Capital drawdown at -16.4% ($-327.05 from $2000 start). Consider reducing position sizes by 50% or pausing all trading until strategies are re-evaluated.",
+          "estimated_impact": "Preserves remaining capital"
+        },
+        {
+          "priority": "CRITICAL",
+          "suggestion": "DISABLE RSI_OVERSOLD immediately - 4 consecutive losses, $-92.44 total PnL. Resume only after manual review.",
+          "estimated_impact": "Prevents further losses from RSI_OVERSOLD (currently $-92.44)"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "Review SUIUSDT execution: large loss $-26.79 on RSI_OVERSOLD. Check if slippage contributed.",
+          "estimated_impact": "Review entry/exit quality for SUIUSDT"
+        },
+        {
+          "priority": "HIGH",
+          "suggestion": "Add trend filter: Block LONG entries when trend_15m=DOWN and trend_1h=DOWN. Currently 4 open LONG positions against DOWN/DOWN trend.",
+          "estimated_impact": "Prevents trend-adverse entries"
+        }
+      ],
+      "capital_forecast_24h": -898.89
     }
   ]
 }
