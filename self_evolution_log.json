@@ -5335,13 +5335,115 @@
       "open_pnl": 0
     },
     {
-      "timestamp": "2026-05-23T09:28:50.127106+00:00",
+      "timestamp": "2026-05-23T09:47:35.846615+00:00",
       "capital": 2025.66,
       "total_trades": 2,
       "total_wins": 2,
       "total_losses": 0,
       "total_pnl": 25.66,
-      "kline_autopsies": [],
+      "new_trades_analyzed": 2,
+      "kline_autopsies": [
+        {
+          "sym": "RIVERUSDT",
+          "side": "LONG",
+          "entry": 6.823,
+          "close": 6.851,
+          "pnl": 18.52,
+          "strat": "TREND_LONG",
+          "reason": "TAKE_PROFIT",
+          "opened": "07:32",
+          "closed": "07:34",
+          "entry_candle_type": "green",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.010992,
+          "max_unfavorable_pct": -0.00044,
+          "slippage_usd": 0,
+          "autopsy_summary": "Entry on green candle. Pattern: none. PnL: $18.52"
+        },
+        {
+          "sym": "AMDUSDT",
+          "side": "LONG",
+          "entry": 459.4,
+          "close": 460.24,
+          "pnl": 7.14,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT",
+          "opened": "08:15",
+          "closed": "08:25",
+          "entry_candle_type": "green",
+          "pattern_detected": "none",
+          "max_favorable_pct": 0.002003,
+          "max_unfavorable_pct": -4.4e-05,
+          "slippage_usd": 0,
+          "autopsy_summary": "Entry on green candle. Pattern: none. PnL: $7.14"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 44,
+          "wins": 27,
+          "losses": 17,
+          "win_pct": 61.4,
+          "total_pnl": -130.46
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 3,
+          "wins": 3,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 47.3
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
       "slippage_heatmap": [
         {
           "sym": "KITEUSDT",
@@ -5452,6 +5554,26 @@
           "slippage_usd": -10.002016129032285
         }
       ],
+      "anomalies": [],
+      "suggestions": [
+        "TUNE or DISABLE SQUEEZE_LONG: 24 trades, 46% WR, $-210.59 PnL. Strategy is unprofitable."
+      ],
+      "capital_forecast_24h": 2073.47,
+      "pnl_delta_15min": 0.0,
+      "trades_delta_15min": 0,
+      "cycle": 33,
+      "open_positions": 0,
+      "open_pnl": 0
+    },
+    {
+      "timestamp": "2026-05-23T09:48:02.389364+00:00",
+      "capital": 2025.66,
+      "total_trades": 2,
+      "total_wins": 2,
+      "total_losses": 0,
+      "total_pnl": 25.66,
+      "new_trades": [],
+      "open_positions": [],
       "consecutive_losses": {
         "SQUEEZE_LONG": 1,
         "EMA_CROSS_DN": 1,
@@ -5460,82 +5582,77 @@
         "SQUEEZE_SHORT": 0,
         "MA10_BOUNCE": 1
       },
-      "strategy_performance": [
-        {
-          "strat": "SQUEEZE_LONG",
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
           "trades": 24,
           "wins": 11,
           "losses": 13,
           "win_pct": 45.8,
           "total_pnl": -210.59
         },
-        {
-          "strat": "RSI_OVERSOLD",
+        "RSI_OVERSOLD": {
           "trades": 43,
           "wins": 26,
           "losses": 17,
           "win_pct": 60.5,
           "total_pnl": -137.6
         },
-        {
-          "strat": "EMA_CROSS_DN",
+        "EMA_CROSS_DN": {
           "trades": 1,
           "wins": 0,
           "losses": 1,
           "win_pct": 0.0,
           "total_pnl": -25.96
         },
-        {
-          "strat": "TREND_SHORT",
+        "TREND_SHORT": {
           "trades": 1,
           "wins": 1,
           "losses": 0,
           "win_pct": 100.0,
           "total_pnl": 15.31
         },
-        {
-          "strat": "VOL_BREAKUP",
+        "VOL_BREAKUP": {
           "trades": 2,
           "wins": 1,
           "losses": 1,
           "win_pct": 50.0,
           "total_pnl": -19.25
         },
-        {
-          "strat": "SQUEEZE_SHORT",
+        "SQUEEZE_SHORT": {
           "trades": 1,
           "wins": 1,
           "losses": 0,
           "win_pct": 100.0,
           "total_pnl": 10.91
         },
-        {
-          "strat": "TREND_LONG",
+        "TREND_LONG": {
           "trades": 2,
           "wins": 2,
           "losses": 0,
           "win_pct": 100.0,
           "total_pnl": 28.78
         },
-        {
-          "strat": "MA10_BOUNCE",
+        "MA10_BOUNCE": {
           "trades": 2,
           "wins": 1,
           "losses": 1,
           "win_pct": 50.0,
           "total_pnl": -15.31
         }
-      ],
-      "anomalies": [
-        "Capital drawdown: -100.0%"
-      ],
+      },
+      "system_logs_last": [],
+      "anomalies": [],
       "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
+        "STRATEGY: SQUEEZE_LONG unprofitable (24 trades, 45.8% WR, $-210.59) - tune or disable",
+        "STRATEGY: RSI_OVERSOLD unprofitable (43 trades, 60.5% WR, $-137.60) - tune or disable",
+        "STRATEGY: VOL_BREAKUP unprofitable (2 trades, 50.0% WR, $-19.25) - tune or disable",
+        "SLIPPAGE: ENAUSDT had -58.28 slippage - use limit orders or reduce size",
+        "SLIPPAGE: BCHUSDT had -28.07 slippage - use limit orders or reduce size"
       ],
-      "capital_forecast_24h": 2343.15,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
+      "pnl_delta_15min": 0.0,
+      "trades_delta_15min": 0,
+      "cycle": 34,
+      "report_type": "enhanced_analysis"
     }
   ]
 }
