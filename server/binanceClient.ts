@@ -616,6 +616,75 @@ export class BinanceClient {
     }
   }
 
+  async closeLimitOrder(pos: { size: number; lev: number; side: string }, symbol: string, side: 'BUY' | 'SELL', currentPrice: number, slippagePct: number = 0.002): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
+      if (this.isSimulation) {
+          const commission = pos.size * pos.lev * 0.0002;
+          return { success: true, avgPrice: currentPrice, filledQty: pos.size, totalCommission: commission };
+      }
+      try {
+          const timestamp = Date.now();
+          const query = `symbol=${symbol}&timestamp=${timestamp}`;
+          const sig = this.sign(query);
+          const posRes = await axios.get(`${BASE_URL}/fapi/v2/positionRisk?${query}&signature=${sig}`, {
+              headers: { 'X-MBX-APIKEY': this.apiKey }
+          });
+
+          if (Array.isArray(posRes.data) && posRes.data.length > 0) {
+              const pos = posRes.data[0];
+              const positionAmt = Math.abs(parseFloat(pos.positionAmt));
+              if (positionAmt > 0) {
+                  const closeSide = parseFloat(pos.positionAmt) > 0 ? 'SELL' : 'BUY';
+                  const limitPrice = closeSide === 'SELL'
+                      ? currentPrice * (1 - slippagePct)
+                      : currentPrice * (1 + slippagePct);
+
+                  let posAmtStr = positionAmt.toString();
+                  if (posAmtStr.includes('e')) {
+                      posAmtStr = positionAmt.toFixed(10).replace(/\.?0+$/, '');
+                  }
+
+                  const tickSize = await this.getTickSize(symbol);
+                  const pricePrecision = Math.max(0, -Math.floor(Math.log10(tickSize)));
+                  const formattedPrice = limitPrice.toFixed(pricePrecision);
+
+                  const closeQuery = `symbol=${symbol}&side=${closeSide}&type=LIMIT&quantity=${posAmtStr}&price=${formattedPrice}&timeInForce=GTC&reduceOnly=true&timestamp=${Date.now()}`;
+                  const closeSig = this.sign(closeQuery);
+                  const res = await axios.post(`${BASE_URL}/fapi/v1/order?${closeQuery}&signature=${closeSig}`, null, {
+                      headers: { 'X-MBX-APIKEY': this.apiKey }
+                  });
+                  console.log(`[Binance API] CLOSED POSITION ${symbol} via LIMIT @ ${formattedPrice}`);
+
+                  let avgPrice = 0;
+                  let filledQty = parseFloat(res.data.executedQty || posAmtStr);
+                  let totalCommission = 0;
+
+                  if (res.data.fills && res.data.fills.length > 0) {
+                      let totalValue = 0;
+                      let totalQty = 0;
+                      res.data.fills.forEach((f: any) => {
+                          const p = parseFloat(f.price);
+                          const q = parseFloat(f.qty);
+                          totalValue += p * q;
+                          totalQty += q;
+                          totalCommission += parseFloat(f.commission || '0');
+                      });
+                      avgPrice = totalQty > 0 ? totalValue / totalQty : 0;
+                      filledQty = totalQty;
+                  } else {
+                      avgPrice = limitPrice;
+                      totalCommission = avgPrice * filledQty * 0.0002;
+                  }
+
+                  return { success: true, avgPrice, filledQty, totalCommission };
+              }
+          }
+          return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
+      } catch (e: any) {
+          console.error(`[Binance API] Close LIMIT failed for ${symbol}:`, e.response?.data || e.message);
+          return { success: false, avgPrice: 0, filledQty: 0, totalCommission: 0 };
+      }
+  }
+
   async closeMarketOrder(pos: { size: number; lev: number; side: string }, symbol: string, side: 'BUY' | 'SELL', currentPrice: number): Promise<{ success: boolean; avgPrice: number; filledQty: number; totalCommission: number; }> {
       if (this.isSimulation) {
           // Simulation: use current price as close price, estimate commission

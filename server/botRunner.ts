@@ -99,6 +99,9 @@ export class BotRunner {
     loopInterval: NodeJS.Timeout | null = null;
     startTimeStr: number = Date.now();
     downloadableLog: string | null = null;
+    lastLoopTime: number = 0;
+    loopCrashCount: number = 0;
+    lastLoopDuration: number = 0;
     
     public systemLogs: SystemLog[] = [];
 
@@ -156,6 +159,7 @@ export class BotRunner {
     }
 
     private async loop() {
+        const loopStartTime = Date.now();
         try {
             const now = Date.now();
             
@@ -551,6 +555,13 @@ export class BotRunner {
                                 }
                             }
 
+                            // Universal trend filter: block LONG when BOTH 15m and 1h are DOWN
+                            // Prevents buying into strong downtrend on higher timeframes
+                            if (sig.side === 'LONG' && trend15m === 'DOWN' && trend1h === 'DOWN') {
+                                this.logToFile(`[${sym}] REJECT: Universal trend filter blocked LONG (15m=DOWN, 1h=DOWN)`);
+                                continue;
+                            }
+
                             const configMarginUsd = USER_CONFIG.margin;
                             const freeBalance = this.capital - this.reservedCapital;
                             const maxDrawdownUsd = freeBalance * 0.40;  // FIX: %80 -> %40
@@ -598,7 +609,7 @@ export class BotRunner {
                             } else {
                                 // ATR bazlı dinamik TP
                                 const atrTarget = (atrPct / 100) * notionalValue * 0.5; // ATR'nin yarısı
-                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(10, atrTarget));
+                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(15, atrTarget));
                                 this.logToFile(`[${sym}] TP: ATR-based $${targetProfit.toFixed(2)} (ATR%: ${atrPct.toFixed(2)}%)`);
                             }
 
@@ -659,8 +670,11 @@ export class BotRunner {
             }
         } catch (e) {
             console.error('Bot Loop Error:', e);
+            this.loopCrashCount++;
         }
 
+        this.lastLoopTime = Date.now();
+        this.lastLoopDuration = this.lastLoopTime - loopStartTime;
         this.loopInterval = setTimeout(() => this.loop(), 500);
     }
 
@@ -680,8 +694,16 @@ export class BotRunner {
         // Execute API close real order
         const closeSide = pos.side === 'LONG' ? 'SELL' : 'BUY';
         
-        // BUG #2 FIX: Verify actual closing
-        const closeResult = await this.binance.closeMarketOrder(pos, sym, closeSide, price);
+        // FIX: Use LIMIT order for hard stops (prevents thin-book slippage)
+        // HARD_STOP_LOSS: 0.3% slippage allowance, MARGIN_CALL: 0.5%, others: 0.2%
+        let closeResult;
+        if (reason === 'HARD_STOP_LOSS') {
+            closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, 0.003);
+        } else if (reason === 'MARGIN_CALL_LIQUIDATION') {
+            closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, 0.005);
+        } else {
+            closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, 0.002);
+        }
         if (!closeResult.success) {
             this.addLog(`[${sym}] KAPATMA BASARISIZ! API reddetti. 10sn sonra tekrar denenecek. Nedeni: ${reason}`, 'error');
             return; // Pozisyonu dashboard'da acik birakmaya devam et!
@@ -772,7 +794,12 @@ export class BotRunner {
                 : '0dk 0s',
             used_capital: this.reservedCapital,
             unrealized_pnl: Object.values(this.openPositions).reduce((s, p) => s + (p.netPnlUsd || 0), 0),
-            has_downloadable_log: !!this.downloadableLog
+            has_downloadable_log: !!this.downloadableLog,
+            loop_running: !!this.loopInterval,
+            last_loop_time: this.lastLoopTime,
+            last_loop_duration_ms: this.lastLoopDuration,
+            loop_crash_count: this.loopCrashCount,
+            pairs_loaded: this.activePairs.length
         };
     }
 }

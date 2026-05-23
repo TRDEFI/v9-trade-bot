@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { BotRunner } from './server/botRunner.js';
 
@@ -54,6 +55,36 @@ async function startServer() {
     // İndirildikten sonra sil, yer kaplamasın
     bot.downloadableLog = null;
     bot.closedPositions = []; // Veya sadece logu temizle
+  });
+
+  // HERMES health endpoint: loop status, crash count, uptime
+  app.get('/api/bot/health', (req, res) => {
+    const data = bot.getDashboardData();
+    res.json({
+      is_active: data.is_active,
+      loop_running: data.loop_running,
+      last_loop_time: data.last_loop_time,
+      last_loop_duration_ms: data.last_loop_duration_ms,
+      loop_crash_count: data.loop_crash_count,
+      pairs_loaded: data.pairs_loaded,
+      open_positions: data.opens.length,
+      total_trades: data.total_trades,
+      capital: data.capital,
+      total_pnl: data.total_pnl,
+      elapsed: data.elapsed,
+      server_time: data.server_time
+    });
+  });
+
+  // Serve evolution log for HERMES agent
+  app.get('/api/evolution', (req, res) => {
+    try {
+      const data = fs.readFileSync(path.join(__dirname, 'self_evolution_log.json'), 'utf-8');
+      res.setHeader('Content-Type', 'application/json');
+      res.send(data);
+    } catch {
+      res.status(404).json({ error: 'Evolution log not found' });
+    }
   });
 
   app.get('/api/bot/download-system-logs', (req, res) => {
