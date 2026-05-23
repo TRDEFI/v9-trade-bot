@@ -3445,6 +3445,276 @@
         "Monitor for pattern emergence and optimize entry timing"
       ],
       "capital_forecast_24h": 1211.02
+    },
+    {
+      "timestamp": "2026-05-23T06:31:12.325391+00:00",
+      "capital": 1726.69,
+      "total_trades": 66,
+      "total_wins": 39,
+      "total_losses": 27,
+      "total_pnl": -273.31,
+      "new_trades_analyzed": 3,
+      "kline_autopsies": [
+        {
+          "sym": "AIAUSDT",
+          "side": "LONG",
+          "entry": 0.05981,
+          "close": 0.05954,
+          "pnl": -26.07147634174882,
+          "strat": "MA10_BOUNCE",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "05:33",
+          "closed": "05:35",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 0.69,
+          "max_favorable_pct": 0.05,
+          "max_unfavorable_pct": -0.47,
+          "stop_hit_candle_type": "green",
+          "stop_hit_volume_ratio": 0.78,
+          "trend_15m": "sideways",
+          "entry_against_trend": false,
+          "slippage_usd": -1.07,
+          "autopsy_summary": "AIAUSDT LONG MA10_BOUNCE: entry=red candle, vol=0.7x, trend=sideways, PnL=$-26.07"
+        },
+        {
+          "sym": "MEGAUSDT",
+          "side": "LONG",
+          "entry": 0.07936,
+          "close": 0.07886,
+          "pnl": -35.002016129032285,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "05:15",
+          "closed": "05:36",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.35,
+          "max_favorable_pct": 0.11,
+          "max_unfavorable_pct": -1.01,
+          "stop_hit_candle_type": "green",
+          "stop_hit_volume_ratio": 10.49,
+          "trend_15m": "sideways",
+          "entry_against_trend": false,
+          "slippage_usd": -10.0,
+          "autopsy_summary": "MEGAUSDT LONG RSI_OVERSOLD: entry=doji candle, vol=0.3x, trend=sideways, PnL=$-35.00"
+        },
+        {
+          "sym": "DOTUSDT",
+          "side": "LONG",
+          "entry": 1.2449999999999999,
+          "close": 1.245,
+          "pnl": -3.4999999999991083,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TIME_STOP_HARD",
+          "opened": "05:30",
+          "closed": "06:30",
+          "entry_candle_type": "green",
+          "entry_volume_ratio": 0.1,
+          "max_favorable_pct": 0.16,
+          "max_unfavorable_pct": -0.24,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "trend_15m": "sideways",
+          "entry_against_trend": false,
+          "slippage_usd": 0,
+          "autopsy_summary": "DOTUSDT LONG RSI_OVERSOLD: entry=green candle, vol=0.1x, trend=sideways, PnL=$-3.50"
+        }
+      ],
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.85,
+          "slippage_usd": -1.85
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.07
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.0
+        }
+      ],
+      "consecutive_losses": {
+        "EMA_CROSS_DN": 1,
+        "SQUEEZE_LONG": 1,
+        "SQUEEZE_SHORT": 0,
+        "RSI_OVERSOLD": 2,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "TREND_LONG": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_LONG",
+          "trades": 23,
+          "wins": 10,
+          "losses": 13,
+          "win_pct": 43.5,
+          "total_pnl": -220.22
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 34,
+          "wins": 23,
+          "losses": 11,
+          "win_pct": 67.6,
+          "total_pnl": -38.67
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.26
+        },
+        {
+          "strat": "MA10_BOUNCE",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      ],
+      "anomalies": [
+        "Low capital warning: $1726.69 (approaching session start)"
+      ],
+      "suggestions": [
+        "No critical issues this cycle \u2014 continue monitoring"
+      ],
+      "capital_forecast_24h": 1043.94,
+      "hourly_pnl_rate": -28.45,
+      "open_positions": 4,
+      "session_elapsed_hours": 9.6
     }
   ]
 }
