@@ -3955,6 +3955,450 @@
         }
       ],
       "capital_forecast_24h": -898.89
+    },
+    {
+      "timestamp": "2026-05-23T07:17:24.590289+00:00",
+      "capital": 1672.9455371632519,
+      "total_trades": 68,
+      "total_wins": 39,
+      "total_losses": 29,
+      "total_pnl": -327.0544628367485,
+      "new_trades_analyzed": 0,
+      "kline_autopsies": [],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 4,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "TREND_LONG": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 36,
+          "wins": 23,
+          "losses": 13,
+          "win_pct": 63.9,
+          "total_pnl": -92.44
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.26
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "anomalies": [
+        "4 open LONG positions against DOWN/DOWN trend, unrealized PnL: $-39.28",
+        "Large open loss: ALLOUSDT $-16.78",
+        "Large open loss: TONUSDT $-10.12"
+      ],
+      "suggestions": [
+        {
+          "priority": "CRITICAL",
+          "suggestion": "Capital drawdown at -16.4% ($-327.05 from $2000 start). Consider reducing position sizes by 50% or pausing all trading until strategies are re-evaluated.",
+          "estimated_impact": "Preserves remaining capital"
+        },
+        {
+          "priority": "CRITICAL",
+          "suggestion": "DISABLE RSI_OVERSOLD immediately - 4 consecutive losses, $-92.44 total PnL. Resume only after manual review.",
+          "estimated_impact": "Prevents further losses from RSI_OVERSOLD (currently $-92.44)"
+        },
+        {
+          "priority": "HIGH",
+          "suggestion": "Add trend filter: Block LONG entries when trend_15m=DOWN and trend_1h=DOWN. Currently 4 open LONG positions against DOWN/DOWN trend.",
+          "estimated_impact": "Prevents trend-adverse entries"
+        }
+      ],
+      "capital_forecast_24h": 1672.95
+    },
+    {
+      "timestamp": "2026-05-23T07:18:47.686696+00:00",
+      "capital": 1609.9743249649348,
+      "total_trades": 72,
+      "total_wins": 40,
+      "total_losses": 32,
+      "total_pnl": -390.02567503506566,
+      "new_trades_analyzed": 4,
+      "kline_autopsies": [
+        {
+          "sym": "ALLOUSDT",
+          "side": "LONG",
+          "entry": 0.08660999999999999,
+          "close": 0.08622,
+          "pnl": -26.014721163837176,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "1779519604044",
+          "closed": "1779519770460"
+        },
+        {
+          "sym": "ENAUSDT",
+          "side": "LONG",
+          "entry": 0.09795,
+          "close": 0.09752,
+          "pnl": -25.449974476773857,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "1779518704559",
+          "closed": "1779520032605"
+        },
+        {
+          "sym": "TONUSDT",
+          "side": "LONG",
+          "entry": 1.8135999999999999,
+          "close": 1.8058,
+          "pnl": -25.004190560211203,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "1779517804480",
+          "closed": "1779520034634"
+        },
+        {
+          "sym": "LITUSDT",
+          "side": "LONG",
+          "entry": 1.1178,
+          "close": 1.1216,
+          "pnl": 13.497674002505036,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT",
+          "opened": "1779520501730",
+          "closed": "1779520584721"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 0,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "TREND_LONG": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 40,
+          "wins": 24,
+          "losses": 16,
+          "win_pct": 60.0,
+          "total_pnl": -155.41
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.26
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "anomalies": [
+        "Large loss: TONUSDT $-25.00",
+        "Large loss: ALLOUSDT $-26.01",
+        "Large loss: ENAUSDT $-25.45",
+        "High stop loss count in recent trades: 7 in last 10",
+        "1 open LONG positions against DOWN/DOWN trend, unrealized PnL: $-6.29"
+      ],
+      "suggestions": [
+        {
+          "priority": "CRITICAL",
+          "suggestion": "Capital drawdown at -19.5% ($-390.03 from $2000 start). Consider reducing position sizes by 50% or pausing all trading until strategies are re-evaluated.",
+          "estimated_impact": "Preserves remaining capital"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "Review ALLOUSDT execution: large loss $-26.01 on RSI_OVERSOLD. Check if slippage contributed.",
+          "estimated_impact": "Review entry/exit quality for ALLOUSDT"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "Review ENAUSDT execution: large loss $-25.45 on RSI_OVERSOLD. Check if slippage contributed.",
+          "estimated_impact": "Review entry/exit quality for ENAUSDT"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "Review TONUSDT execution: large loss $-25.00 on RSI_OVERSOLD. Check if slippage contributed.",
+          "estimated_impact": "Review entry/exit quality for TONUSDT"
+        },
+        {
+          "priority": "HIGH",
+          "suggestion": "Add trend filter: Block LONG entries when trend_15m=DOWN and trend_1h=DOWN. Currently 1 open LONG positions against DOWN/DOWN trend.",
+          "estimated_impact": "Prevents trend-adverse entries"
+        }
+      ],
+      "capital_forecast_24h": -4435.15
+    },
+    {
+      "timestamp": "2026-05-23T07:32:43.890090+00:00",
+      "capital": 1620.6387732513379,
+      "total_trades": 74,
+      "total_wins": 41,
+      "total_losses": 33,
+      "total_pnl": -379.3612267486628,
+      "new_trades_analyzed": 2,
+      "kline_autopsies": [
+        {
+          "sym": "LITUSDT",
+          "side": "LONG",
+          "entry": 1.1138,
+          "close": 1.1173,
+          "pnl": 12.211977015622459,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT",
+          "opened": "1779520764887",
+          "closed": "1779520868653"
+        },
+        {
+          "sym": "EWYUSDT",
+          "side": "LONG",
+          "entry": 179.26,
+          "close": 179.33,
+          "pnl": -1.5475287292195248,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TIME_STOP_HARD",
+          "opened": "1779517804480",
+          "closed": "1779521404487"
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_LONG": 1,
+        "RSI_OVERSOLD": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_SHORT": 0,
+        "VOL_BREAKUP": 0,
+        "SQUEEZE_SHORT": 0,
+        "TREND_LONG": 0,
+        "MA10_BOUNCE": 1
+      },
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 42,
+          "wins": 25,
+          "losses": 17,
+          "win_pct": 59.5,
+          "total_pnl": -144.74
+        },
+        "EMA_CROSS_DN": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -25.96
+        },
+        "TREND_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 15.31
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.26
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        }
+      },
+      "anomalies": [
+        "Large open loss: AVAXUSDT $-15.59",
+        "2 open LONG positions against DOWN/DOWN trend, unrealized PnL: $-16.68"
+      ],
+      "suggestions": [
+        {
+          "priority": "CRITICAL",
+          "suggestion": "IMPLEMENT TREND FILTER: Block ALL LONG entries when trend_15m=DOWN AND trend_1h=DOWN. 26 HARD_STOP_LOSS trades totaling -$781.57. The bot log shows entries like 'OPEN LONG ORDIUSDT @ 3.9840 [SQUEEZE_LONG] t15=DOWN t1h=DOWN' - the trend data is available but not used for filtering. This single change could prevent the majority of losses.",
+          "estimated_impact": "Prevents ~$781 in HARD_STOP_LOSS losses. Would turn total PnL from -$379 to ~+$402."
+        },
+        {
+          "priority": "CRITICAL",
+          "suggestion": "REDUCE SQUEEZE_LONG POSITION SIZE BY 50%: SQUEEZE_LONG has -$210.59 PnL over 24 trades with 46% WR. Until the strategy is fixed, halve position sizes to limit damage.",
+          "estimated_impact": "Reduces SQUEEZE_LONG loss rate from ~$8.77/trade to ~$4.38/trade"
+        },
+        {
+          "priority": "HIGH",
+          "suggestion": "FIX RSI_OVERSOLD RISK/REWARD: Despite 59.5% WR, RSI_OVERSOLD has -$144.74 PnL because avg loss (-$23.93) far exceeds avg win ($7.08). Tighten stop losses or raise take-profit targets for this strategy.",
+          "estimated_impact": "If avg loss reduced to -$15, RSI_OVERSOLD PnL would improve by ~$152"
+        },
+        {
+          "priority": "HIGH",
+          "suggestion": "ADDRESS SLIPPAGE ON LOW-LIQUIDITY COINS: ENAUSDT (-58.28), BCHUSDT (-28.07), MEGAUSDT (-10.00) show extreme slippage on stop losses. Either remove these pairs or use limit-based stop orders instead of market orders.",
+          "estimated_impact": "Prevents ~$96 in slippage losses per occurrence"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "CLOSE AVAXUSDT AND ATOMUSDT POSITIONS MANUALLY: Both are LONG against DOWN/DOWN trend with combined -$16.68 unrealized loss. AVAXUSDT already at -6.24%. These are likely to hit HARD_STOP_LOSS.",
+          "estimated_impact": "Saves ~$8-16 by closing now vs waiting for stop loss"
+        },
+        {
+          "priority": "MEDIUM",
+          "suggestion": "ADD CONSECUTIVE LOSS CIRCUIT BREAKER: After 3 consecutive losses on any strategy, pause it for 60 minutes. Currently no such protection exists.",
+          "estimated_impact": "Prevents extended losing streaks like the recent 8-loss run in last 10 trades"
+        },
+        {
+          "priority": "LOW",
+          "suggestion": "EXPAND SHORT STRATEGIES: TREND_SHORT (1T, 100% WR, +$15.31) and SQUEEZE_SHORT (1T, 100% WR, +$10.91) show promise but are underutilized. Consider increasing their allocation or adding more short-capable strategies.",
+          "estimated_impact": "Could add $20-40/day if expanded"
+        }
+      ],
+      "capital_forecast_24h": 2644.0,
+      "deep_analysis": {
+        "exit_reasons": {
+          "HARD_STOP_LOSS": {
+            "count": 26,
+            "pnl": -781.57,
+            "avg": -30.06
+          },
+          "TIME_STOP_HARD": {
+            "count": 7,
+            "pnl": -49.58,
+            "avg": -7.08
+          },
+          "TAKE_PROFIT_TIME_DECAY": {
+            "count": 12,
+            "pnl": 84.97,
+            "avg": 7.08
+          },
+          "TAKE_PROFIT": {
+            "count": 29,
+            "pnl": 366.82,
+            "avg": 12.65
+          }
+        },
+        "worst_slippage": {
+          "ENAUSDT": -58.28,
+          "BCHUSDT": -28.07,
+          "MEGAUSDT": -10.0,
+          "ALTUSDT": -4.72,
+          "SEIUSDT": -2.82
+        },
+        "last_10_trades": {
+          "wins": 2,
+          "losses": 8,
+          "pnl": -144.55
+        },
+        "trend_analysis": {
+          "first_half_pnl": -277.08,
+          "second_half_pnl": -102.28,
+          "improving": true
+        },
+        "key_insight": "The bot's core problem is entering LONG positions against confirmed downtrends. 26 of 33 losses are HARD_STOP_LOSS averaging -$30.06 each. The trend data (t15=DOWN, t1h=DOWN) is logged at entry but not used as a filter. This is the highest-impact fix available."
+      }
     }
   ]
 }
