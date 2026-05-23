@@ -6929,7 +6929,290 @@
         "Slippage watchlist: ENAUSDT (-$58.28), BCHUSDT (-$28.07), MEGAUSDT (-$10.00). Reduce position sizes or switch to limit orders."
       ],
       "opens": []
+    },
+    {
+      "timestamp": "2026-05-23T14:33:47.658457+00:00",
+      "new_trades": 1,
+      "new_trade_details": [
+        {
+          "sym": "ORDIUSDT",
+          "side": "SHORT",
+          "strat": "TREND_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "pnl": -25.01
+        }
+      ],
+      "capital": 1994.04,
+      "capital_delta": 0.0,
+      "total_trades": 14,
+      "trades_delta": 0,
+      "total_pnl": -5.96,
+      "pnl_delta": 0.0,
+      "total_return_pct": -0.3,
+      "hourly_rate": -0.85,
+      "forecast_24h": 1973.69,
+      "elapsed_hours": 7.0,
+      "open_positions": 2,
+      "unrealized_pnl": -19.7351,
+      "used_capital": 500,
+      "is_active": true,
+      "loop_crashes": 0,
+      "strategy_performance": {
+        "SQUEEZE_LONG": {
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        "RSI_OVERSOLD": {
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        "EMA_CROSS_DN": {
+          "trades": 2,
+          "wins": 0,
+          "losses": 2,
+          "win_pct": 0.0,
+          "total_pnl": -48.02
+        },
+        "TREND_SHORT": {
+          "trades": 6,
+          "wins": 3,
+          "losses": 3,
+          "win_pct": 50.0,
+          "total_pnl": -18.51
+        },
+        "VOL_BREAKUP": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        "TREND_LONG": {
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        "MA10_BOUNCE": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        },
+        "MA10_REJECT": {
+          "trades": 4,
+          "wins": 3,
+          "losses": 1,
+          "win_pct": 75.0,
+          "total_pnl": 34.92
+        }
+      },
+      "consecutive_losses": {
+        "TREND_LONG": 0,
+        "RSI_OVERSOLD": 0,
+        "MA10_REJECT": 0,
+        "TREND_SHORT": 1,
+        "EMA_CROSS_DN": 2
+      },
+      "exit_reasons": {
+        "TAKE_PROFIT": {
+          "count": 8,
+          "total_pnl": 140.08,
+          "avg_pnl": 17.51
+        },
+        "HARD_STOP_LOSS": {
+          "count": 6,
+          "total_pnl": -146.04,
+          "avg_pnl": -24.34
+        }
+      },
+      "risk_metrics": {
+        "avg_win": 17.51,
+        "avg_loss": -24.34,
+        "win_loss_ratio": 0.72,
+        "profit_factor": 0.96,
+        "gross_profit": 140.08,
+        "gross_loss": -146.04
+      },
+      "anomalies": [
+        "SQUEEZE_LONG heavy losses: $-210.59",
+        "RSI_OVERSOLD heavy losses: $-137.60",
+        "Large unrealized loss: $-19.74"
+      ],
+      "suggestions": [
+        "HIGH PRIORITY: SQUEEZE_LONG at 46% WR with $-210.59 PnL over 24 trades. Reduce position size from $250 to $100 or add trend-alignment filter.",
+        "RSI_OVERSOLD is most reliable at 60% WR (26W/17L). Consider increasing allocation to $300-350.",
+        "High slippage symbols: ENAUSDT ($-58.28), BCHUSDT ($-28.07), MEGAUSDT ($-10.00). Reduce position sizes or switch to limit orders for these pairs.",
+        "Win/Loss ratio concern: avg win $17.51 vs avg loss $24.34 (ratio 0.72). Consider tightening stop-losses or using trailing stops."
+      ],
+      "opens": [
+        {
+          "sym": "BTCUSDT",
+          "side": "SHORT",
+          "entry": 75294.7,
+          "current": 75342.2,
+          "lev": 20,
+          "size": 250,
+          "pnl_pct": -2.66,
+          "pnl_usd": -6.65,
+          "trend_15m": "UP",
+          "trend_1h": "DOWN"
+        },
+        {
+          "sym": "SOLUSDT",
+          "side": "SHORT",
+          "entry": 83.5,
+          "current": 83.66,
+          "lev": 20,
+          "size": 250,
+          "pnl_pct": -5.23,
+          "pnl_usd": -13.08,
+          "trend_15m": "UP",
+          "trend_1h": "DOWN"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-23T14:53:26.535812+00:00",
+      "capital": 1970.486685045503,
+      "total_trades": 15,
+      "total_wins": 8,
+      "total_losses": 7,
+      "total_pnl": -29.513314954497066,
+      "unrealized_pnl": -9.914794135576994,
+      "win_rate": "53.3%",
+      "profit_factor": 0.83,
+      "win_loss_ratio": 0.72,
+      "open_positions": 1,
+      "open_pnl": -9.914794135576994,
+      "strategy_summary": {
+        "MA10_REJECT": {
+          "trades": 4,
+          "wr": "75%",
+          "pnl": 34.92
+        },
+        "TREND_LONG": {
+          "trades": 1,
+          "wr": "100%",
+          "pnl": 18.52
+        },
+        "RSI_OVERSOLD": {
+          "trades": 1,
+          "wr": "100%",
+          "pnl": 7.14
+        },
+        "TREND_SHORT": {
+          "trades": 6,
+          "wr": "50%",
+          "pnl": -18.51
+        },
+        "BB_REVERSION_SHORT": {
+          "trades": 1,
+          "wr": "0%",
+          "pnl": -23.56
+        },
+        "EMA_CROSS_DN": {
+          "trades": 2,
+          "wr": "0%",
+          "pnl": -48.02
+        }
+      },
+      "exit_reasons": {
+        "TAKE_PROFIT": {
+          "count": 8,
+          "pnl": 140.08
+        },
+        "HARD_STOP_LOSS": {
+          "count": 7,
+          "pnl": -169.6
+        }
+      },
+      "suggestions": [
+        "HIGH PRIORITY: Disable EMA_CROSS_DN -- 0% WR (0W/2L, -$48.02)",
+        "Add trend-alignment filter to BB_REVERSION_SHORT -- failed on SOLUSDT against UP trend",
+        "Reduce TREND_SHORT position size from $250 to $150 until WR improves above 60%",
+        "Tighten stop-losses by 15-20% to improve win/loss ratio (currently 0.72)"
+      ]
+    },
+    {
+      "timestamp": "2026-05-23T15:07:19.912347+00:00",
+      "capital": 1944.6470256803684,
+      "total_trades": 16,
+      "total_wins": 8,
+      "total_losses": 8,
+      "total_pnl": -55.35297431963166,
+      "unrealized_pnl": -14.77698421222253,
+      "win_rate": "50.0%",
+      "profit_factor": 0.72,
+      "win_loss_ratio": 0.72,
+      "open_positions": 1,
+      "open_pnl": -14.77698421222253,
+      "strategy_summary": {
+        "TREND_LONG": {
+          "trades": 1,
+          "wr": "100%",
+          "pnl": 18.52
+        },
+        "RSI_OVERSOLD": {
+          "trades": 1,
+          "wr": "100%",
+          "pnl": 7.14
+        },
+        "MA10_REJECT": {
+          "trades": 4,
+          "wr": "75%",
+          "pnl": 34.92
+        },
+        "TREND_SHORT": {
+          "trades": 6,
+          "wr": "50%",
+          "pnl": -18.51
+        },
+        "EMA_CROSS_DN": {
+          "trades": 2,
+          "wr": "0%",
+          "pnl": -48.02
+        },
+        "BB_REVERSION_SHORT": {
+          "trades": 2,
+          "wr": "0%",
+          "pnl": -49.4
+        }
+      },
+      "exit_reasons": {
+        "TAKE_PROFIT": {
+          "count": 8,
+          "pnl": 140.08
+        },
+        "HARD_STOP_LOSS": {
+          "count": 8,
+          "pnl": -195.43
+        }
+      },
+      "suggestions": [
+        "HIGH PRIORITY: Disable EMA_CROSS_DN immediately. 0% WR (0W/2L, -$48.02). Both trades hit hard stop-losses. This strategy is consistently losing and dragging down overall performance.",
+        "BB_REVERSION_SHORT has 0% WR. Both BTCUSDT and SOLUSDT shorts failed against 15m UP trends. Recommend adding a trend-alignment filter: only take BB_REVERSION_SHORT when 15m trend is DOWN or NEUTRAL.",
+        "TREND_SHORT underperforming at 50% WR over 6 trades ($-18.51). Consider reducing position size from $250 to $150 until WR improves above 60%.",
+        "Win/Loss ratio remains unhealthy at 0.72 (avg win $17.51 vs avg loss $24.43). Stop-losses are too wide relative to take-profits. Consider tightening SL by 15-20% or switching to trailing stops.",
+        "LINKUSDT SHORT opened against 15m UP trend at $9.311. This mirrors the failed BTCUSDT and SOLUSDT BB_REVERSION_SHORT pattern. Monitor closely -- if 15m trend doesn't flip to DOWN within 10 minutes, consider manual close.",
+        "Capital has dropped to $1944.65 (-2.77% from start). At current hourly rate of $-7.30/hr, the bot is in a drawdown phase. Consider reducing overall position size by 25% until profit factor recovers above 1.0."
+      ]
     }
   ],
-  "last_updated": "2026-05-23T14:13:53.390831+00:00"
+  "last_updated": "2026-05-23T15:07:19.912347+00:00"
 }
