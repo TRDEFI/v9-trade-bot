@@ -25,6 +25,7 @@ state = {
     "slippage_data": {},  # symbol -> list of slippage entries
     "strategy_performance": {},  # strategy -> {trades, wins, losses, total_pnl}
     "session_start": None,  # timestamp when monitoring started
+    "peak_crash_count": 0,  # peak loop crash count seen
 }
 
 def load_state():
@@ -424,6 +425,21 @@ def check_anomalies(dashboard_data: Dict, kline_autopsies: List) -> List[str]:
         if drawdown < -0.05:  # >5% drawdown
             anomalies.append(f"Capital drawdown: {drawdown:.1%}")
     
+    # Check loop health
+    if not dashboard_data.get("loop_running", False):
+        anomalies.append("BOT LOOP STOPPED — no active interval")
+    crash_count = dashboard_data.get("loop_crash_count", 0)
+    if crash_count > 0:
+        anomalies.append(f"Loop crashes: {crash_count}")
+    pairs = dashboard_data.get("pairs_loaded", 0)
+    if pairs == 0:
+        anomalies.append("No pairs loaded — scanning may be broken")
+    # Check if loop is stuck (no heartbeat >60s)
+    last_loop = dashboard_data.get("last_loop_time", 0)
+    server_time = dashboard_data.get("server_time", 0)
+    if last_loop > 0 and server_time > 0 and (server_time - last_loop) > 60000:
+        anomalies.append(f"Loop stuck: last execution {(server_time - last_loop)/1000:.0f}s ago")
+    
     return anomalies
 
 def generate_suggestions(kline_autopsies: List, consecutive_losses: Dict, anomalies: List) -> List[str]:
@@ -476,6 +492,9 @@ def main():
     state["total_wins"] = dashboard_data.get("total_wins", 0)
     state["total_losses"] = dashboard_data.get("total_losses", 0)
     state["total_pnl"] = dashboard_data.get("total_pnl", 0)
+    # Track peak crash count
+    current_crash_count = dashboard_data.get("loop_crash_count", 0)
+    state["peak_crash_count"] = max(state.get("peak_crash_count", 0), current_crash_count)
     
     # Process closed positions since last check
     closed_positions = dashboard_data.get("closed", [])
@@ -552,7 +571,10 @@ def main():
         "strategy_performance": strategy_performance,
         "anomalies": anomalies,
         "suggestions": suggestions,
-        "capital_forecast_24h": round(forecast_24h, 2)
+        "capital_forecast_24h": round(forecast_24h, 2),
+        "loop_running": dashboard_data.get("loop_running", False),
+        "loop_crash_count": dashboard_data.get("loop_crash_count", 0),
+        "pairs_loaded": dashboard_data.get("pairs_loaded", 0),
     }
     
     # Load existing log or create new
