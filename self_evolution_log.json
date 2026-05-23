@@ -7212,6 +7212,310 @@
         "LINKUSDT SHORT opened against 15m UP trend at $9.311. This mirrors the failed BTCUSDT and SOLUSDT BB_REVERSION_SHORT pattern. Monitor closely -- if 15m trend doesn't flip to DOWN within 10 minutes, consider manual close.",
         "Capital has dropped to $1944.65 (-2.77% from start). At current hourly rate of $-7.30/hr, the bot is in a drawdown phase. Consider reducing overall position size by 25% until profit factor recovers above 1.0."
       ]
+    },
+    {
+      "timestamp": "2026-05-23T15:46:57.779684+00:00",
+      "capital": 1919.02,
+      "total_trades": 17,
+      "total_wins": 8,
+      "total_losses": 9,
+      "total_pnl": -80.98,
+      "kline_autopsies": [
+        {
+          "sym": "SOLUSDT",
+          "side": "SHORT",
+          "entry": 83.5,
+          "close": 83.86,
+          "pnl": -23.556886227544876,
+          "strat": "BB_REVERSION_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "14:30",
+          "closed": "14:42",
+          "entry_candle_type": "green",
+          "entry_volume_ratio": 1.603777226234986,
+          "max_favorable_pct": 0.005269461077844284,
+          "max_unfavorable_pct": -0.000958083832335309,
+          "stop_hit_candle_type": "long_wick_up",
+          "stop_hit_volume_ratio": 0.6009153516233865,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 1.4431137724551242,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on green candle with 1.6x volume Stop hit on long_wick_up candle. PnL: $-23.56"
+        },
+        {
+          "sym": "BTCUSDT",
+          "side": "SHORT",
+          "entry": 75294.7,
+          "close": 75653.7,
+          "pnl": -25.839659365134597,
+          "strat": "BB_REVERSION_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "14:30",
+          "closed": "14:56",
+          "entry_candle_type": "green",
+          "entry_volume_ratio": 0.9481335638172489,
+          "max_favorable_pct": 0.00499503949149151,
+          "max_unfavorable_pct": -0.0004900743345812411,
+          "stop_hit_candle_type": "red",
+          "stop_hit_volume_ratio": 2.052623467050269,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -0.8396593651345974,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on green candle Stop hit on red candle. PnL: $-25.84"
+        },
+        {
+          "sym": "LINKUSDT",
+          "side": "SHORT",
+          "entry": 9.311,
+          "close": 9.355,
+          "pnl": -25.627966920846568,
+          "strat": "BB_REVERSION_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "15:00",
+          "closed": "15:09",
+          "entry_candle_type": "long_wick_down",
+          "entry_volume_ratio": 0.566362829286186,
+          "max_favorable_pct": 0.005692192030931245,
+          "max_unfavorable_pct": -0.0004295993985607947,
+          "stop_hit_candle_type": "green",
+          "stop_hit_volume_ratio": 0.1022742404982034,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -0.6279669208465677,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on long_wick_down candle Stop hit on green candle. PnL: $-25.63"
+        }
+      ],
+      "slippage_heatmap": [
+        {
+          "sym": "KITEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.03,
+          "slippage_usd": -0.03
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.12,
+          "slippage_usd": -0.12
+        },
+        {
+          "sym": "RENDERUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.8,
+          "slippage_usd": -2.8
+        },
+        {
+          "sym": "ETHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.85,
+          "slippage_usd": -1.85
+        },
+        {
+          "sym": "PENGUUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.22,
+          "slippage_usd": -0.22
+        },
+        {
+          "sym": "AVAXUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.69,
+          "slippage_usd": -0.69
+        },
+        {
+          "sym": "ALTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.72,
+          "slippage_usd": -4.72
+        },
+        {
+          "sym": "ENAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -83.28,
+          "slippage_usd": -58.28
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.96,
+          "slippage_usd": -0.96
+        },
+        {
+          "sym": "OPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.18,
+          "slippage_usd": -2.18
+        },
+        {
+          "sym": "JUPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.09,
+          "slippage_usd": -1.09
+        },
+        {
+          "sym": "SEIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.06911910260622,
+          "slippage_usd": -4.069119102606219
+        },
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -53.07,
+          "slippage_usd": -28.07
+        },
+        {
+          "sym": "DRAMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.31,
+          "slippage_usd": -0.31
+        },
+        {
+          "sym": "WIFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.1220472440948,
+          "slippage_usd": -2.12
+        },
+        {
+          "sym": "DOTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.404382470118662,
+          "slippage_usd": -2.4
+        },
+        {
+          "sym": "AIAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.07147634174882,
+          "slippage_usd": -1.07147634174882
+        },
+        {
+          "sym": "MEGAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.002016129032285,
+          "slippage_usd": -10.002016129032285
+        },
+        {
+          "sym": "BTCUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.839659365134597,
+          "slippage_usd": -0.8396593651345974
+        },
+        {
+          "sym": "LINKUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.627966920846568,
+          "slippage_usd": -0.6279669208465677
+        }
+      ],
+      "consecutive_losses": {
+        "TREND_LONG": 0,
+        "RSI_OVERSOLD": 0,
+        "MA10_REJECT": 0,
+        "TREND_SHORT": 1,
+        "EMA_CROSS_DN": 2,
+        "BB_REVERSION_SHORT": 3
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_LONG",
+          "trades": 24,
+          "wins": 11,
+          "losses": 13,
+          "win_pct": 45.8,
+          "total_pnl": -210.59
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 43,
+          "wins": 26,
+          "losses": 17,
+          "win_pct": 60.5,
+          "total_pnl": -137.6
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 2,
+          "wins": 0,
+          "losses": 2,
+          "win_pct": 0.0,
+          "total_pnl": -48.02
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 6,
+          "wins": 3,
+          "losses": 3,
+          "win_pct": 50.0,
+          "total_pnl": -18.51
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -19.25
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.91
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 28.78
+        },
+        {
+          "strat": "MA10_BOUNCE",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -15.31
+        },
+        {
+          "strat": "MA10_REJECT",
+          "trades": 4,
+          "wins": 3,
+          "losses": 1,
+          "win_pct": 75.0,
+          "total_pnl": 34.92
+        },
+        {
+          "strat": "BB_REVERSION_SHORT",
+          "trades": 3,
+          "wins": 0,
+          "losses": 3,
+          "win_pct": 0.0,
+          "total_pnl": -75.02
+        }
+      ],
+      "anomalies": [
+        "Capital drawdown: -100.0%"
+      ],
+      "suggestions": [
+        "Disable BB_REVERSION_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1683.21,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
     }
   ],
   "last_updated": "2026-05-23T15:07:19.912347+00:00"
