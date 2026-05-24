@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-cd /workspace/v9-repo
+cd /home/hermeswebui/v9-trade-bot
 
 # Fetch latest from origin
 git fetch origin
