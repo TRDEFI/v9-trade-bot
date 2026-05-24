@@ -8341,7 +8341,115 @@
         "BASEDUSDT": -3.79,
         "ZECUSDT": -1.27
       }
+    },
+    {
+      "cycle": 60,
+      "timestamp": "2026-05-24T04:40:49.718335+00:00",
+      "capital": 1968.32,
+      "total_trades": 19,
+      "total_wins": 11,
+      "total_losses": 8,
+      "total_pnl": -31.68,
+      "total_return_pct": -1.58,
+      "hourly_rate": -2.73,
+      "forecast_24h": 1902.92,
+      "elapsed": "11sa 37dk 33s",
+      "open_positions": 0,
+      "unrealized_pnl": 0,
+      "new_trades": 1,
+      "new_trade_details": [
+        {
+          "sym": "RIVERUSDT",
+          "side": "SHORT",
+          "strat": "EMA_CROSS_DN",
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "pnl": 11.59
+        }
+      ],
+      "strategy_performance": {
+        "SQUEEZE_SHORT": {
+          "trades": 9,
+          "wins": 4,
+          "losses": 5,
+          "total_pnl": -77.2,
+          "win_pct": 44.4
+        },
+        "VOL_BREAKUP": {
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "total_pnl": -22.1,
+          "win_pct": 33.3
+        },
+        "TREND_LONG": {
+          "trades": 5,
+          "wins": 5,
+          "losses": 0,
+          "total_pnl": 80.65,
+          "win_pct": 100.0
+        },
+        "EMA_CROSS_DN": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "total_pnl": -13.03,
+          "win_pct": 50.0
+        }
+      },
+      "consecutive_losses": {
+        "EMA_CROSS_DN": 1
+      },
+      "exit_reasons": {
+        "TAKE_PROFIT_TIME_DECAY": {
+          "count": 7,
+          "total_pnl": 86.45731077767101,
+          "avg_pnl": 12.35
+        },
+        "TIME_STOP_HARD": {
+          "count": 1,
+          "total_pnl": -4.493765586035302,
+          "avg_pnl": -4.49
+        },
+        "TAKE_PROFIT": {
+          "count": 4,
+          "total_pnl": 69.97889769345134,
+          "avg_pnl": 17.49
+        },
+        "HARD_STOP_LOSS": {
+          "count": 7,
+          "total_pnl": -183.62415505798472,
+          "avg_pnl": -26.23
+        }
+      },
+      "risk_metrics": {
+        "profit_factor": 0.83,
+        "win_loss_ratio": 0.6,
+        "avg_win": 14.22,
+        "avg_loss": -23.51,
+        "gross_profit": 156.44,
+        "gross_loss": -188.12
+      },
+      "anomalies": [
+        "Profit Factor below 1.0: 0.83",
+        "Win/Loss ratio unhealthy: 0.60",
+        "High slippage: ETHUSDT $-6.43"
+      ],
+      "suggestions": [
+        "Add trend-alignment filter to SQUEEZE_SHORT: Block SHORT entries when 15m trend is UP. 5 of 9 trades lost while trading against 15m UP trend.",
+        "Win/Loss ratio at 0.60 (avg win $14.22 vs avg loss $23.51). Consider tightening SL by 15-20% or switching to trailing stops.",
+        "POSITIVE: TREND_LONG at 100% WR, +$80.65 PnL. Consider increasing allocation from $250 to $350.",
+        "High slippage symbols: ETHUSDT ($-6.43), BASEDUSDT ($-3.79). Reduce position sizes or switch to limit orders for these pairs.",
+        "POSITIVE: TREND_LONG at 100% WR (5W/0L), +$80.65 PnL but only 5 trade(s). Consider more entries or increase allocation."
+      ],
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150,
+      "slippage_summary": {
+        "ETHUSDT": -6.43,
+        "BASEDUSDT": -3.79,
+        "ZECUSDT": -1.27
+      }
     }
   ],
-  "last_updated": "2026-05-24T02:50:53.822736+00:00"
+  "last_updated": "2026-05-24T04:40:49.718335+00:00"
 }
