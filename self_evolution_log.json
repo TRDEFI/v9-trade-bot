@@ -1,25 +1,25 @@
 {
-  "session_start": 1779521546887,
+  "session_start": 1779644883726,
   "updates": [
     {
-      "timestamp": "2026-05-24T17:47:34.712522+00:00",
+      "timestamp": "2026-05-24T17:48:09.944103+00:00",
       "scanning_phase": {
         "window_duration_min": 15,
         "total_pairs_scanned": 150,
         "signals_found": 25,
         "positions_opened": 0,
         "rejection_breakdown": {
-          "price_too_low_high": 15921,
-          "micro_volatility": 1856,
-          "other": 60,
-          "trend_matrix": 60
+          "price_too_low_high": 15912,
+          "micro_volatility": 1835,
+          "other": 74,
+          "trend_matrix": 74
         },
         "batch_events": [],
-        "loop_duration_ms_avg": 6.5,
+        "loop_duration_ms_avg": 7.0,
         "loop_duration_ms_max": 7,
         "scanning_health_score": 70,
         "pre_trade_alerts": [
-          "\u26a0\ufe0f TREND_MATRIX OVER-FILTERING: 60 signals blocked by trend matrix \u2014 consider relaxing"
+          "\u26a0\ufe0f TREND_MATRIX OVER-FILTERING: 74 signals blocked by trend matrix \u2014 consider relaxing"
         ]
       },
       "trade_phase": {
@@ -31,243 +31,41 @@
         "unrealized_pnl": 0,
         "open_positions": 0,
         "win_rate": "100.0%",
-        "kline_autopsies": [],
-        "slippage_heatmap": [
+        "kline_autopsies": [
           {
-            "sym": "KITEUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.03,
-            "slippage_usd": -0.03
-          },
-          {
-            "sym": "FARTCOINUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.12,
-            "slippage_usd": -0.12
-          },
-          {
-            "sym": "RENDERUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -27.8,
-            "slippage_usd": -2.8
-          },
-          {
-            "sym": "ETHUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -31.4303233482177,
-            "slippage_usd": -6.430323348217701
-          },
-          {
-            "sym": "PENGUUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.53327495621696,
-            "slippage_usd": -0.5332749562169603
-          },
-          {
-            "sym": "AVAXUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.69,
-            "slippage_usd": -0.69
-          },
-          {
-            "sym": "ALTUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -29.72,
-            "slippage_usd": -4.72
-          },
-          {
-            "sym": "ENAUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -83.28,
-            "slippage_usd": -58.28
-          },
-          {
-            "sym": "CHIPUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.96,
-            "slippage_usd": -0.96
-          },
-          {
-            "sym": "OPUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -27.18,
-            "slippage_usd": -2.18
-          },
-          {
-            "sym": "JUPUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -26.09,
-            "slippage_usd": -1.09
-          },
-          {
-            "sym": "SEIUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -29.06911910260622,
-            "slippage_usd": -4.069119102606219
-          },
-          {
-            "sym": "BCHUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -53.07,
-            "slippage_usd": -28.07
-          },
-          {
-            "sym": "DRAMUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.31,
-            "slippage_usd": -0.31
-          },
-          {
-            "sym": "WIFUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -27.1220472440948,
-            "slippage_usd": -2.12
-          },
-          {
-            "sym": "DOTUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -27.404382470118662,
-            "slippage_usd": -2.4
-          },
-          {
-            "sym": "AIAUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -26.07147634174882,
-            "slippage_usd": -1.07147634174882
-          },
-          {
-            "sym": "MEGAUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -35.002016129032285,
-            "slippage_usd": -10.002016129032285
-          },
-          {
-            "sym": "BTCUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.839659365134597,
-            "slippage_usd": -0.8396593651345974
-          },
-          {
-            "sym": "LINKUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.627966920846568,
-            "slippage_usd": -0.6279669208465677
-          },
-          {
-            "sym": "ZECUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -26.269488399183622,
-            "slippage_usd": -1.269488399183622
-          },
-          {
-            "sym": "BASEDUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -28.793075020610157,
-            "slippage_usd": -3.793075020610157
-          },
-          {
-            "sym": "TAOUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -26.188098032938747,
-            "slippage_usd": -1.188098032938747
+            "sym": "SNDKUSDT",
+            "side": "LONG",
+            "entry": 1514.42,
+            "close": 1517.54,
+            "pnl": 8.300973309913665,
+            "strat": "VOL_BREAKUP",
+            "reason": "TAKE_PROFIT_TIME_DECAY",
+            "opened": "16:15",
+            "closed": "16:41",
+            "entry_candle_type": "long_wick_up",
+            "entry_volume_ratio": 0.6719598829920602,
+            "max_favorable_pct": 0.003024260112782403,
+            "max_unfavorable_pct": -0.002918609104475689,
+            "stop_hit_candle_type": "none",
+            "stop_hit_volume_ratio": 1.0,
+            "pattern_detected": "none",
+            "trend_15m": "sideways",
+            "entry_was_against_trend": false,
+            "slippage_usd": 0,
+            "runner_pct": 0.003024260112782403,
+            "tp_captured_pct_of_runner": 0.002060194661982733,
+            "autopsy_summary": "Entry on long_wick_up candle. PnL: $8.30"
           }
         ],
+        "slippage_heatmap": [],
         "strategy_performance": [
           {
-            "strat": "SQUEEZE_LONG",
-            "trades": 24,
-            "wins": 11,
-            "losses": 13,
-            "win_pct": 45.8,
-            "total_pnl": -210.59
-          },
-          {
-            "strat": "RSI_OVERSOLD",
-            "trades": 43,
-            "wins": 26,
-            "losses": 17,
-            "win_pct": 60.5,
-            "total_pnl": -137.6
-          },
-          {
-            "strat": "EMA_CROSS_DN",
-            "trades": 4,
-            "wins": 1,
-            "losses": 3,
-            "win_pct": 25.0,
-            "total_pnl": -61.05
-          },
-          {
-            "strat": "TREND_SHORT",
-            "trades": 6,
-            "wins": 3,
-            "losses": 3,
-            "win_pct": 50.0,
-            "total_pnl": -18.51
-          },
-          {
             "strat": "VOL_BREAKUP",
-            "trades": 8,
-            "wins": 5,
-            "losses": 3,
-            "win_pct": 62.5,
-            "total_pnl": -12.54
-          },
-          {
-            "strat": "SQUEEZE_SHORT",
-            "trades": 11,
-            "wins": 6,
-            "losses": 5,
-            "win_pct": 54.5,
-            "total_pnl": -54.74
-          },
-          {
-            "strat": "TREND_LONG",
-            "trades": 7,
-            "wins": 7,
+            "trades": 1,
+            "wins": 1,
             "losses": 0,
             "win_pct": 100.0,
-            "total_pnl": 109.43
-          },
-          {
-            "strat": "MA10_BOUNCE",
-            "trades": 2,
-            "wins": 1,
-            "losses": 1,
-            "win_pct": 50.0,
-            "total_pnl": -15.31
-          },
-          {
-            "strat": "MA10_REJECT",
-            "trades": 4,
-            "wins": 3,
-            "losses": 1,
-            "win_pct": 75.0,
-            "total_pnl": 34.92
-          },
-          {
-            "strat": "BB_REVERSION_SHORT",
-            "trades": 3,
-            "wins": 0,
-            "losses": 3,
-            "win_pct": 0.0,
-            "total_pnl": -75.02
-          },
-          {
-            "strat": "EMA_CROSS_UP",
-            "trades": 14,
-            "wins": 4,
-            "losses": 10,
-            "win_pct": 28.6,
-            "total_pnl": -139.61
-          },
-          {
-            "strat": "MOMENTUM_LONG",
-            "trades": 1,
-            "wins": 0,
-            "losses": 1,
-            "win_pct": 0.0,
-            "total_pnl": -24.03
+            "total_pnl": 8.3
           }
         ],
         "post_trade_alerts": [
@@ -275,12 +73,12 @@
         ],
         "suggestions": [
           {
-            "priority": "HIGH",
-            "suggestion": "Disable BB_REVERSION_SHORT (consecutive 3 losses)",
-            "estimated_impact": "Prevents further losses of ~$75 at current rate"
+            "priority": "LOW",
+            "suggestion": "Monitor for pattern emergence and optimize entry timing",
+            "estimated_impact": "Continuous improvement"
           }
         ],
-        "capital_forecast_24h": 2105.64
+        "capital_forecast_24h": 2105.18
       }
     }
   ]
