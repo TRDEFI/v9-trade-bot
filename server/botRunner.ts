@@ -50,7 +50,7 @@ const TREND_MATRIX: Record<string, TrendReq> = {
     'MA10_REJECT':         { align15m: 'DOWN', align1h: 'ANY'  },
     'BB_REVERSION_LONG':   { align15m: 'UP',   align1h: 'UP'   },
     'BB_REVERSION_SHORT':  { align15m: 'DOWN', align1h: 'DOWN' },
-    'EMA_CROSS_UP':        { align15m: 'UP',   align1h: 'ANY'  },
+    'EMA_CROSS_UP':        { align15m: 'UP',   align1h: 'DOWN' },
     'EMA_CROSS_DN':        { align15m: 'DOWN', align1h: 'ANY'  },
     'MOMENTUM_LONG':       { align15m: 'UP',   align1h: 'ANY'  },
     'MOMENTUM_SHORT':      { align15m: 'DOWN', align1h: 'ANY'  },
@@ -107,6 +107,8 @@ export class BotRunner {
     closedPositions: any[] = [];
     reversalCooldown: Record<string, number> = {};
     tradesPerSymbol: Record<string, number> = {};  // FIX: Aynı sembole spam açılış sayacı
+    cycleLongCount: number = 0;
+    cycleShortCount: number = 0;
     
     pairIndex = 0;
     lastKlineCheck: Record<string, number> = {};
@@ -404,6 +406,8 @@ export class BotRunner {
                 if (this.openingPosition) {
                     this.logToFile(`[BOT] SKIP: Opening mutex locked`);
                 } else if (openCount < USER_CONFIG.max_open) {
+                    this.cycleLongCount = 0;
+                    this.cycleShortCount = 0;
                     this.openingPosition = true;  // mutex lock
                     let checked = 0;
                     let processed = 0;
@@ -585,6 +589,21 @@ export class BotRunner {
                                 continue;
                             }
 
+                            // Same-side correlation guard: max 2 positions per side total
+                            const existingSameSide = Object.values(this.openPositions).filter(p => p.side === sig.side).length;
+                            if (existingSameSide >= 2) {
+                                this.logToFile(`[${sym}] REJECT: Correlation guard - already ${existingSameSide} ${sig.side} positions`);
+                                continue;
+                            }
+                            if (sig.side === 'LONG' && this.cycleLongCount >= 2) {
+                                this.logToFile(`[${sym}] REJECT: Correlation guard - max 2 LONG per cycle`);
+                                continue;
+                            }
+                            if (sig.side === 'SHORT' && this.cycleShortCount >= 2) {
+                                this.logToFile(`[${sym}] REJECT: Correlation guard - max 2 SHORT per cycle`);
+                                continue;
+                            }
+
                             const configMarginUsd = USER_CONFIG.margin;
                             const freeBalance = this.capital - this.reservedCapital;
                             const maxDrawdownUsd = freeBalance * 0.40;  // FIX: %80 -> %40
@@ -655,6 +674,8 @@ export class BotRunner {
                                 minNetPnlUsd: -result.totalCommission
                             };
                             this.reservedCapital += actualMarginUsd;
+                            if (sig.side === 'LONG') this.cycleLongCount++;
+                            else this.cycleShortCount++;
 
                             // SERVER-SIDE STOP-LOSS: Place STOP_MARKET order on Binance
                             // Primary protection at -$25 equivalent — triggers instantly via Binance engine, preventing MARKET-order slippage
