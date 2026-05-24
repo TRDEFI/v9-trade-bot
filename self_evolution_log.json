@@ -8449,7 +8449,113 @@
         "BASEDUSDT": -3.79,
         "ZECUSDT": -1.27
       }
+    },
+    {
+      "cycle": 61,
+      "timestamp": "2026-05-24T13:39:12.810296+00:00",
+      "capital": 1836.74,
+      "total_trades": 37,
+      "total_wins": 18,
+      "total_losses": 19,
+      "total_pnl": -163.26,
+      "total_return_pct": -8.16,
+      "unrealized_pnl": 0.55,
+      "open_positions": 1,
+      "strategy_performance": {
+        "SQUEEZE_SHORT": {
+          "trades": 10,
+          "wins": 5,
+          "losses": 5,
+          "total_pnl": -65.64,
+          "win_pct": 50.0
+        },
+        "VOL_BREAKUP": {
+          "trades": 5,
+          "wins": 3,
+          "losses": 2,
+          "total_pnl": -1.58,
+          "win_pct": 60.0
+        },
+        "TREND_LONG": {
+          "trades": 5,
+          "wins": 5,
+          "losses": 0,
+          "total_pnl": 80.66,
+          "win_pct": 100.0
+        },
+        "EMA_CROSS_DN": {
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "total_pnl": -13.03,
+          "win_pct": 50.0
+        },
+        "EMA_CROSS_UP": {
+          "trades": 14,
+          "wins": 4,
+          "losses": 10,
+          "total_pnl": -139.62,
+          "win_pct": 28.6
+        },
+        "MOMENTUM_LONG": {
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "total_pnl": -24.03,
+          "win_pct": 0.0
+        }
+      },
+      "consecutive_losses": {
+        "EMA_CROSS_UP": 3,
+        "MOMENTUM_LONG": 1
+      },
+      "exit_reasons": {
+        "TAKE_PROFIT_TIME_DECAY": {
+          "count": 8,
+          "total_pnl": 97.33,
+          "avg_pnl": 12.17
+        },
+        "TIME_STOP_HARD": {
+          "count": 4,
+          "total_pnl": -38.59,
+          "avg_pnl": -9.65
+        },
+        "TAKE_PROFIT": {
+          "count": 10,
+          "total_pnl": 157.97,
+          "avg_pnl": 15.8
+        },
+        "HARD_STOP_LOSS": {
+          "count": 15,
+          "total_pnl": -379.95,
+          "avg_pnl": -25.33
+        }
+      },
+      "risk_metrics": {
+        "profit_factor": 0.33,
+        "win_loss_ratio": 0.35,
+        "avg_win": 4.48,
+        "avg_loss": -12.84,
+        "gross_profit": 80.66,
+        "gross_loss": -243.9
+      },
+      "anomalies": [
+        "Profit Factor below 1.0: 0.33",
+        "Win/Loss ratio unhealthy: 0.35",
+        "EMA_CROSS_UP on 3-loss streak"
+      ],
+      "suggestions": [
+        "CRITICAL: DISABLE EMA_CROSS_UP immediately - 3 consecutive losses",
+        "Profit Factor 0.33 < 1.0. Reduce risk exposure or pause trading.",
+        "Win/Loss ratio at 0.35 (avg win $4.48 vs avg loss $-12.84). Consider tightening stops.",
+        "POSITIVE: TREND_LONG best performer at 100.0% WR, $80.66 PnL. Consider increasing allocation."
+      ],
+      "hourly_rate": -7.93,
+      "forecast_24h": 1646.52,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
     }
   ],
-  "last_updated": "2026-05-24T04:40:49.718335+00:00"
+  "last_updated": "2026-05-24T13:39:12.810296+00:00"
 }
