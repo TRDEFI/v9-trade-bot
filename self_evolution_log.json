@@ -1,13 +1,13 @@
 {
-  "session_start": 1779717682829,
+  "session_start": 1779721310378,
   "updates": [
     {
-      "timestamp": "2026-05-25T14:01:28.279275+00:00",
-      "capital": 1972.41,
-      "total_trades": 9,
-      "total_wins": 5,
-      "total_losses": 4,
-      "total_pnl": -27.59,
+      "timestamp": "2026-05-25T15:01:56.755020+00:00",
+      "capital": 1960.53,
+      "total_trades": 11,
+      "total_wins": 6,
+      "total_losses": 5,
+      "total_pnl": -39.47,
       "kline_autopsies": [
         {
           "sym": "MEGAUSDT",
@@ -224,301 +224,7 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-35.93"
-        }
-      ],
-      "slippage_heatmap": [
-        {
-          "sym": "AKTUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.58225715889939,
-          "slippage_usd": -0.5822571588993917
         },
-        {
-          "sym": "HUMAUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -35.92574887235419,
-          "slippage_usd": -10.925748872354191
-        }
-      ],
-      "consecutive_losses": {
-        "MOMENTUM_SHORT": 1,
-        "EMA_CROSS_DN": 1,
-        "TREND_LONG": 1,
-        "VOL_BREAKUP": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 2,
-          "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -13.89
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -2.0
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 5,
-          "wins": 4,
-          "losses": 1,
-          "win_pct": 80.0,
-          "total_pnl": 13.88
-        },
-        {
-          "strat": "TREND_LONG",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -25.58
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Reduce margin for HUMAUSDT (slippage $-10.93)"
-      ],
-      "capital_forecast_24h": 1904.84,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T14:16:15.648306+00:00",
-      "capital": 1972.41,
-      "total_trades": 9,
-      "total_wins": 5,
-      "total_losses": 4,
-      "total_pnl": -27.59,
-      "kline_autopsies": [],
-      "slippage_heatmap": [
-        {
-          "sym": "AKTUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.58225715889939,
-          "slippage_usd": -0.5822571588993917
-        },
-        {
-          "sym": "HUMAUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -35.92574887235419,
-          "slippage_usd": -10.925748872354191
-        }
-      ],
-      "consecutive_losses": {
-        "MOMENTUM_SHORT": 1,
-        "EMA_CROSS_DN": 1,
-        "TREND_LONG": 1,
-        "VOL_BREAKUP": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 2,
-          "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -13.89
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -2.0
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 5,
-          "wins": 4,
-          "losses": 1,
-          "win_pct": 80.0,
-          "total_pnl": 13.88
-        },
-        {
-          "strat": "TREND_LONG",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -25.58
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 1906.5,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T14:17:48.815810+00:00",
-      "capital": 1972.41,
-      "total_trades": 9,
-      "total_wins": 5,
-      "total_losses": 4,
-      "total_pnl": -27.59,
-      "kline_autopsies": [],
-      "slippage_heatmap": [
-        {
-          "sym": "AKTUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.58225715889939,
-          "slippage_usd": -0.5822571588993917
-        },
-        {
-          "sym": "HUMAUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -35.92574887235419,
-          "slippage_usd": -10.925748872354191
-        }
-      ],
-      "consecutive_losses": {
-        "MOMENTUM_SHORT": 1,
-        "EMA_CROSS_DN": 1,
-        "TREND_LONG": 1,
-        "VOL_BREAKUP": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 2,
-          "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -13.89
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -2.0
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 5,
-          "wins": 4,
-          "losses": 1,
-          "win_pct": 80.0,
-          "total_pnl": 13.88
-        },
-        {
-          "strat": "TREND_LONG",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -25.58
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 1906.67,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T14:19:18.596516+00:00",
-      "capital": 1972.4064043908702,
-      "total_trades": 9,
-      "total_wins": 5,
-      "total_losses": 4,
-      "total_pnl": -27.593595609129704,
-      "kline_autopsies": [
-        {
-          "sym": "HUMAUSDT",
-          "side": "LONG",
-          "strat": "VOL_BREAKUP",
-          "pnl": -35.92574887235419,
-          "reason": "HARD_STOP_LOSS",
-          "entry_candle_type": "rejection_wick_up",
-          "pattern_detected": "bearish_rejection",
-          "entry_volume_ratio": 1.0,
-          "max_favorable_pct": 0.001,
-          "runner_pct": 0.0,
-          "trend_15m": "UP",
-          "opened": "13:05",
-          "closed": "13:22",
-          "autopsy_summary": "Entry on rejection wick (bearish) for LONG position. VOL_BREAKUP misinterpreted volume spike. Max favorable only 0.1% before reversal. Stopped out after 17 min with -$35.93 loss."
-        }
-      ],
-      "slippage_heatmap": [],
-      "consecutive_losses": {
-        "MOMENTUM_SHORT": 1,
-        "EMA_CROSS_DN": 1,
-        "TREND_LONG": 1,
-        "VOL_BREAKUP": 2
-      },
-      "strategy_performance": [
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 2,
-          "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -13.89
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -2.0
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 6,
-          "wins": 4,
-          "losses": 2,
-          "win_pct": 66.7,
-          "total_pnl": -22.04
-        },
-        {
-          "strat": "TREND_LONG",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -25.58
-        }
-      ],
-      "anomalies": [
-        "Large loss on HUMAUSDT VOL_BREAKUP (-$35.93) after previous win (+$20.44)"
-      ],
-      "suggestions": [
-        "CRITICAL: Add rejection pattern filter to VOL_BREAKUP - reject entries with bearish rejection wicks for LONG positions",
-        "Review volume spike detection logic - high volume with rejection wick indicates distribution not accumulation",
-        "Consider tightening stop-loss for VOL_BREAKUP after consecutive loss",
-        "Investigate if HUMAUSDT liquidity issues causing slippage on stop loss"
-      ],
-      "capital_forecast_24h": 1907.32,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T14:30:50.412523+00:00",
-      "capital": 1960.53,
-      "total_trades": 11,
-      "total_wins": 6,
-      "total_losses": 5,
-      "total_pnl": -39.47,
-      "kline_autopsies": [
         {
           "sym": "JTOUSDT",
           "side": "LONG",
@@ -586,7 +292,7 @@
         "MOMENTUM_SHORT": 1,
         "EMA_CROSS_DN": 1,
         "TREND_LONG": 2,
-        "VOL_BREAKUP": 2
+        "VOL_BREAKUP": 1
       },
       "strategy_performance": [
         {
@@ -607,11 +313,11 @@
         },
         {
           "strat": "VOL_BREAKUP",
-          "trades": 6,
+          "trades": 5,
           "wins": 4,
-          "losses": 2,
-          "win_pct": 66.7,
-          "total_pnl": -22.04
+          "losses": 1,
+          "win_pct": 80.0,
+          "total_pnl": 13.88
         },
         {
           "strat": "TREND_LONG",
@@ -630,11 +336,13 @@
           "total_pnl": 11.94
         }
       ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
+      "anomalies": [
+        "High stop loss count: 4"
       ],
-      "capital_forecast_24h": 1868.48,
+      "suggestions": [
+        "Reduce margin for HUMAUSDT (slippage $-10.93)"
+      ],
+      "capital_forecast_24h": 1872.9,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
