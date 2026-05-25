@@ -1,33 +1,13 @@
 {
-  "session_start": 1779692526929,
+  "session_start": 1779696987420,
   "updates": [
     {
-      "timestamp": "2026-05-25T07:02:07.434600+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2000.0,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T07:45:49.078123+00:00",
-      "capital": 2008.35,
-      "total_trades": 2,
-      "total_wins": 1,
+      "timestamp": "2026-05-25T08:16:30.086892+00:00",
+      "capital": 2028.24,
+      "total_trades": 4,
+      "total_wins": 3,
       "total_losses": 1,
-      "total_pnl": 8.35,
+      "total_pnl": 28.24,
       "kline_autopsies": [
         {
           "sym": "MEGAUSDT",
@@ -76,6 +56,54 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on doji candle. PnL: $-2.00"
+        },
+        {
+          "sym": "WLDUSDT",
+          "side": "LONG",
+          "entry": 0.29519999999999996,
+          "close": 0.296,
+          "pnl": 11.550135501355404,
+          "strat": "VOL_BREAKUP",
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "opened": "07:45",
+          "closed": "07:56",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 1.083745875640185,
+          "max_favorable_pct": 0.004403794037940459,
+          "max_unfavorable_pct": -0.0013550135501353524,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.004403794037940459,
+          "tp_captured_pct_of_runner": 0.0027100271002710808,
+          "autopsy_summary": "Entry on doji candle. PnL: $11.55"
+        },
+        {
+          "sym": "CLUSDT",
+          "side": "LONG",
+          "entry": 91.87,
+          "close": 92.06,
+          "pnl": 8.34069881354075,
+          "strat": "VOL_BREAKUP",
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "opened": "07:45",
+          "closed": "08:16",
+          "entry_candle_type": "long_wick_up",
+          "entry_volume_ratio": 1.773116759365867,
+          "max_favorable_pct": 0.0025035376074887313,
+          "max_unfavorable_pct": -0.003374333297050204,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "rejection_wick",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.0025035376074887313,
+          "tp_captured_pct_of_runner": 0.0020681397627081498,
+          "autopsy_summary": "Entry on long_wick_up candle with 1.8x volume Pattern: rejection_wick. PnL: $8.34"
         }
       ],
       "slippage_heatmap": [],
@@ -98,13 +126,115 @@
           "losses": 1,
           "win_pct": 0.0,
           "total_pnl": -2.0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 19.89
         }
       ],
       "anomalies": [],
       "suggestions": [
         "Monitor for pattern emergence and optimize entry timing"
       ],
-      "capital_forecast_24h": 2064.95,
+      "capital_forecast_24h": 2195.5,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
+    },
+    {
+      "timestamp": "2026-05-25T08:30:24.042365+00:00",
+      "capital": 2028.24,
+      "total_trades": 4,
+      "total_wins": 3,
+      "total_losses": 1,
+      "total_pnl": 28.24,
+      "kline_autopsies": [],
+      "slippage_heatmap": [],
+      "consecutive_losses": {
+        "MOMENTUM_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.35
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -2.0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 19.89
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "capital_forecast_24h": 2186.45,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
+    },
+    {
+      "timestamp": "2026-05-25T08:46:21.663470+00:00",
+      "capital": 2028.24,
+      "total_trades": 4,
+      "total_wins": 3,
+      "total_losses": 1,
+      "total_pnl": 28.24,
+      "kline_autopsies": [],
+      "slippage_heatmap": [],
+      "consecutive_losses": {
+        "MOMENTUM_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.35
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -2.0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 2,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 19.89
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "capital_forecast_24h": 2177.2,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
