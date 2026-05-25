@@ -1,8 +1,8 @@
 {
-  "session_start": 1779735692076,
+  "session_start": 1779739349150,
   "updates": [
     {
-      "timestamp": "2026-05-25T19:01:32.637940+00:00",
+      "timestamp": "2026-05-25T20:02:29.645713+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
@@ -19,10 +19,10 @@
       "capital_forecast_24h": 2000.0,
       "loop_running": true,
       "loop_crash_count": 0,
-      "pairs_loaded": 150
+      "pairs_loaded": 141
     },
     {
-      "timestamp": "2026-05-25T19:16:29.365431+00:00",
+      "timestamp": "2026-05-25T20:31:26.889422+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
@@ -39,10 +39,10 @@
       "capital_forecast_24h": 2000.0,
       "loop_running": true,
       "loop_crash_count": 0,
-      "pairs_loaded": 150
+      "pairs_loaded": 141
     },
     {
-      "timestamp": "2026-05-25T19:31:27.970856+00:00",
+      "timestamp": "2026-05-25T20:46:38.932564+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
@@ -59,7 +59,7 @@
       "capital_forecast_24h": 2000.0,
       "loop_running": true,
       "loop_crash_count": 0,
-      "pairs_loaded": 150
+      "pairs_loaded": 141
     }
   ]
 }
