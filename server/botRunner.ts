@@ -148,6 +148,19 @@ export class BotRunner {
             this.activePairs = ['BTCUSDT'];
         }
 
+        // Price filter: remove pairs below $0.01 to avoid thin-book slippage
+        const allPrices = await this.binance.getAllPrices();
+        const beforeCount = this.activePairs.length;
+        this.activePairs = this.activePairs.filter(sym => {
+            const px = allPrices[sym];
+            return px !== undefined && px >= 0.01;
+        });
+        const removedCount = beforeCount - this.activePairs.length;
+        if (removedCount > 0) {
+            console.log(`[Bot] Price filter removed ${removedCount} pairs below $0.01. Remaining: ${this.activePairs.length}`);
+            this.logToFile(`[Bot] Price filter removed ${removedCount} pairs below $0.01. Remaining: ${this.activePairs.length}`);
+        }
+
         console.log(`[Bot] Scanning Started - ${this.activePairs.length} pairs loaded.`);
         this.logToFile(`[Bot] Scanning Started - ${this.activePairs.length} pairs loaded: ${this.activePairs.join(', ')}`);
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
