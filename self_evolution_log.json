@@ -1,8 +1,8 @@
 {
-  "session_start": 1779703344389,
+  "session_start": 1779708669411,
   "updates": [
     {
-      "timestamp": "2026-05-25T10:02:27.093351+00:00",
+      "timestamp": "2026-05-25T11:31:12.059927+00:00",
       "capital": 2028.24,
       "total_trades": 4,
       "total_wins": 3,
@@ -140,54 +140,7 @@
       "suggestions": [
         "Monitor for pattern emergence and optimize entry timing"
       ],
-      "capital_forecast_24h": 2144.74,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T10:31:15.582748+00:00",
-      "capital": 2028.24,
-      "total_trades": 4,
-      "total_wins": 3,
-      "total_losses": 1,
-      "total_pnl": 28.24,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {
-        "MOMENTUM_SHORT": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 10.35
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -2.0
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 2,
-          "wins": 2,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 19.89
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2135.86,
+      "capital_forecast_24h": 2121.12,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
