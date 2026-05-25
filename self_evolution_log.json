@@ -1,8 +1,8 @@
 {
-  "session_start": 1779688915376,
+  "session_start": 1779692526929,
   "updates": [
     {
-      "timestamp": "2026-05-25T06:01:55.934352+00:00",
+      "timestamp": "2026-05-25T07:02:07.434600+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
@@ -22,21 +22,89 @@
       "pairs_loaded": 150
     },
     {
-      "timestamp": "2026-05-25T06:18:35.172843+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
+      "timestamp": "2026-05-25T07:45:49.078123+00:00",
+      "capital": 2008.35,
+      "total_trades": 2,
+      "total_wins": 1,
+      "total_losses": 1,
+      "total_pnl": 8.35,
+      "kline_autopsies": [
+        {
+          "sym": "MEGAUSDT",
+          "side": "SHORT",
+          "entry": 0.07692,
+          "close": 0.07673,
+          "pnl": 10.350494019760513,
+          "strat": "EMA_CROSS_DN",
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "opened": "06:30",
+          "closed": "07:22",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.5604402284216818,
+          "max_favorable_pct": 0.005720228809152314,
+          "max_unfavorable_pct": -0.003250130005200211,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "rejection_wick",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.005720228809152314,
+          "tp_captured_pct_of_runner": -0.0024700988039521024,
+          "autopsy_summary": "Entry on doji candle Pattern: rejection_wick. PnL: $10.35"
+        },
+        {
+          "sym": "ARKMUSDT",
+          "side": "SHORT",
+          "entry": 0.13570000000000002,
+          "close": 0.1357,
+          "pnl": -1.9999999999989773,
+          "strat": "MOMENTUM_SHORT",
+          "reason": "TIME_STOP_HARD",
+          "opened": "06:30",
+          "closed": "07:30",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.1645777041750196,
+          "max_favorable_pct": 0.0036845983787765118,
+          "max_unfavorable_pct": -0.002947678703021455,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle. PnL: $-2.00"
+        }
+      ],
       "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
+      "consecutive_losses": {
+        "MOMENTUM_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 10.35
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -2.0
+        }
+      ],
       "anomalies": [],
       "suggestions": [
         "Monitor for pattern emergence and optimize entry timing"
       ],
-      "capital_forecast_24h": 2000.0,
+      "capital_forecast_24h": 2064.95,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
