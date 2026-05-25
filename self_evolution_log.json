@@ -1,74 +1,8 @@
 {
-  "session_start": 1779685357791,
+  "session_start": 1779688915376,
   "updates": [
     {
-      "timestamp": "2026-05-25T05:02:38.285079+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
-      "anomalies": [
-        "Capital drawdown: -100.0%"
-      ],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2000.0,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T05:16:03.579981+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
-      "anomalies": [
-        "Capital drawdown: -100.0%"
-      ],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2000.0,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T05:31:40.168377+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
-      "anomalies": [
-        "Capital drawdown: -100.0%"
-      ],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2000.0,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T05:32:26.258722+00:00",
+      "timestamp": "2026-05-25T06:01:55.934352+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
@@ -88,27 +22,7 @@
       "pairs_loaded": 150
     },
     {
-      "timestamp": "2026-05-25T05:45:37.605292+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2000.0,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 150
-    },
-    {
-      "timestamp": "2026-05-25T05:46:05.414604+00:00",
+      "timestamp": "2026-05-25T06:18:35.172843+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
