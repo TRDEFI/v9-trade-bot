@@ -1,8 +1,8 @@
 {
-  "session_start": 1779699796945,
+  "session_start": 1779703344389,
   "updates": [
     {
-      "timestamp": "2026-05-25T09:03:19.584806+00:00",
+      "timestamp": "2026-05-25T10:02:27.093351+00:00",
       "capital": 2028.24,
       "total_trades": 4,
       "total_wins": 3,
@@ -140,13 +140,13 @@
       "suggestions": [
         "Monitor for pattern emergence and optimize entry timing"
       ],
-      "capital_forecast_24h": 2168.49,
+      "capital_forecast_24h": 2144.74,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
     },
     {
-      "timestamp": "2026-05-25T09:17:03.655389+00:00",
+      "timestamp": "2026-05-25T10:31:15.582748+00:00",
       "capital": 2028.24,
       "total_trades": 4,
       "total_wins": 3,
@@ -187,7 +187,7 @@
       "suggestions": [
         "Monitor for pattern emergence and optimize entry timing"
       ],
-      "capital_forecast_24h": 2162.15,
+      "capital_forecast_24h": 2135.86,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
