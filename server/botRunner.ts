@@ -107,6 +107,7 @@ export class BotRunner {
     closedPositions: any[] = [];
     reversalCooldown: Record<string, number> = {};
     tradesPerSymbol: Record<string, number> = {};  // FIX: Aynı sembole spam açılış sayacı
+    strategyLossMemory: Record<string, number> = {};  // sym:strat → timestamp, blocks same strategy re-entry after loss
     cycleLongCount: number = 0;
     cycleShortCount: number = 0;
     
@@ -497,6 +498,13 @@ export class BotRunner {
                                 continue;
                             }
 
+                            // Strategy loss memory check (same symbol+strategy lost recently)
+                            const memKey = `${sym}:${sig.name}`;
+                            if (this.strategyLossMemory[memKey] && now < this.strategyLossMemory[memKey]) {
+                                this.logToFile(`[${sym}] REJECT: Strategy ${sig.name} in loss cooldown (${Math.ceil((this.strategyLossMemory[memKey] - now) / 60000)}min remaining)`);
+                                continue;
+                            }
+
                             // Boost score for most profitable strategies
                             if (sig.name === 'TREND_LONG' || sig.name === 'MA10_REJECT') {
                                 sig.score = Math.min(sig.score + 0.05, 1.0);
@@ -536,6 +544,12 @@ export class BotRunner {
                             }
                             if (sig.side === 'SHORT' && rsi5m < 20) {
                                 this.logToFile(`[${sym}] REJECT: SHORT RSI5m too low (${rsi5m.toFixed(2)})`);
+                                continue;
+                            }
+
+                            // EMA_CROSS_UP specific: require RSI5m < 50 (buying pullback within 15m uptrend)
+                            if (sig.name === 'EMA_CROSS_UP' && rsi5m > 50) {
+                                this.logToFile(`[${sym}] REJECT: EMA_CROSS_UP requires RSI5m < 50 (got ${rsi5m.toFixed(2)})`);
                                 continue;
                             }
 
@@ -680,7 +694,7 @@ export class BotRunner {
                             // SERVER-SIDE STOP-LOSS: Place STOP_MARKET order on Binance
                             // Primary protection at -$25 equivalent — triggers instantly via Binance engine, preventing MARKET-order slippage
                             const stopNotional = actualMarginUsd * USER_CONFIG.lev;
-                            const stopLossPct = Math.max(0.002, Math.abs(USER_CONFIG.cut_loss) / stopNotional);
+                            const stopLossPct = Math.max(0.008, Math.abs(USER_CONFIG.cut_loss) / stopNotional);
                             const stopPrice = sig.side === 'LONG'
                                 ? result.avgPrice * (1 - stopLossPct)
                                 : result.avgPrice * (1 + stopLossPct);
@@ -786,6 +800,13 @@ export class BotRunner {
         // Kazanç: 3 dk, Kayıp: 5 dk cooldown
         const cooldownSec = netPnlUsd < 0 ? USER_CONFIG.cooldown_min : 3;
         this.reversalCooldown[sym] = Date.now() + cooldownSec * 60000;
+
+        // Strategy loss memory: block same symbol+strategy for 30 min after loss
+        if (netPnlUsd < 0) {
+            const memKey = `${sym}:${pos.strat}`;
+            this.strategyLossMemory[memKey] = Date.now() + 30 * 60 * 1000;
+            this.logToFile(`[${sym}] Strategy loss memory set: ${memKey} blocked for 30min`);
+        }
 
         this.logToFile(`[${sym}] CLOSED: side=${pos.side} entry=${pos.entry} close=${closePrice} pnl=${netPnlUsd.toFixed(2)} reason=${reason}`);
         console.log('  CLOSED ' + reason + ' ' + sym + ' ENTRY=' + pos.entry + ' CLOSE=' + closePrice + ' PNL=' + netPnlUsd.toFixed(2));

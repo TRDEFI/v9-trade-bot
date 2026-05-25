@@ -216,10 +216,14 @@ export function getSignal(klines: Kline[]): Signal | null {
   const justCrossedUp = ema9Prev <= ema21Prev && ema9Curr > ema21Curr;
   const justCrossedDn = ema9Prev >= ema21Prev && ema9Curr < ema21Curr;
   
-  if (justCrossedUp && vr > 1.3 && rsi < 65) {
+  // EMA_CROSS_UP: require green crossover candle, strong volume, EMA21 not declining
+  const lastCandle = klines[klines.length - 1];
+  const isGreenCandle = lastCandle.c > lastCandle.o;
+  const ema21Slope = ema21Curr > 0 && ema21Prev > 0 ? (ema21Curr - ema21Prev) / ema21Prev : 0;
+  if (justCrossedUp && vr > 2.0 && rsi < 65 && isGreenCandle && ema21Slope > -0.0005) {
       sigs.push({ name: 'EMA_CROSS_UP', score: 0.86, side: 'LONG', avg_move: avg });
   }
-  if (justCrossedDn && vr > 1.3 && rsi > 35) {
+  if (justCrossedDn && vr > 2.0 && rsi > 35) {
       sigs.push({ name: 'EMA_CROSS_DN', score: 0.86, side: 'SHORT', avg_move: avg });
   }
 
