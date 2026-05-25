@@ -1,8 +1,8 @@
 {
-  "session_start": 1779728741477,
+  "session_start": 1779728808230,
   "updates": [
     {
-      "timestamp": "2026-05-25T17:05:49.532132+00:00",
+      "timestamp": "2026-05-25T17:06:56.209769+00:00",
       "capital": 1939.54,
       "total_trades": 14,
       "total_wins": 7,
@@ -428,7 +428,193 @@
       "suggestions": [
         "Reduce margin for HUMAUSDT (slippage $-10.93)"
       ],
-      "capital_forecast_24h": 1826.84,
+      "capital_forecast_24h": 1827.0,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
+    },
+    {
+      "timestamp": "2026-05-25T17:45:32.342229+00:00",
+      "capital": 1939.54,
+      "total_trades": 14,
+      "total_wins": 7,
+      "total_losses": 7,
+      "total_pnl": -60.46,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "AKTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.58225715889939,
+          "slippage_usd": -0.5822571588993917
+        },
+        {
+          "sym": "HUMAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.92574887235419,
+          "slippage_usd": -10.925748872354191
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.172530018959854,
+          "slippage_usd": -0.1725300189598542
+        }
+      ],
+      "consecutive_losses": {
+        "MOMENTUM_SHORT": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_LONG": 2,
+        "VOL_BREAKUP": 2
+      },
+      "strategy_performance": [
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -13.89
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -2.0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 6,
+          "wins": 4,
+          "losses": 2,
+          "win_pct": 66.7,
+          "total_pnl": 0.85
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 2,
+          "wins": 0,
+          "losses": 2,
+          "win_pct": 0.0,
+          "total_pnl": -49.4
+        },
+        {
+          "strat": "MOMENTUM_LONG",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 11.94
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -7.96
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "capital_forecast_24h": 1832.35,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 150
+    },
+    {
+      "timestamp": "2026-05-25T17:46:16.339404+00:00",
+      "capital": 1939.54,
+      "total_trades": 14,
+      "total_wins": 7,
+      "total_losses": 7,
+      "total_pnl": -60.46,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "AKTUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.58225715889939,
+          "slippage_usd": -0.5822571588993917
+        },
+        {
+          "sym": "HUMAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -35.92574887235419,
+          "slippage_usd": -10.925748872354191
+        },
+        {
+          "sym": "CHIPUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.172530018959854,
+          "slippage_usd": -0.1725300189598542
+        }
+      ],
+      "consecutive_losses": {
+        "MOMENTUM_SHORT": 1,
+        "EMA_CROSS_DN": 1,
+        "TREND_LONG": 2,
+        "VOL_BREAKUP": 2
+      },
+      "strategy_performance": [
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -13.89
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -2.0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 6,
+          "wins": 4,
+          "losses": 2,
+          "win_pct": 66.7,
+          "total_pnl": 0.85
+        },
+        {
+          "strat": "TREND_LONG",
+          "trades": 2,
+          "wins": 0,
+          "losses": 2,
+          "win_pct": 0.0,
+          "total_pnl": -49.4
+        },
+        {
+          "strat": "MOMENTUM_LONG",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 11.94
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -7.96
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Monitor for pattern emergence and optimize entry timing"
+      ],
+      "capital_forecast_24h": 1832.44,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 150
