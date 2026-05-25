@@ -1,8 +1,8 @@
 {
-  "session_start": 1779739349150,
+  "session_start": 1779742868468,
   "updates": [
     {
-      "timestamp": "2026-05-25T20:02:29.645713+00:00",
+      "timestamp": "2026-05-25T21:01:09.028301+00:00",
       "capital": 2000,
       "total_trades": 0,
       "total_wins": 0,
@@ -22,41 +22,55 @@
       "pairs_loaded": 141
     },
     {
-      "timestamp": "2026-05-25T20:31:26.889422+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
+      "timestamp": "2026-05-25T21:46:44.570216+00:00",
+      "capital": 2018.76,
+      "total_trades": 1,
+      "total_wins": 1,
       "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
+      "total_pnl": 18.76,
+      "kline_autopsies": [
+        {
+          "sym": "PLUMEUSDT",
+          "side": "LONG",
+          "entry": 0.01445,
+          "close": 0.01451,
+          "pnl": 18.76124567474084,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "opened": "21:30",
+          "closed": "21:40",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.11052982885515045,
+          "max_favorable_pct": 0.00553633217993081,
+          "max_unfavorable_pct": -0.002076124567473964,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.00553633217993081,
+          "tp_captured_pct_of_runner": 0.004152249134948168,
+          "autopsy_summary": "Entry on doji candle. PnL: $18.76"
+        }
+      ],
       "slippage_heatmap": [],
       "consecutive_losses": {},
-      "strategy_performance": [],
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 18.76
+        }
+      ],
       "anomalies": [],
       "suggestions": [
         "Monitor for pattern emergence and optimize entry timing"
       ],
-      "capital_forecast_24h": 2000.0,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 141
-    },
-    {
-      "timestamp": "2026-05-25T20:46:38.932564+00:00",
-      "capital": 2000,
-      "total_trades": 0,
-      "total_wins": 0,
-      "total_losses": 0,
-      "total_pnl": 0,
-      "kline_autopsies": [],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
-      "strategy_performance": [],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2000.0,
+      "capital_forecast_24h": 2553.54,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
