@@ -54,8 +54,8 @@ const TREND_MATRIX: Record<string, TrendReq> = {
     'EMA_CROSS_DN':        { align15m: 'DOWN', align1h: 'ANY'  },
     'MOMENTUM_LONG':       { align15m: 'UP',   align1h: 'ANY'  },
     'MOMENTUM_SHORT':      { align15m: 'DOWN', align1h: 'ANY'  },
-    'VOL_BREAKUP':         { align15m: 'UP',   align1h: 'ANY'  },
-    'VOL_BREAKDN':         { align15m: 'DOWN', align1h: 'ANY'  },
+    'VOL_BREAKUP':         { align15m: 'ANY',  align1h: 'ANY'  },
+    'VOL_BREAKDN':         { align15m: 'ANY',  align1h: 'ANY'  },
     'SQUEEZE_LONG':        { align15m: 'ANY',  align1h: 'ANY'  },
     'SQUEEZE_SHORT':       { align15m: 'ANY',  align1h: 'ANY'  },
 };
@@ -515,8 +515,8 @@ export class BotRunner {
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // Fresh Signal: Valid for 7 minutes (15m strategy)
-                            if (candleAgeMs > 7 * 60 * 1000) {
+                            // Fresh Signal: Valid for 2 minutes (scalping — stale signals lose before T+0)
+                            if (candleAgeMs > 2 * 60 * 1000) {
                                 continue;
                             }
 
@@ -555,11 +555,11 @@ export class BotRunner {
 
                             // Anlik hareket kontrolu
                             const active5m = c5m[c5m.length - 1];
-                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.99) {
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.998) {
                                 this.logToFile(`[${sym}] REJECT: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
-                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.01) {
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.002) {
                                 this.logToFile(`[${sym}] REJECT: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
@@ -663,9 +663,9 @@ export class BotRunner {
                                 targetProfit = notionalValue * tpPct;
                                 this.logToFile(`[${sym}] TP: Strategy-based $${targetProfit.toFixed(2)} (price target: ${sig.tp_target})`);
                             } else {
-                                // ATR bazlı dinamik TP
-                                const atrTarget = (atrPct / 100) * notionalValue * 0.5; // ATR'nin yarısı
-                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(15, atrTarget));
+                                // ATR bazlı dinamik TP — ATR'nin tamamını hedefle (R:R ≈ 1:1)
+                                const atrTarget = (atrPct / 100) * notionalValue;
+                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(25, atrTarget));
                                 this.logToFile(`[${sym}] TP: ATR-based $${targetProfit.toFixed(2)} (ATR%: ${atrPct.toFixed(2)}%)`);
                             }
 

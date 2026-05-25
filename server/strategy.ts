@@ -228,14 +228,14 @@ export function getSignal(klines: Kline[]): Signal | null {
   }
 
   // Mean Reversion - Bollinger Band reversion with dynamic TP/SL
-  // TREND MATRIX (botRunner.ts) gates by 15m trend direction
-  // LONG: price BELOW EMA50 (dip below support in uptrend) + lower BB touch + oversold
-  if (bb && p < bb.lower * 1.002 && rsi < 35 && vr > 1.3 && ema50 > 0 && p < ema50 && p > ema50 * 0.95) {
+  // TREND MATRIX (botRunner.ts) gates by 15m/1h trend direction
+  // LONG: price above EMA50 (pullback in uptrend) + lower BB touch + oversold
+  if (bb && p < bb.lower * 1.002 && rsi < 35 && vr > 1.3 && ema50 > 0 && p > ema50 * 0.995) {
       sigs.push({ name: 'BB_REVERSION_LONG', score: 0.87, side: 'LONG', avg_move: atr,
                   tp_target: bb.sma, sl_target: bb.lower * 0.997 });
   }
-  // SHORT: price ABOVE EMA50 (bounce above resistance in downtrend) + upper BB touch + overbought
-  if (bb && p > bb.upper * 0.998 && rsi > 65 && vr > 1.3 && ema50 > 0 && p > ema50 && p < ema50 * 1.05) {
+  // SHORT: price below EMA50 (pullback in downtrend) + upper BB touch + overbought
+  if (bb && p > bb.upper * 0.998 && rsi > 65 && vr > 1.3 && ema50 > 0 && p < ema50 * 1.005) {
       sigs.push({ name: 'BB_REVERSION_SHORT', score: 0.87, side: 'SHORT', avg_move: atr,
                   tp_target: bb.sma, sl_target: bb.upper * 1.003 });
   }
