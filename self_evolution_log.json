@@ -1,13 +1,13 @@
 {
-  "session_start": 1779800595556,
+  "session_start": 1779805850941,
   "updates": [
     {
-      "timestamp": "2026-05-26T13:03:45.535398+00:00",
-      "capital": 1677.38,
-      "total_trades": 53,
+      "timestamp": "2026-05-26T14:31:21.808205+00:00",
+      "capital": 1628.74,
+      "total_trades": 55,
       "total_wins": 24,
-      "total_losses": 29,
-      "total_pnl": -322.62,
+      "total_losses": 31,
+      "total_pnl": -371.26,
       "kline_autopsies": [
         {
           "sym": "PLUMEUSDT",
@@ -1280,6 +1280,54 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on red candle Stop hit on green candle. PnL: $-62.44"
+        },
+        {
+          "sym": "ORDIUSDT",
+          "side": "SHORT",
+          "entry": 4.09,
+          "close": 4.108,
+          "pnl": -24.00488997554987,
+          "strat": "SQUEEZE_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "13:00",
+          "closed": "13:04",
+          "entry_candle_type": "long_wick_up",
+          "entry_volume_ratio": 0.5120843863976876,
+          "max_favorable_pct": 0.005867970660146705,
+          "max_unfavorable_pct": 0.0009779951100245593,
+          "stop_hit_candle_type": "green",
+          "stop_hit_volume_ratio": 1.238237208105695,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.9951100244501312,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on long_wick_up candle Stop hit on green candle. PnL: $-24.00"
+        },
+        {
+          "sym": "EWYUSDT",
+          "side": "SHORT",
+          "entry": 194.33,
+          "close": 195.21,
+          "pnl": -24.641897802706616,
+          "strat": "SQUEEZE_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "13:00",
+          "closed": "13:33",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 1.0578191345198302,
+          "max_favorable_pct": 0.007410075644522192,
+          "max_unfavorable_pct": -0.0013379303247054975,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.358102197293384,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on red candle Stop hit on none candle. PnL: $-24.64"
         }
       ],
       "slippage_heatmap": [
@@ -1358,7 +1406,8 @@
       ],
       "consecutive_losses": {
         "TREND_SHORT": 1,
-        "RSI_OVERSOLD": 2
+        "RSI_OVERSOLD": 2,
+        "SQUEEZE_SHORT": 2
       },
       "strategy_performance": [
         {
@@ -1403,11 +1452,11 @@
         },
         {
           "strat": "SQUEEZE_SHORT",
-          "trades": 1,
+          "trades": 3,
           "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 12.14
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -36.51
         },
         {
           "strat": "TREND_SHORT",
@@ -1429,12 +1478,12 @@
       "anomalies": [
         "Large loss: SKYAIUSDT $-51.92",
         "Large loss: DEXEUSDT $-62.44",
-        "High stop loss count: 27"
+        "High stop loss count: 29"
       ],
       "suggestions": [
         "Reduce margin for SOXLUSDT (slippage $-5.47)"
       ],
-      "capital_forecast_24h": 1197.23,
+      "capital_forecast_24h": 1122.06,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
