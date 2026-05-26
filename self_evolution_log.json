@@ -1,13 +1,13 @@
 {
-  "session_start": 1779822946521,
+  "session_start": 1779828392746,
   "updates": [
     {
-      "timestamp": "2026-05-26T19:15:48.116200+00:00",
-      "capital": 2003.66,
-      "total_trades": 2,
-      "total_wins": 1,
-      "total_losses": 1,
-      "total_pnl": 3.66,
+      "timestamp": "2026-05-26T20:46:36.228488+00:00",
+      "capital": 2008.56,
+      "total_trades": 5,
+      "total_wins": 3,
+      "total_losses": 2,
+      "total_pnl": 8.56,
       "kline_autopsies": [
         {
           "sym": "SOXLUSDT",
@@ -56,47 +56,7 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on green candle Stop hit on red candle. PnL: $-23.80"
-        }
-      ],
-      "slippage_heatmap": [],
-      "consecutive_losses": {
-        "RSI_OVERSOLD": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "SQUEEZE_SHORT",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 27.46
         },
-        {
-          "strat": "RSI_OVERSOLD",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -23.8
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 2125.66,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 142
-    },
-    {
-      "timestamp": "2026-05-26T19:46:07.199304+00:00",
-      "capital": 2045.06,
-      "total_trades": 4,
-      "total_wins": 3,
-      "total_losses": 1,
-      "total_pnl": 45.06,
-      "kline_autopsies": [
         {
           "sym": "SKYAIUSDT",
           "side": "LONG",
@@ -144,18 +104,51 @@
           "runner_pct": 0.005535055350553536,
           "tp_captured_pct_of_runner": 0.004612546125461259,
           "autopsy_summary": "Entry on doji candle. PnL: $21.06"
+        },
+        {
+          "sym": "SOXLUSDT",
+          "side": "SHORT",
+          "entry": 226.07000000000002,
+          "close": 227.63,
+          "pnl": -36.502587694076475,
+          "strat": "SQUEEZE_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "19:45",
+          "closed": "19:48",
+          "entry_candle_type": "green",
+          "entry_volume_ratio": 0.6310724106324471,
+          "max_favorable_pct": 0.01902065731852958,
+          "max_unfavorable_pct": 8.846817357447609e-05,
+          "stop_hit_candle_type": "long_wick_up",
+          "stop_hit_volume_ratio": 7.339138405132903,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -11.502587694076475,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on green candle Stop hit on long_wick_up candle. PnL: $-36.50"
         }
       ],
-      "slippage_heatmap": [],
-      "consecutive_losses": {},
+      "slippage_heatmap": [
+        {
+          "sym": "SOXLUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -36.502587694076475,
+          "slippage_usd": -11.502587694076475
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 1
+      },
       "strategy_performance": [
         {
           "strat": "SQUEEZE_SHORT",
-          "trades": 1,
+          "trades": 2,
           "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 27.46
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -9.04
         },
         {
           "strat": "RSI_OVERSOLD",
@@ -168,9 +161,9 @@
       ],
       "anomalies": [],
       "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
+        "Reduce margin for SOXLUSDT (slippage $-11.50)"
       ],
-      "capital_forecast_24h": 2928.13,
+      "capital_forecast_24h": 2100.58,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
