@@ -1,13 +1,13 @@
 {
-  "session_start": 1779750955904,
+  "session_start": 1779753736428,
   "updates": [
     {
-      "timestamp": "2026-05-25T23:16:00.138330+00:00",
-      "capital": 1977.7,
-      "total_trades": 6,
-      "total_wins": 3,
-      "total_losses": 3,
-      "total_pnl": -22.3,
+      "timestamp": "2026-05-26T00:02:24.977181+00:00",
+      "capital": 1894.32,
+      "total_trades": 12,
+      "total_wins": 5,
+      "total_losses": 7,
+      "total_pnl": -105.68,
       "kline_autopsies": [
         {
           "sym": "PLUMEUSDT",
@@ -152,164 +152,31 @@
           "runner_pct": 0.003004130679684402,
           "tp_captured_pct_of_runner": -0.003755163349605794,
           "autopsy_summary": "Entry on red candle. PnL: $16.78"
-        }
-      ],
-      "slippage_heatmap": [
+        },
         {
-          "sym": "OPGUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.60717658168085,
-          "slippage_usd": -0.6071765816808501
-        }
-      ],
-      "consecutive_losses": {
-        "RSI_OVERSOLD": 3
-      },
-      "strategy_performance": [
-        {
+          "sym": "DOGEUSDT",
+          "side": "LONG",
+          "entry": 0.10181,
+          "close": 0.10207,
+          "pnl": 10.768883213829502,
           "strat": "RSI_OVERSOLD",
-          "trades": 4,
-          "wins": 1,
-          "losses": 3,
-          "win_pct": 25.0,
-          "total_pnl": -55.32
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "opened": "22:45",
+          "closed": "23:18",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.42834339778152997,
+          "max_favorable_pct": 0.00333955407130937,
+          "max_unfavorable_pct": -0.002259110107062117,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.00333955407130937,
+          "tp_captured_pct_of_runner": 0.0025537766427659006,
+          "autopsy_summary": "Entry on doji candle. PnL: $10.77"
         },
-        {
-          "strat": "MOMENTUM_LONG",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 16.25
-        },
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 16.78
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Disable RSI_OVERSOLD (consecutive 3 losses)"
-      ],
-      "capital_forecast_24h": 1747.98,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 141
-    },
-    {
-      "timestamp": "2026-05-25T23:32:05.519229+00:00",
-      "scanning_phase": {
-        "window_duration_min": 15,
-        "total_pairs_scanned": 150,
-        "signals_found": 11,
-        "positions_opened": 2,
-        "rejection_breakdown": {
-          "micro_volatility": 518,
-          "other": 37,
-          "correlation_guard": 1
-        },
-        "batch_events": [],
-        "loop_duration_ms_avg": 6.0,
-        "loop_duration_ms_max": 6,
-        "scanning_health_score": 70,
-        "pre_trade_alerts": [
-          "\u26a0\ufe0f CORRELATION GUARD TRIPPED: 1 entries blocked by correlation limit \u2014 good prevention active"
-        ]
-      },
-      "trade_phase": {
-        "capital": 1988.47,
-        "total_trades": 7,
-        "total_wins": 4,
-        "total_losses": 3,
-        "total_pnl": -11.53,
-        "unrealized_pnl": -4.952633233746317,
-        "open_positions": 4,
-        "win_rate": "57.1%",
-        "kline_autopsies": [
-          {
-            "sym": "DOGEUSDT",
-            "side": "LONG",
-            "entry": 0.10181,
-            "close": 0.10207,
-            "pnl": 10.768883213829502,
-            "strat": "RSI_OVERSOLD",
-            "reason": "TAKE_PROFIT_TIME_DECAY",
-            "opened": "22:45",
-            "closed": "23:18",
-            "entry_candle_type": "doji",
-            "entry_volume_ratio": 0.42834339778152997,
-            "max_favorable_pct": 0.00333955407130937,
-            "max_unfavorable_pct": -0.002259110107062117,
-            "stop_hit_candle_type": "none",
-            "stop_hit_volume_ratio": 1.0,
-            "pattern_detected": "none",
-            "trend_15m": "sideways",
-            "entry_was_against_trend": false,
-            "slippage_usd": 0,
-            "runner_pct": 0.00333955407130937,
-            "tp_captured_pct_of_runner": 0.0025537766427659006,
-            "autopsy_summary": "Entry on doji candle. PnL: $10.77"
-          }
-        ],
-        "slippage_heatmap": [
-          {
-            "sym": "OPGUSDT",
-            "trigger_usd": -25.0,
-            "fill_usd": -25.60717658168085,
-            "slippage_usd": -0.6071765816808501
-          }
-        ],
-        "strategy_performance": [
-          {
-            "strat": "RSI_OVERSOLD",
-            "trades": 5,
-            "wins": 2,
-            "losses": 3,
-            "win_pct": 40.0,
-            "total_pnl": -44.55
-          },
-          {
-            "strat": "MOMENTUM_LONG",
-            "trades": 1,
-            "wins": 1,
-            "losses": 0,
-            "win_pct": 100.0,
-            "total_pnl": 16.25
-          },
-          {
-            "strat": "EMA_CROSS_DN",
-            "trades": 1,
-            "wins": 1,
-            "losses": 0,
-            "win_pct": 100.0,
-            "total_pnl": 16.78
-          }
-        ],
-        "post_trade_alerts": [
-          "Capital drawdown: -100.0%"
-        ],
-        "suggestions": [
-          {
-            "priority": "LOW",
-            "suggestion": "Monitor for pattern emergence and optimize entry timing",
-            "estimated_impact": "Continuous improvement"
-          }
-        ],
-        "capital_forecast_24h": 1881.95
-      }
-    },
-    {
-      "timestamp": "2026-05-25T23:46:06.315094+00:00",
-      "capital": 1949.59,
-      "total_trades": 10,
-      "total_wins": 5,
-      "total_losses": 5,
-      "total_pnl": -50.41,
-      "kline_autopsies": [
         {
           "sym": "AVAXUSDT",
           "side": "LONG",
@@ -381,6 +248,54 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on doji candle with 2.0x volume Pattern: rejection_wick Stop hit on doji candle. PnL: $-27.77"
+        },
+        {
+          "sym": "SOXLUSDT",
+          "side": "SHORT",
+          "entry": 205.45000000000002,
+          "close": 206.62,
+          "pnl": -30.474081284983875,
+          "strat": "EMA_CROSS_DN",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "23:34",
+          "closed": "23:49",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 0.0633397312859885,
+          "max_favorable_pct": 0.012509126308104128,
+          "max_unfavorable_pct": -0.0031637868094427143,
+          "stop_hit_candle_type": "green",
+          "stop_hit_volume_ratio": 7.195282025880751,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -5.474081284983875,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on red candle Stop hit on green candle. PnL: $-30.47"
+        },
+        {
+          "sym": "PROVEUSDT",
+          "side": "LONG",
+          "entry": 0.2632,
+          "close": 0.262,
+          "pnl": -24.796352583586227,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "23:30",
+          "closed": "23:50",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.604223541506143,
+          "max_favorable_pct": 0.0011398176291794167,
+          "max_unfavorable_pct": -0.006458966565349466,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 8.515270454321415,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.20364741641377293,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-24.80"
         }
       ],
       "slippage_heatmap": [
@@ -395,20 +310,26 @@
           "trigger_usd": -25.0,
           "fill_usd": -27.773195876288682,
           "slippage_usd": -2.773195876288682
+        },
+        {
+          "sym": "SOXLUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -30.474081284983875,
+          "slippage_usd": -5.474081284983875
         }
       ],
       "consecutive_losses": {
-        "EMA_CROSS_DN": 1,
-        "RSI_OVERSOLD": 1
+        "EMA_CROSS_DN": 2,
+        "RSI_OVERSOLD": 2
       },
       "strategy_performance": [
         {
           "strat": "RSI_OVERSOLD",
-          "trades": 7,
+          "trades": 8,
           "wins": 3,
-          "losses": 4,
-          "win_pct": 42.9,
-          "total_pnl": -59.79
+          "losses": 5,
+          "win_pct": 37.5,
+          "total_pnl": -84.59
         },
         {
           "strat": "MOMENTUM_LONG",
@@ -420,18 +341,328 @@
         },
         {
           "strat": "EMA_CROSS_DN",
-          "trades": 2,
+          "trades": 3,
           "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -6.86
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -37.34
         }
       ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
+      "anomalies": [
+        "High stop loss count: 7"
       ],
-      "capital_forecast_24h": 1522.31,
+      "suggestions": [
+        "Reduce margin for SOXLUSDT (slippage $-5.47)"
+      ],
+      "capital_forecast_24h": 1077.01,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
+    },
+    {
+      "timestamp": "2026-05-26T00:16:16.918121+00:00",
+      "scanning_phase": {
+        "window_duration_min": 15,
+        "total_pairs_scanned": 150,
+        "signals_found": 16,
+        "positions_opened": 1,
+        "rejection_breakdown": {
+          "other": 395,
+          "micro_volatility": 959
+        },
+        "batch_events": [],
+        "loop_duration_ms_avg": 7.0,
+        "loop_duration_ms_max": 7,
+        "scanning_health_score": 70,
+        "pre_trade_alerts": []
+      },
+      "trade_phase": {
+        "capital": 1911.69,
+        "total_trades": 13,
+        "total_wins": 6,
+        "total_losses": 7,
+        "total_pnl": -88.31,
+        "unrealized_pnl": -1.1765799256497815,
+        "open_positions": 1,
+        "win_rate": "46.2%",
+        "kline_autopsies": [
+          {
+            "sym": "EWYUSDT",
+            "side": "SHORT",
+            "entry": 191.03,
+            "close": 190.29,
+            "pnl": 17.368685546772994,
+            "strat": "MOMENTUM_SHORT",
+            "reason": "TAKE_PROFIT_TIME_DECAY",
+            "opened": "23:30",
+            "closed": "00:10",
+            "entry_candle_type": "red",
+            "entry_volume_ratio": 2.078655382371398,
+            "max_favorable_pct": 0.004135476103229818,
+            "max_unfavorable_pct": -0.007642778621159022,
+            "stop_hit_candle_type": "none",
+            "stop_hit_volume_ratio": 1.0,
+            "pattern_detected": "spike",
+            "trend_15m": "sideways",
+            "entry_was_against_trend": false,
+            "slippage_usd": 0,
+            "runner_pct": 0.004135476103229818,
+            "tp_captured_pct_of_runner": -0.003873737109354599,
+            "autopsy_summary": "Entry on red candle with 2.1x volume Pattern: spike. PnL: $17.37"
+          }
+        ],
+        "slippage_heatmap": [
+          {
+            "sym": "OPGUSDT",
+            "trigger_usd": -25.0,
+            "fill_usd": -25.60717658168085,
+            "slippage_usd": -0.6071765816808501
+          },
+          {
+            "sym": "MEUSDT",
+            "trigger_usd": -25.0,
+            "fill_usd": -27.773195876288682,
+            "slippage_usd": -2.773195876288682
+          },
+          {
+            "sym": "SOXLUSDT",
+            "trigger_usd": -25.0,
+            "fill_usd": -30.474081284983875,
+            "slippage_usd": -5.474081284983875
+          }
+        ],
+        "strategy_performance": [
+          {
+            "strat": "RSI_OVERSOLD",
+            "trades": 8,
+            "wins": 3,
+            "losses": 5,
+            "win_pct": 37.5,
+            "total_pnl": -84.59
+          },
+          {
+            "strat": "MOMENTUM_LONG",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "win_pct": 100.0,
+            "total_pnl": 16.25
+          },
+          {
+            "strat": "EMA_CROSS_DN",
+            "trades": 3,
+            "wins": 1,
+            "losses": 2,
+            "win_pct": 33.3,
+            "total_pnl": -37.34
+          },
+          {
+            "strat": "MOMENTUM_SHORT",
+            "trades": 1,
+            "wins": 1,
+            "losses": 0,
+            "win_pct": 100.0,
+            "total_pnl": 17.37
+          }
+        ],
+        "post_trade_alerts": [
+          "Capital drawdown: -100.0%"
+        ],
+        "suggestions": [
+          {
+            "priority": "LOW",
+            "suggestion": "Monitor for pattern emergence and optimize entry timing",
+            "estimated_impact": "Continuous improvement"
+          }
+        ],
+        "capital_forecast_24h": 1276.05
+      }
+    },
+    {
+      "timestamp": "2026-05-26T00:45:19.921474+00:00",
+      "capital": 1811.71,
+      "total_trades": 17,
+      "total_wins": 6,
+      "total_losses": 11,
+      "total_pnl": -188.29,
+      "kline_autopsies": [
+        {
+          "sym": "PHAROSUSDT",
+          "side": "SHORT",
+          "entry": 0.6058,
+          "close": 0.6085,
+          "pnl": -24.284582370419578,
+          "strat": "EMA_CROSS_DN",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "00:30",
+          "closed": "00:31",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 0.6827962894545019,
+          "max_favorable_pct": 0.004952129415648734,
+          "max_unfavorable_pct": 0.0019808517662594565,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 0.17503270192816558,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.715417629580422,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on red candle Stop hit on doji candle. PnL: $-24.28"
+        },
+        {
+          "sym": "SNDKUSDT",
+          "side": "SHORT",
+          "entry": 1528.79,
+          "close": 1535.4,
+          "pnl": -23.618404097358457,
+          "strat": "EMA_CROSS_DN",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "00:30",
+          "closed": "00:35",
+          "entry_candle_type": "long_wick_up",
+          "entry_volume_ratio": 0.8683966114097548,
+          "max_favorable_pct": 0.004330221940227316,
+          "max_unfavorable_pct": 0.0010204148378782864,
+          "stop_hit_candle_type": "red",
+          "stop_hit_volume_ratio": 0.4547578171174467,
+          "pattern_detected": "rejection_wick",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 1.3815959026415428,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on long_wick_up candle Pattern: rejection_wick Stop hit on red candle. PnL: $-23.62"
+        },
+        {
+          "sym": "GMTUSDT",
+          "side": "LONG",
+          "entry": 0.011099999999999999,
+          "close": 0.01105,
+          "pnl": -24.52252252252161,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "00:30",
+          "closed": "00:36",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.47728907119452935,
+          "max_favorable_pct": 1.562813942321448e-16,
+          "max_unfavorable_pct": -0.00720720720720707,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 0.8123448653671402,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.4774774774783914,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-24.52"
+        },
+        {
+          "sym": "ATOMUSDT",
+          "side": "LONG",
+          "entry": 2.1519999999999997,
+          "close": 2.141,
+          "pnl": -27.55762081784312,
+          "strat": "VOL_BREAKUP",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "00:15",
+          "closed": "00:38",
+          "entry_candle_type": "green",
+          "entry_volume_ratio": 0.5088619940911887,
+          "max_favorable_pct": 0.0023234200743495995,
+          "max_unfavorable_pct": -0.006040892193308505,
+          "stop_hit_candle_type": "red",
+          "stop_hit_volume_ratio": 0.8307641813071519,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -2.5576208178431195,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on green candle Stop hit on red candle. PnL: $-27.56"
+        }
+      ],
+      "slippage_heatmap": [
+        {
+          "sym": "OPGUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.60717658168085,
+          "slippage_usd": -0.6071765816808501
+        },
+        {
+          "sym": "MEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.773195876288682,
+          "slippage_usd": -2.773195876288682
+        },
+        {
+          "sym": "SOXLUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -30.474081284983875,
+          "slippage_usd": -5.474081284983875
+        },
+        {
+          "sym": "ATOMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -27.55762081784312,
+          "slippage_usd": -2.5576208178431195
+        }
+      ],
+      "consecutive_losses": {
+        "EMA_CROSS_DN": 4,
+        "RSI_OVERSOLD": 3,
+        "VOL_BREAKUP": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 9,
+          "wins": 3,
+          "losses": 6,
+          "win_pct": 33.3,
+          "total_pnl": -109.11
+        },
+        {
+          "strat": "MOMENTUM_LONG",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 16.25
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 5,
+          "wins": 1,
+          "losses": 4,
+          "win_pct": 20.0,
+          "total_pnl": -85.24
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 17.37
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -27.56
+        }
+      ],
+      "anomalies": [
+        "High stop loss count: 4"
+      ],
+      "suggestions": [
+        "Disable EMA_CROSS_DN (consecutive 4 losses)"
+      ],
+      "capital_forecast_24h": 628.24,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
