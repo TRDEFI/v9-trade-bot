@@ -48,8 +48,8 @@ const TREND_MATRIX: Record<string, TrendReq> = {
     'RSI_OVERBOUGHT':      { align15m: 'DOWN', align1h: 'DOWN' },
     'MA10_BOUNCE':         { align15m: 'UP',   align1h: 'ANY'  },
     'MA10_REJECT':         { align15m: 'DOWN', align1h: 'ANY'  },
-    'BB_REVERSION_LONG':   { align15m: 'UP',   align1h: 'UP'   },
-    'BB_REVERSION_SHORT':  { align15m: 'DOWN', align1h: 'DOWN' },
+    'BB_REVERSION_LONG':   { align15m: 'UP',   align1h: 'ANY'  },
+    'BB_REVERSION_SHORT':  { align15m: 'DOWN', align1h: 'ANY'  },
     'EMA_CROSS_UP':        { align15m: 'UP',   align1h: 'DOWN' },
     'EMA_CROSS_DN':        { align15m: 'DOWN', align1h: 'ANY'  },
     'MOMENTUM_LONG':       { align15m: 'UP',   align1h: 'ANY'  },
@@ -528,14 +528,20 @@ export class BotRunner {
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // Fresh Signal: Valid for 2 minutes (scalping — stale signals lose before T+0)
-                            if (candleAgeMs > 2 * 60 * 1000) {
+                            // Fresh Signal: Valid for 5 minutes (scalping balance)
+                            if (candleAgeMs > 5 * 60 * 1000) {
                                 continue;
                             }
 
                             const atrPct = (sig.avg_move / sigClosePrice) * 100;
                             if (atrPct < USER_CONFIG.min_atr_pct || atrPct > USER_CONFIG.max_atr_pct) {
                                 this.logToFile(`[${sym}] REJECT: ATR% out of scalp range (${atrPct.toFixed(2)}%)`);
+                                continue;
+                            }
+
+                            // RSI_OVERSOLD requires ATR > 0.6% (low-ATR coins have terrible R:R)
+                            if (sig.name === 'RSI_OVERSOLD' && atrPct < 0.6) {
+                                this.logToFile(`[${sym}] REJECT: RSI_OVERSOLD requires ATR > 0.6% (got ${atrPct.toFixed(2)}%)`);
                                 continue;
                             }
 
@@ -560,21 +566,37 @@ export class BotRunner {
                                 continue;
                             }
 
-                            // EMA_CROSS_UP specific: require RSI5m < 50 (buying pullback within 15m uptrend)
-                            if (sig.name === 'EMA_CROSS_UP' && rsi5m > 50) {
-                                this.logToFile(`[${sym}] REJECT: EMA_CROSS_UP requires RSI5m < 50 (got ${rsi5m.toFixed(2)})`);
+                            // EMA_CROSS_UP specific: require RSI5m < 60 (buying pullback within 15m uptrend)
+                            if (sig.name === 'EMA_CROSS_UP' && rsi5m > 60) {
+                                this.logToFile(`[${sym}] REJECT: EMA_CROSS_UP requires RSI5m < 60 (got ${rsi5m.toFixed(2)})`);
                                 continue;
                             }
 
                             // Anlik hareket kontrolu
                             const active5m = c5m[c5m.length - 1];
-                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.998) {
+                            if (sig.side === 'LONG' && active5m.c < active5m.o * 0.995) {
                                 this.logToFile(`[${sym}] REJECT: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
-                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.002) {
+                            if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.005) {
                                 this.logToFile(`[${sym}] REJECT: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
+                            }
+
+                            // 1dklik momentum kontrolu: son kapanan 1m mum sinyal yonune ters mi?
+                            const c1m = await this.binance.getKlines(sym, '1m', 3);
+                            if (c1m && c1m.length >= 2) {
+                                const last1m = c1m[c1m.length - 2];
+                                if (sig.side === 'LONG' && last1m.c < last1m.o) {
+                                    const dropPct = ((1 - last1m.c / last1m.o) * 100).toFixed(2);
+                                    this.logToFile(`[${sym}] REJECT: LONG last 1m was red (-${dropPct}%)`);
+                                    continue;
+                                }
+                                if (sig.side === 'SHORT' && last1m.c > last1m.o) {
+                                    const risePct = ((last1m.c / last1m.o - 1) * 100).toFixed(2);
+                                    this.logToFile(`[${sym}] REJECT: SHORT last 1m was green (+${risePct}%)`);
+                                    continue;
+                                }
                             }
 
                             const ema50_15m = calcEma(closed15m, 50);
@@ -605,15 +627,13 @@ export class BotRunner {
                                 }
                             }
 
-                            // Universal trend filter: block LONG when BOTH 15m and 1h are DOWN
-                            // Block SHORT when BOTH 15m and 1h are UP
-                            if (sig.side === 'LONG' && trend15m === 'DOWN' && trend1h === 'DOWN') {
-                                this.logToFile(`[${sym}] REJECT: Universal trend filter blocked LONG (15m=DOWN, 1h=DOWN)`);
-                                continue;
-                            }
-                            if (sig.side === 'SHORT' && trend15m === 'UP' && trend1h === 'UP') {
-                                this.logToFile(`[${sym}] REJECT: Universal trend filter blocked SHORT (15m=UP, 1h=UP)`);
-                                continue;
+                            // EMA_CROSS_DN momentum check: don't short when last 2 15m candles are both UP
+                            if (sig.name === 'EMA_CROSS_DN' && closed15m.length >= 3) {
+                                const last2 = closed15m.slice(-2);
+                                if (last2[0].c > last2[0].o && last2[1].c > last2[1].o) {
+                                    this.logToFile(`[${sym}] REJECT: EMA_CROSS_DN blocked - last 2 15m candles rising`);
+                                    continue;
+                                }
                             }
 
                             // Same-side correlation guard: max 2 positions per side total
@@ -676,10 +696,11 @@ export class BotRunner {
                                 targetProfit = notionalValue * tpPct;
                                 this.logToFile(`[${sym}] TP: Strategy-based $${targetProfit.toFixed(2)} (price target: ${sig.tp_target})`);
                             } else {
-                                // ATR bazlı dinamik TP — ATR'nin tamamını hedefle (R:R ≈ 1:1)
+                                // ATR bazlı dinamik TP — R:R >= 1:1 garanti (target >= stopLoss)
                                 const atrTarget = (atrPct / 100) * notionalValue;
-                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(25, atrTarget));
-                                this.logToFile(`[${sym}] TP: ATR-based $${targetProfit.toFixed(2)} (ATR%: ${atrPct.toFixed(2)}%)`);
+                                const stopUsd = Math.abs(USER_CONFIG.cut_loss);
+                                targetProfit = Math.max(USER_CONFIG.target_profit, Math.min(25, atrTarget), stopUsd);
+                                this.logToFile(`[${sym}] TP: ATR-based $${targetProfit.toFixed(2)} (ATR%: ${atrPct.toFixed(2)}%, stop: $${stopUsd})`);
                             }
 
                             this.openPositions[sym] = {
