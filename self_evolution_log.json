@@ -1,13 +1,13 @@
 {
-  "session_start": 1779828392746,
+  "session_start": 1779831952452,
   "updates": [
     {
-      "timestamp": "2026-05-26T20:46:36.228488+00:00",
-      "capital": 2008.56,
-      "total_trades": 5,
+      "timestamp": "2026-05-26T21:45:56.123361+00:00",
+      "capital": 1984.62,
+      "total_trades": 6,
       "total_wins": 3,
-      "total_losses": 2,
-      "total_pnl": 8.56,
+      "total_losses": 3,
+      "total_pnl": -15.38,
       "kline_autopsies": [
         {
           "sym": "SOXLUSDT",
@@ -128,6 +128,30 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on green candle Stop hit on long_wick_up candle. PnL: $-36.50"
+        },
+        {
+          "sym": "EDENUSDT",
+          "side": "LONG",
+          "entry": 0.06609999999999999,
+          "close": 0.06581,
+          "pnl": -23.93645990922834,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "20:45",
+          "closed": "20:46",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 1.3260355730218183,
+          "max_favorable_pct": -0.0022692889561270403,
+          "max_unfavorable_pct": -0.005597579425113394,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 0.16220542543289704,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 1.0635400907716601,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-23.94"
         }
       ],
       "slippage_heatmap": [
@@ -139,7 +163,8 @@
         }
       ],
       "consecutive_losses": {
-        "SQUEEZE_SHORT": 1
+        "SQUEEZE_SHORT": 1,
+        "RSI_OVERSOLD": 1
       },
       "strategy_performance": [
         {
@@ -152,18 +177,18 @@
         },
         {
           "strat": "RSI_OVERSOLD",
-          "trades": 3,
+          "trades": 4,
           "wins": 2,
-          "losses": 1,
-          "win_pct": 66.7,
-          "total_pnl": 17.6
+          "losses": 2,
+          "win_pct": 50.0,
+          "total_pnl": -6.33
         }
       ],
       "anomalies": [],
       "suggestions": [
         "Reduce margin for SOXLUSDT (slippage $-11.50)"
       ],
-      "capital_forecast_24h": 2100.58,
+      "capital_forecast_24h": 1870.08,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
