@@ -1,8 +1,8 @@
 {
-  "session_start": 1779779809783,
+  "session_start": 1779782539598,
   "updates": [
     {
-      "timestamp": "2026-05-26T07:17:11.760767+00:00",
+      "timestamp": "2026-05-26T08:02:41.720657+00:00",
       "capital": 1684.98,
       "total_trades": 40,
       "total_wins": 17,
@@ -1101,25 +1101,24 @@
       "suggestions": [
         "Reduce margin for SOXLUSDT (slippage $-5.47)"
       ],
-      "capital_forecast_24h": 954.48,
+      "capital_forecast_24h": 1004.35,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
     },
     {
-      "timestamp": "2026-05-26T07:31:24.444147+00:00",
+      "timestamp": "2026-05-26T08:16:34.794894+00:00",
       "scanning_phase": {
         "window_duration_min": 15,
         "total_pairs_scanned": 150,
-        "signals_found": 14,
-        "positions_opened": 0,
+        "signals_found": 16,
+        "positions_opened": 1,
         "rejection_breakdown": {
-          "micro_volatility": 2065,
-          "active_candle_direction": 42
+          "micro_volatility": 2060
         },
         "batch_events": [],
-        "loop_duration_ms_avg": 9.0,
-        "loop_duration_ms_max": 9,
+        "loop_duration_ms_avg": 6.0,
+        "loop_duration_ms_max": 6,
         "scanning_health_score": 70,
         "pre_trade_alerts": []
       },
@@ -1129,8 +1128,8 @@
         "total_wins": 17,
         "total_losses": 23,
         "total_pnl": -315.02,
-        "unrealized_pnl": 0,
-        "open_positions": 0,
+        "unrealized_pnl": -7.558441558441112,
+        "open_positions": 1,
         "win_rate": "42.5%",
         "kline_autopsies": [],
         "slippage_heatmap": [
@@ -1263,7 +1262,7 @@
             "estimated_impact": "Continuous improvement"
           }
         ],
-        "capital_forecast_24h": 970.83
+        "capital_forecast_24h": 1018.24
       }
     }
   ]
