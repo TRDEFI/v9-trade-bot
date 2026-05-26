@@ -1,8 +1,8 @@
 {
-  "session_start": 1779794222469,
+  "session_start": 1779797746369,
   "updates": [
     {
-      "timestamp": "2026-05-26T11:17:31.017872+00:00",
+      "timestamp": "2026-05-26T12:16:14.008842+00:00",
       "capital": 1740.86,
       "total_trades": 50,
       "total_wins": 23,
@@ -1349,19 +1349,92 @@
       "suggestions": [
         "Reduce margin for SOXLUSDT (slippage $-5.47)"
       ],
-      "capital_forecast_24h": 1307.61,
+      "capital_forecast_24h": 1335.26,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
     },
     {
-      "timestamp": "2026-05-26T11:31:01.810096+00:00",
-      "capital": 1740.86,
-      "total_trades": 50,
-      "total_wins": 23,
-      "total_losses": 27,
-      "total_pnl": -259.14,
-      "kline_autopsies": [],
+      "timestamp": "2026-05-26T12:30:58.565337+00:00",
+      "capital": 1677.38,
+      "total_trades": 53,
+      "total_wins": 24,
+      "total_losses": 29,
+      "total_pnl": -322.62,
+      "kline_autopsies": [
+        {
+          "sym": "HANAUSDT",
+          "side": "LONG",
+          "entry": 0.03361,
+          "close": 0.03382,
+          "pnl": 29.240702171972902,
+          "strat": "RSI_OVERSOLD",
+          "reason": "TAKE_PROFIT",
+          "opened": "12:15",
+          "closed": "12:16",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.622427930975808,
+          "max_favorable_pct": 0.00624814043439458,
+          "max_unfavorable_pct": 0.0008925914906278561,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.00624814043439458,
+          "tp_captured_pct_of_runner": 0.00624814043439458,
+          "autopsy_summary": "Entry on doji candle. PnL: $29.24"
+        },
+        {
+          "sym": "HANAUSDT",
+          "side": "LONG",
+          "entry": 0.03359,
+          "close": 0.0334,
+          "pnl": -30.282226853230522,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "12:19",
+          "closed": "12:19",
+          "entry_candle_type": "long_wick_up",
+          "entry_volume_ratio": 1.9888176621918707,
+          "max_favorable_pct": 0.0,
+          "max_unfavorable_pct": 0.0,
+          "stop_hit_candle_type": "long_wick_up",
+          "stop_hit_volume_ratio": 1.9888176621918707,
+          "pattern_detected": "engulfing_bullish",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -5.282226853230522,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on long_wick_up candle with 2.0x volume Pattern: engulfing_bullish Stop hit on long_wick_up candle. PnL: $-30.28"
+        },
+        {
+          "sym": "DEXEUSDT",
+          "side": "LONG",
+          "entry": 16.298000000000002,
+          "close": 16.101,
+          "pnl": -62.436863418825226,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "12:15",
+          "closed": "12:23",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 0.231002378384537,
+          "max_favorable_pct": 0.003926862191679746,
+          "max_unfavorable_pct": -0.01276230212295999,
+          "stop_hit_candle_type": "green",
+          "stop_hit_volume_ratio": 0.2880279346895865,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -37.436863418825226,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on red candle Stop hit on green candle. PnL: $-62.44"
+        }
+      ],
       "slippage_heatmap": [
         {
           "sym": "OPGUSDT",
@@ -1422,20 +1495,32 @@
           "trigger_usd": -25.0,
           "fill_usd": -51.91778247592302,
           "slippage_usd": -26.91778247592302
+        },
+        {
+          "sym": "HANAUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -30.282226853230522,
+          "slippage_usd": -5.282226853230522
+        },
+        {
+          "sym": "DEXEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -62.436863418825226,
+          "slippage_usd": -37.436863418825226
         }
       ],
       "consecutive_losses": {
         "TREND_SHORT": 1,
-        "RSI_OVERSOLD": 1
+        "RSI_OVERSOLD": 2
       },
       "strategy_performance": [
         {
           "strat": "RSI_OVERSOLD",
-          "trades": 33,
-          "wins": 13,
-          "losses": 20,
-          "win_pct": 39.4,
-          "total_pnl": -254.75
+          "trades": 36,
+          "wins": 14,
+          "losses": 22,
+          "win_pct": 38.9,
+          "total_pnl": -318.22
         },
         {
           "strat": "MOMENTUM_LONG",
@@ -1494,160 +1579,13 @@
           "total_pnl": 29.29
         }
       ],
-      "anomalies": [],
+      "anomalies": [
+        "Large loss: DEXEUSDT $-62.44"
+      ],
       "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
+        "Reduce margin for HANAUSDT (slippage $-5.28)"
       ],
-      "capital_forecast_24h": 1314.3,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 141
-    },
-    {
-      "timestamp": "2026-05-26T11:46:10.650615+00:00",
-      "capital": 1740.86,
-      "total_trades": 50,
-      "total_wins": 23,
-      "total_losses": 27,
-      "total_pnl": -259.14,
-      "kline_autopsies": [],
-      "slippage_heatmap": [
-        {
-          "sym": "OPGUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.60717658168085,
-          "slippage_usd": -0.6071765816808501
-        },
-        {
-          "sym": "MEUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -27.773195876288682,
-          "slippage_usd": -2.773195876288682
-        },
-        {
-          "sym": "SOXLUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -30.474081284983875,
-          "slippage_usd": -5.474081284983875
-        },
-        {
-          "sym": "ATOMUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -27.55762081784312,
-          "slippage_usd": -2.5576208178431195
-        },
-        {
-          "sym": "WIFUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.560209424083357,
-          "slippage_usd": -0.5602094240833573
-        },
-        {
-          "sym": "XRPUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.103294082575584,
-          "slippage_usd": -0.1032940825755837
-        },
-        {
-          "sym": "DOGEUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -25.2811571230433,
-          "slippage_usd": -0.2811571230433003
-        },
-        {
-          "sym": "SUPERUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -27.000000000000135,
-          "slippage_usd": -2.000000000000135
-        },
-        {
-          "sym": "GMTUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -28.857654431512664,
-          "slippage_usd": -3.857654431512664
-        },
-        {
-          "sym": "SKYAIUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -51.91778247592302,
-          "slippage_usd": -26.91778247592302
-        }
-      ],
-      "consecutive_losses": {
-        "TREND_SHORT": 1,
-        "RSI_OVERSOLD": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "RSI_OVERSOLD",
-          "trades": 33,
-          "wins": 13,
-          "losses": 20,
-          "win_pct": 39.4,
-          "total_pnl": -254.75
-        },
-        {
-          "strat": "MOMENTUM_LONG",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 16.25
-        },
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 7,
-          "wins": 3,
-          "losses": 4,
-          "win_pct": 42.9,
-          "total_pnl": -45.8
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 17.37
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 4,
-          "wins": 2,
-          "losses": 2,
-          "win_pct": 50.0,
-          "total_pnl": -21.39
-        },
-        {
-          "strat": "SQUEEZE_SHORT",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 12.14
-        },
-        {
-          "strat": "TREND_SHORT",
-          "trades": 2,
-          "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -12.25
-        },
-        {
-          "strat": "EMA_CROSS_UP",
-          "trades": 1,
-          "wins": 1,
-          "losses": 0,
-          "win_pct": 100.0,
-          "total_pnl": 29.29
-        }
-      ],
-      "anomalies": [],
-      "suggestions": [
-        "Monitor for pattern emergence and optimize entry timing"
-      ],
-      "capital_forecast_24h": 1321.56,
+      "capital_forecast_24h": 1180.39,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
