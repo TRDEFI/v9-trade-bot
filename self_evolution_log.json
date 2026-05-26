@@ -1,13 +1,13 @@
 {
-  "session_start": 1779831952452,
+  "session_start": 1779834714877,
   "updates": [
     {
-      "timestamp": "2026-05-26T21:45:56.123361+00:00",
-      "capital": 1984.62,
-      "total_trades": 6,
+      "timestamp": "2026-05-26T22:32:00.032876+00:00",
+      "capital": 1956.94,
+      "total_trades": 8,
       "total_wins": 3,
-      "total_losses": 3,
-      "total_pnl": -15.38,
+      "total_losses": 5,
+      "total_pnl": -43.06,
       "kline_autopsies": [
         {
           "sym": "SOXLUSDT",
@@ -152,6 +152,54 @@
           "runner_pct": 0,
           "tp_captured_pct_of_runner": 0,
           "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-23.94"
+        },
+        {
+          "sym": "MRVLUSDT",
+          "side": "SHORT",
+          "entry": 211.59,
+          "close": 212.5,
+          "pnl": -23.50385178883682,
+          "strat": "SQUEEZE_SHORT",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "21:00",
+          "closed": "21:52",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 0.11552718286655683,
+          "max_favorable_pct": 0.006002174015785293,
+          "max_unfavorable_pct": -0.00184318729618609,
+          "stop_hit_candle_type": "long_wick_up",
+          "stop_hit_volume_ratio": 8.746087314662272,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 1.496148211163181,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on red candle Stop hit on long_wick_up candle. PnL: $-23.50"
+        },
+        {
+          "sym": "AMDUSDT",
+          "side": "SHORT",
+          "entry": 504.64,
+          "close": 504.86,
+          "pnl": -4.179771718453029,
+          "strat": "SQUEEZE_SHORT",
+          "reason": "TIME_STOP_HARD",
+          "opened": "21:00",
+          "closed": "22:00",
+          "entry_candle_type": "long_wick_up",
+          "entry_volume_ratio": 0.5442278860569716,
+          "max_favorable_pct": 0.001565472415979749,
+          "max_unfavorable_pct": -0.0010898858592264017,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "rejection_wick",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on long_wick_up candle Pattern: rejection_wick. PnL: $-4.18"
         }
       ],
       "slippage_heatmap": [
@@ -163,17 +211,17 @@
         }
       ],
       "consecutive_losses": {
-        "SQUEEZE_SHORT": 1,
+        "SQUEEZE_SHORT": 3,
         "RSI_OVERSOLD": 1
       },
       "strategy_performance": [
         {
           "strat": "SQUEEZE_SHORT",
-          "trades": 2,
+          "trades": 4,
           "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -9.04
+          "losses": 3,
+          "win_pct": 25.0,
+          "total_pnl": -36.73
         },
         {
           "strat": "RSI_OVERSOLD",
@@ -184,11 +232,13 @@
           "total_pnl": -6.33
         }
       ],
-      "anomalies": [],
-      "suggestions": [
-        "Reduce margin for SOXLUSDT (slippage $-11.50)"
+      "anomalies": [
+        "High stop loss count: 4"
       ],
-      "capital_forecast_24h": 1870.08,
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1697.9,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
