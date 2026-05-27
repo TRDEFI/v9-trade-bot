@@ -2100,6 +2100,78 @@
         "EMA_CROSS_DN has 6 consecutive losses"
       ],
       "forecast_24h": 2088.92
+    },
+    {
+      "timestamp": "2026-05-27T22:45:50.787030+00:00",
+      "capital": 2000,
+      "total_trades": 0,
+      "total_wins": 0,
+      "total_losses": 0,
+      "total_pnl": 0,
+      "win_rate": 0,
+      "avg_win": 0,
+      "avg_loss": 0,
+      "forecast_24h": 2000,
+      "session_duration": "11240h 1m 34s",
+      "bot_active": true,
+      "loop_running": true,
+      "loop_crashes": 0,
+      "pairs_loaded": 141,
+      "open_positions_count": 0,
+      "closed_count": 0,
+      "strategy_performance": {
+        "RSI_OVERSOLD": {
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "pnl": 0,
+          "consec_losses": 1
+        },
+        "SQUEEZE_SHORT": {
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "pnl": 0,
+          "consec_losses": 3
+        },
+        "VOL_BREAKUP": {
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "pnl": 0,
+          "consec_losses": 5
+        },
+        "EMA_CROSS_DN": {
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "pnl": 0,
+          "consec_losses": 6
+        },
+        "TREND_SHORT": {
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "pnl": 0,
+          "consec_losses": 1
+        }
+      },
+      "anomalies": [
+        "SQUEEZE_SHORT has 3 consecutive losses",
+        "VOL_BREAKUP has 5 consecutive losses",
+        "EMA_CROSS_DN has 6 consecutive losses"
+      ],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "slippage_issues": [],
+      "consecutive_losses": {
+        "RSI_OVERSOLD": 1,
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "TREND_SHORT": 1
+      }
     }
   ]
 }
