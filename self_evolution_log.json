@@ -932,6 +932,204 @@
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
+    },
+    {
+      "timestamp": "2026-05-27T15:16:21.414753+00:00",
+      "capital": 1611.69,
+      "total_trades": 32,
+      "total_wins": 10,
+      "total_losses": 22,
+      "total_pnl": -388.31,
+      "kline_autopsies": [
+        {
+          "sym": "XRPUSDT",
+          "side": "LONG",
+          "entry": 1.3333,
+          "close": 1.3274,
+          "pnl": -24.125553138828536,
+          "strat": "VOL_BREAKUP",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "12:34",
+          "closed": "13:09",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.4366788778414785,
+          "max_favorable_pct": 0.00262506562664071,
+          "max_unfavorable_pct": -0.005100127503187518,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.8744468611714638,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on none candle. PnL: $-24.13"
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "side": "SHORT",
+          "entry": 0.17140000000000002,
+          "close": 0.1722,
+          "pnl": -25.337222870477458,
+          "strat": "EMA_CROSS_DN",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "13:45",
+          "closed": "13:48",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.8628132266696036,
+          "max_favorable_pct": 0.005834305717619445,
+          "max_unfavorable_pct": 0.000583430571761896,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 1.0278053983494824,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": -0.3372228704774578,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-25.34"
+        },
+        {
+          "sym": "BNBUSDT",
+          "side": "SHORT",
+          "entry": 652.79,
+          "close": 654.65,
+          "pnl": -16.246541766877662,
+          "strat": "EMA_CROSS_DN",
+          "reason": "TIME_STOP_HARD",
+          "opened": "14:00",
+          "closed": "15:00",
+          "entry_candle_type": "green",
+          "entry_volume_ratio": 0.6851510680767179,
+          "max_favorable_pct": 0.003232279906248585,
+          "max_unfavorable_pct": -0.001562523935722027,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on green candle. PnL: $-16.25"
+        }
+      ],
+      "slippage_heatmap": [
+        {
+          "sym": "SOXLUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -36.502587694076475,
+          "slippage_usd": -11.502587694076475
+        },
+        {
+          "sym": "ZEREBROUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -30.931166967550826,
+          "slippage_usd": -5.931166967550826
+        },
+        {
+          "sym": "ARKMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -31.335071707952544,
+          "slippage_usd": -6.335071707952544
+        },
+        {
+          "sym": "BLUAIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -45.701151357256144,
+          "slippage_usd": -20.701151357256144
+        },
+        {
+          "sym": "SKYAIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -28.193928621544735,
+          "slippage_usd": -3.1939286215447353
+        },
+        {
+          "sym": "FFUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.671185711211315,
+          "slippage_usd": -0.6711857112113151
+        },
+        {
+          "sym": "PENDLEUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -48.98972099853096,
+          "slippage_usd": -23.989720998530963
+        },
+        {
+          "sym": "FARTCOINUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -25.337222870477458,
+          "slippage_usd": -0.3372228704774578
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "TREND_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 4,
+          "wins": 1,
+          "losses": 3,
+          "win_pct": 25.0,
+          "total_pnl": -36.73
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 12,
+          "wins": 6,
+          "losses": 6,
+          "win_pct": 50.0,
+          "total_pnl": -81.57
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -16.59
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 6,
+          "wins": 1,
+          "losses": 5,
+          "win_pct": 16.7,
+          "total_pnl": -99.5
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 6,
+          "wins": 0,
+          "losses": 6,
+          "win_pct": 0.0,
+          "total_pnl": -160.63
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": 6.71
+        }
+      ],
+      "anomalies": [
+        "Capital drawdown: -8.1%"
+      ],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1162.09,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 142
     }
   ]
 }
