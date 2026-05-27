@@ -1,8 +1,8 @@
 {
-  "session_start": 1779852672172,
+  "session_start": 1779854530884,
   "updates": [
     {
-      "timestamp": "2026-05-27T03:31:21.677699+00:00",
+      "timestamp": "2026-05-27T04:02:23.595733+00:00",
       "capital": 1833.29,
       "total_trades": 17,
       "total_wins": 7,
@@ -505,19 +505,68 @@
       "suggestions": [
         "Disable SQUEEZE_SHORT (consecutive 3 losses)"
       ],
-      "capital_forecast_24h": 1387.67,
+      "capital_forecast_24h": 1411.94,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
     },
     {
-      "timestamp": "2026-05-27T03:46:01.775527+00:00",
-      "capital": 1833.29,
-      "total_trades": 17,
-      "total_wins": 7,
-      "total_losses": 10,
-      "total_pnl": -166.71,
-      "kline_autopsies": [],
+      "timestamp": "2026-05-27T04:30:50.633711+00:00",
+      "capital": 1823.37,
+      "total_trades": 19,
+      "total_wins": 8,
+      "total_losses": 11,
+      "total_pnl": -176.63,
+      "kline_autopsies": [
+        {
+          "sym": "SAGAUSDT",
+          "side": "LONG",
+          "entry": 0.01985,
+          "close": 0.01976,
+          "pnl": -24.670025188916828,
+          "strat": "RSI_OVERSOLD",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "04:00",
+          "closed": "04:05",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.39462649304546343,
+          "max_favorable_pct": 0.0005037783375314656,
+          "max_unfavorable_pct": -0.005037783375314831,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 0.4005682744687464,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0.32997481108317217,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-24.67"
+        },
+        {
+          "sym": "ETHUSDT",
+          "side": "SHORT",
+          "entry": 2068.79,
+          "close": 2061.86,
+          "pnl": 14.74892086678647,
+          "strat": "MOMENTUM_SHORT",
+          "reason": "TAKE_PROFIT_TIME_DECAY",
+          "opened": "04:00",
+          "closed": "04:19",
+          "entry_candle_type": "red",
+          "entry_volume_ratio": 0.5232390835751208,
+          "max_favorable_pct": 0.0006815578188215597,
+          "max_unfavorable_pct": -0.003533466422401474,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.0006815578188215597,
+          "tp_captured_pct_of_runner": -0.003349784173357294,
+          "autopsy_summary": "Entry on red candle. PnL: $14.75"
+        }
+      ],
       "slippage_heatmap": [
         {
           "sym": "SOXLUSDT",
@@ -552,9 +601,9 @@
       ],
       "consecutive_losses": {
         "SQUEEZE_SHORT": 3,
-        "MOMENTUM_SHORT": 1,
         "VOL_BREAKUP": 1,
-        "EMA_CROSS_DN": 1
+        "EMA_CROSS_DN": 1,
+        "RSI_OVERSOLD": 1
       },
       "strategy_performance": [
         {
@@ -567,19 +616,19 @@
         },
         {
           "strat": "RSI_OVERSOLD",
-          "trades": 9,
+          "trades": 10,
           "wins": 5,
-          "losses": 4,
-          "win_pct": 55.6,
-          "total_pnl": -29.33
+          "losses": 5,
+          "win_pct": 50.0,
+          "total_pnl": -54.0
         },
         {
           "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
+          "trades": 2,
+          "wins": 1,
           "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -31.34
+          "win_pct": 50.0,
+          "total_pnl": -16.59
         },
         {
           "strat": "VOL_BREAKUP",
@@ -602,7 +651,7 @@
       "suggestions": [
         "Disable SQUEEZE_SHORT (consecutive 3 losses)"
       ],
-      "capital_forecast_24h": 1399.48,
+      "capital_forecast_24h": 1398.18,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
