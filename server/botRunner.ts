@@ -36,7 +36,9 @@ const MEAN_REVERSION_STRATS = new Set([
 
 const DISABLED_STRATS = new Set([
     'VOL_BREAKDN',
-    'SQUEEZE_LONG'
+    'SQUEEZE_LONG',
+    'EMA_CROSS_DN',
+    'VOL_BREAKUP'
 ]);
 
 interface TrendReq { align15m: 'UP' | 'DOWN' | 'ANY', align1h: 'UP' | 'DOWN' | 'ANY' }
@@ -57,7 +59,7 @@ const TREND_MATRIX: Record<string, TrendReq> = {
     'VOL_BREAKUP':         { align15m: 'ANY',  align1h: 'ANY'  },
     'VOL_BREAKDN':         { align15m: 'ANY',  align1h: 'ANY'  },
     'SQUEEZE_LONG':        { align15m: 'ANY',  align1h: 'ANY'  },
-    'SQUEEZE_SHORT':       { align15m: 'ANY',  align1h: 'ANY'  },
+    'SQUEEZE_SHORT':       { align15m: 'DOWN',  align1h: 'ANY'  },
 };
 
 export interface SystemLog {
@@ -351,11 +353,11 @@ export class BotRunner {
                     continue;
                 }
 
-                // TIME_DECAY TP: After 10min, close if >= 60% of target reached
+                // TIME_DECAY TP: After 15min, close if >= 80% of target reached
                 // Prevents waiting forever for aggressive strategy-based TPs (e.g. BB SMA)
                 // while still giving the trade time to run during initial momentum
                 const ageMin = (now - pos.opened_at) / 60000;
-                if (ageMin >= 10 && netPnlUsd >= targetProfit * 0.6) {
+                if (ageMin >= 15 && netPnlUsd >= targetProfit * 0.8) {
                     await this.closePosition(sym, 'TAKE_PROFIT_TIME_DECAY');
                     continue;
                 }
@@ -545,6 +547,12 @@ export class BotRunner {
                                 continue;
                             }
 
+                            // Mikro-cap filtre: $0.05 alti coinlerde tick granularity pozisyon yonetimini imkansiz kiliyor
+                            if (price < 0.05) {
+                                this.logToFile(`[${sym}] REJECT: Micro-cap coin (< $0.05, price=${price})`);
+                                continue;
+                            }
+
                             // Pullback Control (0.5% allowed slippage) FIX: 0.3% -> 0.5%
                             if (sig.side === 'LONG' && price > sigClosePrice * 1.005) {
                                 this.logToFile(`[${sym}] REJECT: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.005})`);
@@ -583,19 +591,32 @@ export class BotRunner {
                                 continue;
                             }
 
-                            // 1dklik momentum kontrolu: son kapanan 1m mum sinyal yonune ters mi?
-                            const c1m = await this.binance.getKlines(sym, '1m', 3);
-                            if (c1m && c1m.length >= 2) {
+                            // 1dk momentum kontrolu: son 2 kapanan mumdan en az 1'i sinyal yonunde olmali
+                            const c1m = await this.binance.getKlines(sym, '1m', 4);
+                            if (c1m && c1m.length >= 3) {
                                 const last1m = c1m[c1m.length - 2];
-                                if (sig.side === 'LONG' && last1m.c < last1m.o) {
-                                    const dropPct = ((1 - last1m.c / last1m.o) * 100).toFixed(2);
-                                    this.logToFile(`[${sym}] REJECT: LONG last 1m was red (-${dropPct}%)`);
+                                const prev1m = c1m[c1m.length - 3];
+                                const longAllowed = last1m.c >= last1m.o || prev1m.c >= prev1m.o;
+                                const shortAllowed = last1m.c <= last1m.o || prev1m.c <= prev1m.o;
+                                if (sig.side === 'LONG' && !longAllowed) {
+                                    this.logToFile(`[${sym}] REJECT: LONG last 2 1m both red`);
                                     continue;
                                 }
-                                if (sig.side === 'SHORT' && last1m.c > last1m.o) {
-                                    const risePct = ((last1m.c / last1m.o - 1) * 100).toFixed(2);
-                                    this.logToFile(`[${sym}] REJECT: SHORT last 1m was green (+${risePct}%)`);
+                                if (sig.side === 'SHORT' && !shortAllowed) {
+                                    this.logToFile(`[${sym}] REJECT: SHORT last 2 1m both green`);
                                     continue;
+                                }
+                                // Ayrica aktif 1m mum da sinyalle ayni yondeyse tercih sebebi (opsiyonel)
+                                if (c1m.length >= 2) {
+                                    const active1m = c1m[c1m.length - 1];
+                                    if (sig.side === 'LONG' && active1m.c < active1m.o) {
+                                        const dropPct = ((1 - active1m.c / active1m.o) * 100).toFixed(2);
+                                        this.logToFile(`[${sym}] LONG active 1m red (-${dropPct}%) - less ideal`);
+                                    }
+                                    if (sig.side === 'SHORT' && active1m.c > active1m.o) {
+                                        const risePct = ((active1m.c / active1m.o - 1) * 100).toFixed(2);
+                                        this.logToFile(`[${sym}] SHORT active 1m green (+${risePct}%) - less ideal`);
+                                    }
                                 }
                             }
 
@@ -786,19 +807,19 @@ export class BotRunner {
         // Execute API close real order
         const closeSide = pos.side === 'LONG' ? 'SELL' : 'BUY';
         
-        // FIX: Use LIMIT order for hard stops (prevents thin-book slippage)
-        // HARD_STOP_LOSS: 0.3% slippage allowance, MARGIN_CALL: 0.5%, others: 0.2%
+        // FIX: LIMIT order first, MARKET order fallback (prevents thin-book slippage)
+        // HARD_STOP_LOSS: 0.5% slippage allowance, MARGIN_CALL: 0.5%, others: 0.3%
         let closeResult;
-        if (reason === 'HARD_STOP_LOSS') {
-            closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, 0.003);
-        } else if (reason === 'MARGIN_CALL_LIQUIDATION') {
-            closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, 0.005);
-        } else {
-            closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, 0.002);
-        }
+        const slippagePct = reason === 'HARD_STOP_LOSS' || reason === 'MARGIN_CALL_LIQUIDATION' ? 0.005 : 0.003;
+        closeResult = await this.binance.closeLimitOrder(pos, sym, closeSide, price, slippagePct);
         if (!closeResult.success) {
-            this.addLog(`[${sym}] KAPATMA BASARISIZ! API reddetti. 10sn sonra tekrar denenecek. Nedeni: ${reason}`, 'error');
-            return; // Pozisyonu dashboard'da acik birakmaya devam et!
+            this.logToFile(`[${sym}] LIMIT close failed, trying MARKET order...`);
+            closeResult = await this.binance.closeMarketOrder(pos, sym, closeSide, price);
+            if (!closeResult.success) {
+                this.addLog(`[${sym}] KAPATMA BASARISIZ! LIMIT+MARKET basarisiz. Nedeni: ${reason}`, 'error');
+                return;
+            }
+            this.logToFile(`[${sym}] MARKET close used (slippage risk)`);
         }
 
         const closePrice = closeResult.avgPrice;
