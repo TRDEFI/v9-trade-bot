@@ -26,6 +26,7 @@ state = {
     "strategy_performance": {},  # strategy -> {trades, wins, losses, total_pnl}
     "session_start": None,  # timestamp when monitoring started
     "peak_crash_count": 0,  # peak loop crash count seen
+    "peak_capital": 0.0,  # highest capital seen this session
 }
 
 def load_state():
@@ -419,7 +420,8 @@ def check_anomalies(dashboard_data: Dict, kline_autopsies: List) -> List[str]:
     
     # Check for capital drawdown
     capital = dashboard_data.get("capital", 0)
-    session_start_capital = dashboard_data.get("session_start", 0)
+    # Use peak capital for drawdown calculation
+    session_start_capital = state.get("peak_capital", capital)
     if session_start_capital > 0:
         drawdown = (capital - session_start_capital) / session_start_capital
         if drawdown < -0.05:  # >5% drawdown
@@ -488,6 +490,9 @@ def main():
     
     # Update state with latest dashboard data
     state["capital"] = dashboard_data.get("capital", 0)
+    # Update peak capital
+    if state["capital"] > state.get("peak_capital", 0):
+        state["peak_capital"] = state["capital"]
     state["total_trades"] = dashboard_data.get("total_trades", 0)
     state["total_wins"] = dashboard_data.get("total_wins", 0)
     state["total_losses"] = dashboard_data.get("total_losses", 0)
