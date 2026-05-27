@@ -1,13 +1,13 @@
 {
-  "session_start": 1779854530884,
+  "session_start": 1779858924669,
   "updates": [
     {
-      "timestamp": "2026-05-27T04:02:23.595733+00:00",
-      "capital": 1833.29,
-      "total_trades": 17,
-      "total_wins": 7,
-      "total_losses": 10,
-      "total_pnl": -166.71,
+      "timestamp": "2026-05-27T05:15:36.203497+00:00",
+      "capital": 1799.5,
+      "total_trades": 20,
+      "total_wins": 8,
+      "total_losses": 12,
+      "total_pnl": -200.5,
       "kline_autopsies": [
         {
           "sym": "SOXLUSDT",
@@ -416,108 +416,7 @@
           "runner_pct": 0.00520833333333338,
           "tp_captured_pct_of_runner": 0.003720238095238202,
           "autopsy_summary": "Entry on doji candle Pattern: rejection_wick. PnL: $16.60"
-        }
-      ],
-      "slippage_heatmap": [
-        {
-          "sym": "SOXLUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -36.502587694076475,
-          "slippage_usd": -11.502587694076475
         },
-        {
-          "sym": "ZEREBROUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -30.931166967550826,
-          "slippage_usd": -5.931166967550826
-        },
-        {
-          "sym": "ARKMUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -31.335071707952544,
-          "slippage_usd": -6.335071707952544
-        },
-        {
-          "sym": "BLUAIUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -45.701151357256144,
-          "slippage_usd": -20.701151357256144
-        },
-        {
-          "sym": "SKYAIUSDT",
-          "trigger_usd": -25.0,
-          "fill_usd": -28.193928621544735,
-          "slippage_usd": -3.1939286215447353
-        }
-      ],
-      "consecutive_losses": {
-        "SQUEEZE_SHORT": 3,
-        "MOMENTUM_SHORT": 1,
-        "VOL_BREAKUP": 1,
-        "EMA_CROSS_DN": 1
-      },
-      "strategy_performance": [
-        {
-          "strat": "SQUEEZE_SHORT",
-          "trades": 4,
-          "wins": 1,
-          "losses": 3,
-          "win_pct": 25.0,
-          "total_pnl": -36.73
-        },
-        {
-          "strat": "RSI_OVERSOLD",
-          "trades": 9,
-          "wins": 5,
-          "losses": 4,
-          "win_pct": 55.6,
-          "total_pnl": -29.33
-        },
-        {
-          "strat": "MOMENTUM_SHORT",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -31.34
-        },
-        {
-          "strat": "VOL_BREAKUP",
-          "trades": 2,
-          "wins": 1,
-          "losses": 1,
-          "win_pct": 50.0,
-          "total_pnl": -23.62
-        },
-        {
-          "strat": "EMA_CROSS_DN",
-          "trades": 1,
-          "wins": 0,
-          "losses": 1,
-          "win_pct": 0.0,
-          "total_pnl": -45.7
-        }
-      ],
-      "anomalies": [
-        "Large loss: BLUAIUSDT $-45.70",
-        "High stop loss count: 9"
-      ],
-      "suggestions": [
-        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
-      ],
-      "capital_forecast_24h": 1411.94,
-      "loop_running": true,
-      "loop_crash_count": 0,
-      "pairs_loaded": 142
-    },
-    {
-      "timestamp": "2026-05-27T04:30:50.633711+00:00",
-      "capital": 1823.37,
-      "total_trades": 19,
-      "total_wins": 8,
-      "total_losses": 11,
-      "total_pnl": -176.63,
-      "kline_autopsies": [
         {
           "sym": "SAGAUSDT",
           "side": "LONG",
@@ -565,6 +464,30 @@
           "runner_pct": 0.0006815578188215597,
           "tp_captured_pct_of_runner": -0.003349784173357294,
           "autopsy_summary": "Entry on red candle. PnL: $14.75"
+        },
+        {
+          "sym": "DOGEUSDT",
+          "side": "SHORT",
+          "entry": 0.10060000000000001,
+          "close": 0.10104,
+          "pnl": -23.868787276341745,
+          "strat": "EMA_CROSS_DN",
+          "reason": "HARD_STOP_LOSS",
+          "opened": "04:45",
+          "closed": "04:50",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 0.6293113517548649,
+          "max_favorable_pct": 0.004572564612325926,
+          "max_unfavorable_pct": 0.0013916500994034528,
+          "stop_hit_candle_type": "doji",
+          "stop_hit_volume_ratio": 1.0521027062057695,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 1.1312127236582548,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on doji candle Stop hit on doji candle. PnL: $-23.87"
         }
       ],
       "slippage_heatmap": [
@@ -602,7 +525,7 @@
       "consecutive_losses": {
         "SQUEEZE_SHORT": 3,
         "VOL_BREAKUP": 1,
-        "EMA_CROSS_DN": 1,
+        "EMA_CROSS_DN": 2,
         "RSI_OVERSOLD": 1
       },
       "strategy_performance": [
@@ -640,18 +563,118 @@
         },
         {
           "strat": "EMA_CROSS_DN",
-          "trades": 1,
+          "trades": 2,
           "wins": 0,
-          "losses": 1,
+          "losses": 2,
           "win_pct": 0.0,
-          "total_pnl": -45.7
+          "total_pnl": -69.57
+        }
+      ],
+      "anomalies": [
+        "Large loss: BLUAIUSDT $-45.70",
+        "High stop loss count: 11"
+      ],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1350.45,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 142
+    },
+    {
+      "timestamp": "2026-05-27T05:32:02.948251+00:00",
+      "capital": 1799.5,
+      "total_trades": 20,
+      "total_wins": 8,
+      "total_losses": 12,
+      "total_pnl": -200.5,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "SOXLUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -36.502587694076475,
+          "slippage_usd": -11.502587694076475
+        },
+        {
+          "sym": "ZEREBROUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -30.931166967550826,
+          "slippage_usd": -5.931166967550826
+        },
+        {
+          "sym": "ARKMUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -31.335071707952544,
+          "slippage_usd": -6.335071707952544
+        },
+        {
+          "sym": "BLUAIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -45.701151357256144,
+          "slippage_usd": -20.701151357256144
+        },
+        {
+          "sym": "SKYAIUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -28.193928621544735,
+          "slippage_usd": -3.1939286215447353
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 1,
+        "EMA_CROSS_DN": 2,
+        "RSI_OVERSOLD": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 4,
+          "wins": 1,
+          "losses": 3,
+          "win_pct": 25.0,
+          "total_pnl": -36.73
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 10,
+          "wins": 5,
+          "losses": 5,
+          "win_pct": 50.0,
+          "total_pnl": -54.0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -16.59
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 2,
+          "wins": 1,
+          "losses": 1,
+          "win_pct": 50.0,
+          "total_pnl": -23.62
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 2,
+          "wins": 0,
+          "losses": 2,
+          "win_pct": 0.0,
+          "total_pnl": -69.57
         }
       ],
       "anomalies": [],
       "suggestions": [
         "Disable SQUEEZE_SHORT (consecutive 3 losses)"
       ],
-      "capital_forecast_24h": 1398.18,
+      "capital_forecast_24h": 1361.65,
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 142
