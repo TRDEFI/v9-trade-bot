@@ -592,7 +592,7 @@ export class BotRunner {
                             }
 
                             // 1dk momentum kontrolu: son 2 kapanan mumdan en az 1'i sinyal yonunde olmali
-                            const c1m = await this.binance.getKlines(sym, '1m', 4);
+                            const c1m = await this.binance.getKlines(sym, '1m', 8);
                             if (c1m && c1m.length >= 3) {
                                 const last1m = c1m[c1m.length - 2];
                                 const prev1m = c1m[c1m.length - 3];
@@ -606,17 +606,30 @@ export class BotRunner {
                                     this.logToFile(`[${sym}] REJECT: SHORT last 2 1m both green`);
                                     continue;
                                 }
-                                // Ayrica aktif 1m mum da sinyalle ayni yondeyse tercih sebebi (opsiyonel)
+                                // Aktif 1m mum sinyale ters yondeyse entry'yi engelle
                                 if (c1m.length >= 2) {
                                     const active1m = c1m[c1m.length - 1];
                                     if (sig.side === 'LONG' && active1m.c < active1m.o) {
                                         const dropPct = ((1 - active1m.c / active1m.o) * 100).toFixed(2);
-                                        this.logToFile(`[${sym}] LONG active 1m red (-${dropPct}%) - less ideal`);
+                                        this.logToFile(`[${sym}] REJECT: LONG active 1m red (-${dropPct}%)`);
+                                        continue;
                                     }
                                     if (sig.side === 'SHORT' && active1m.c > active1m.o) {
                                         const risePct = ((active1m.c / active1m.o - 1) * 100).toFixed(2);
-                                        this.logToFile(`[${sym}] SHORT active 1m green (+${risePct}%) - less ideal`);
+                                        this.logToFile(`[${sym}] REJECT: SHORT active 1m green (+${risePct}%)`);
+                                        continue;
                                     }
+                                }
+                            }
+
+                            // Minimum 1m hacim kontrolu: son 5 kapanan mumun ortalama USD hacmi > $15K olmali
+                            if (c1m && c1m.length >= 6) {
+                                const closed1m = c1m.slice(-6, -1);
+                                const avgBaseVol = closed1m.reduce((sum, k) => sum + k.v, 0) / 5;
+                                const avgUsdVol = avgBaseVol * price;
+                                if (avgUsdVol < 15000) {
+                                    this.logToFile(`[${sym}] REJECT: Low 1m volume - avg $${avgUsdVol.toFixed(0)}/min (min $15000)`);
+                                    continue;
                                 }
                             }
 
