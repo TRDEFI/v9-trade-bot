@@ -3461,6 +3461,198 @@
         "EMA_CROSS_DN": 6,
         "MOMENTUM_SHORT": 1
       }
+    },
+    {
+      "timestamp": "2026-05-28T02:31:30.476992+00:00",
+      "scanning_phase": {
+        "window_duration_min": 15,
+        "total_pairs_scanned": 150,
+        "signals_found": 13,
+        "positions_opened": 0,
+        "rejection_breakdown": {
+          "micro_volatility": 1339,
+          "other": 68
+        },
+        "batch_events": [],
+        "loop_duration_ms_avg": 9.0,
+        "loop_duration_ms_max": 9,
+        "scanning_health_score": 70,
+        "pre_trade_alerts": []
+      },
+      "trade_phase": {
+        "capital": 1833.19,
+        "total_trades": 8,
+        "total_wins": 1,
+        "total_losses": 7,
+        "total_pnl": -166.81,
+        "unrealized_pnl": 0,
+        "open_positions": 0,
+        "win_rate": "12.5%",
+        "kline_autopsies": [],
+        "slippage_heatmap": [],
+        "strategy_performance": [
+          {
+            "strat": "TREND_SHORT",
+            "trades": 1,
+            "wins": 0,
+            "losses": 1,
+            "win_pct": 0.0,
+            "total_pnl": -27.11
+          },
+          {
+            "strat": "RSI_OVERSOLD",
+            "trades": 7,
+            "wins": 1,
+            "losses": 6,
+            "win_pct": 14.3,
+            "total_pnl": -139.7
+          },
+          {
+            "strat": "SQUEEZE_SHORT",
+            "trades": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_pct": 0,
+            "total_pnl": 0.0
+          },
+          {
+            "strat": "VOL_BREAKUP",
+            "trades": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_pct": 0,
+            "total_pnl": 0.0
+          },
+          {
+            "strat": "EMA_CROSS_DN",
+            "trades": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_pct": 0,
+            "total_pnl": 0.0
+          },
+          {
+            "strat": "MOMENTUM_SHORT",
+            "trades": 0,
+            "wins": 0,
+            "losses": 0,
+            "win_pct": 0,
+            "total_pnl": 0.0
+          }
+        ],
+        "post_trade_alerts": [
+          "Capital drawdown: -100.0%"
+        ],
+        "suggestions": [
+          {
+            "priority": "HIGH",
+            "suggestion": "Disable RSI_OVERSOLD (consecutive 3 losses)",
+            "estimated_impact": "Prevents further losses of ~$75 at current rate"
+          }
+        ],
+        "capital_forecast_24h": 14.87
+      }
+    },
+    {
+      "timestamp": "2026-05-28T02:31:34.642848+00:00",
+      "capital": 1833.19,
+      "total_trades": 8,
+      "total_wins": 1,
+      "total_losses": 7,
+      "total_pnl": -166.81,
+      "kline_autopsies": [],
+      "slippage_heatmap": [],
+      "consecutive_losses": {
+        "TREND_SHORT": 2,
+        "RSI_OVERSOLD": 3,
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "MOMENTUM_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "TREND_SHORT",
+          "trades": 1,
+          "wins": 0,
+          "losses": 1,
+          "win_pct": 0.0,
+          "total_pnl": -27.11
+        },
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 7,
+          "wins": 1,
+          "losses": 6,
+          "win_pct": 14.3,
+          "total_pnl": -139.7
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        }
+      ],
+      "anomalies": [
+        "Capital drawdown: -9.5%"
+      ],
+      "suggestions": [
+        "Disable RSI_OVERSOLD (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 15.82,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
+    },
+    {
+      "timestamp": "2026-05-28T02:32:00.112247+00:00",
+      "capital": 1833.189921308533,
+      "total_pnl": -166.8100786914667,
+      "total_trades": 8,
+      "win_rate": 12.5,
+      "suggestion": "Disable RSI_OVERSOLD (consecutive 3 losses)",
+      "critical_strategies": [
+        "RSI_OVERSOLD",
+        "SQUEEZE_SHORT",
+        "VOL_BREAKUP",
+        "EMA_CROSS_DN"
+      ],
+      "anomalies": [
+        "Win rate 12.5% critically low",
+        "Total loss $166.81 exceeds threshold",
+        "RSI_OVERSOLD has 3 consecutive losses",
+        "SQUEEZE_SHORT has 3 consecutive losses",
+        "VOL_BREAKUP has 5 consecutive losses",
+        "EMA_CROSS_DN has 6 consecutive losses"
+      ],
+      "forecast_24h": 1566.46
     }
   ]
 }
