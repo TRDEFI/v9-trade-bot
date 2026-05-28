@@ -41,6 +41,23 @@ def load_state():
         except Exception as e:
             print(f"Error loading state: {e}")
     # Initialize session start if not set
+    # Ensure all required keys exist after loading from JSON
+    defaults = {
+        "last_check": None,
+        "closed_seen": set(),
+        "consecutive_losses": {},
+        "slippage_data": {},
+        "strategy_performance": {},
+        "session_start": None,
+        "peak_crash_count": 0,
+        "peak_capital": 0.0,
+    }
+    for k, v in defaults.items():
+        if k not in state:
+            state[k] = v
+    # Convert closed_seen back to set if it came from JSON as list
+    if isinstance(state["closed_seen"], list):
+        state["closed_seen"] = set(state["closed_seen"])
     if state["session_start"] is None:
         state["session_start"] = int(time.time() * 1000)
 
@@ -357,7 +374,8 @@ def update_strategy_performance(strategy: str, is_win: bool, pnl: float):
             "trades": 0,
             "wins": 0,
             "losses": 0,
-            "total_pnl": 0.0
+            "total_pnl": 0.0,
+            "pnl": 0.0,
         }
     perf = state["strategy_performance"][strategy]
     perf["trades"] += 1
@@ -365,12 +383,15 @@ def update_strategy_performance(strategy: str, is_win: bool, pnl: float):
         perf["wins"] += 1
     else:
         perf["losses"] += 1
+    if "total_pnl" not in perf:
+        perf["total_pnl"] = perf.get("pnl", 0.0)
     perf["total_pnl"] += pnl
+    perf["pnl"] = perf["total_pnl"]
 
 def generate_slippage_heatmap() -> List[Dict]:
     """Generate slippage heatmap from recorded data."""
     heatmap = []
-    for symbol, data in state["slippage_data"].items():
+    for symbol, data in state.get("slippage_data", {}).items():
         if data:
             latest = data[-1]  # Use latest entry
             heatmap.append({
@@ -390,13 +411,14 @@ def generate_strategy_performance() -> List[Dict]:
         trades = data["trades"]
         win_pct = (wins / trades * 100) if trades > 0 else 0
         
+        total_pnl = data.get("total_pnl", data.get("pnl", 0.0))
         perf_list.append({
             "strat": strategy,
             "trades": trades,
             "wins": wins,
             "losses": losses,
             "win_pct": round(win_pct, 1),
-            "total_pnl": round(data["total_pnl"], 2)
+            "total_pnl": round(total_pnl, 2)
         })
     return perf_list
 

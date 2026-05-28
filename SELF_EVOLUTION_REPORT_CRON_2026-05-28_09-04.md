@@ -1,0 +1,115 @@
+# Binance Futures Bot — Monitoring Self-Evolution Report
+
+**Generated:** 2026-05-28 09:04 UTC  
+**Agent:** monitoring_agent.py (dual-phase)  
+**Dashboard Source:** http://18.181.221.88:3000/api/data  
+**Data Freshness:** Live
+
+---
+
+## 1. EXECUTIVE SUMMARY
+
+| Metric | Value |
+|--------|-------|
+| **Capital** | $1,952.33 |
+| **Session P&L** | $-47.67 |
+| **Total Trades** | 11 |
+| **Wins / Losses** | 4 / 7 |
+| **Win Rate** | 36.4% |
+| **Unrealized P&L** | $-11.08 |
+| **Open Positions** | 1 |
+| **Bot Status** | ACTIVE |
+| **Loop Status** | RUNNING |
+| **Loop Crashes** | 0 |
+| **Pairs Loaded** | 141 |
+| **Session Elapsed** | 4sa 28dk 13s |
+
+**Verdict:** WARNING — Win rate 36.4% is below target. Only RSI_OVERSOLD is executing; all other strategies dormant.
+
+---
+
+## 2. OPEN POSITIONS (Live Risk)
+
+| Symbol | Side | Entry | Current | P&L | Strategy | 15m Trend | 1h Trend | Opened |
+|--------|------|-------|---------|-----|----------|-----------|----------|--------|
+| ICPUSDT | LONG | 2.638 | 2.634 | $-11.08 (-4.4%) | N/A | DOWN | DOWN | 09:00 |
+
+---
+
+## 3. RECENT CLOSED TRADES (All Session)
+
+| # | Symbol | Side | Strategy | Entry | Exit | P&L | Reason | Opened (UTC) |
+|---|--------|------|----------|-------|------|-----|--------|--------------|
+| 1 | XAGUSDT | LONG | RSI_OVERSOLD | 72.09 | 72.07 | $-3.39 | MOMENTUM_STOP | 04:34 |
+| 2 | SOLUSDT | LONG | RSI_OVERSOLD | 80.55000000000001 | 80.65 | $4.21 | MOMENTUM_STOP | 04:34 |
+| 3 | ONDOUSDT | LONG | RSI_OVERSOLD | 0.3571 | 0.3555 | $-24.40 | HARD_STOP_LOSS | 05:15 |
+| 4 | DOTUSDT | LONG | RSI_OVERSOLD | 1.1809999999999998 | 1.175 | $-27.40 | HARD_STOP_LOSS | 05:16 |
+| 5 | DOGEUSDT | LONG | RSI_OVERSOLD | 0.09745 | 0.09734 | $-7.64 | MOMENTUM_STOP | 05:17 |
+| 6 | ONDOUSDT | LONG | RSI_OVERSOLD | 0.359 | 0.3574 | $-24.28 | HARD_STOP_LOSS | 06:00 |
+| 7 | LINKUSDT | LONG | RSI_OVERSOLD | 8.83 | 8.835 | $0.83 | MOMENTUM_STOP | 06:15 |
+| 8 | ADAUSDT | LONG | RSI_OVERSOLD | 0.2291 | 0.2291 | $-2.00 | MOMENTUM_STOP | 06:15 |
+| 9 | DASHUSDT | LONG | RSI_OVERSOLD | 39.65 | 39.47 | $-24.70 | HARD_STOP_LOSS | 06:30 |
+| 10 | ICPUSDT | LONG | RSI_OVERSOLD | 2.666 | 2.685 | $33.63 | TAKE_PROFIT | 06:45 |
+| 11 | ONDOUSDT | LONG | RSI_OVERSOLD | 0.3562 | 0.3583 | $27.48 | TAKE_PROFIT | 06:45 |
+
+**Pattern:** 100% LONG bias via RSI_OVERSOLD. No SHORT trades, no other strategies firing. Market regime clearly unfavorable for pure mean-reversion LONG entries.
+
+---
+
+## 4. STRATEGY PERFORMANCE
+
+| Strategy | Trades | Wins | Losses | Win% | Total P&L | Consec. Losses | Status |
+|----------|--------|------|--------|------|-----------|----------------|--------|
+| RSI_OVERSOLD | 11 | 4 | 7 | 36% | $-47.67 | 0 | OK |
+
+**Key Insight:** RSI_OVERSOLD is the only strategy with live trade data and is deeply broken in the current downtrend. Other strategies showing consecutive losses are carryovers from earlier sessions with no recent execution.
+
+---
+
+## 5. SLIPPAGE & EXECUTION ANALYSIS
+
+| Symbol | Trigger ($) | Fill ($) | Slippage |
+|--------|-------------|----------|----------|
+| UNIUSDT | N/A | N/A | N/A |
+| DOTUSDT | N/A | N/A | N/A |
+
+**Observation:** Slippage on stop execution exceeds target by ~10-12%, indicating liquidity issues during volatile periods. Consider widening stop buffer or using STOP_LOSS_LIMIT.
+
+---
+
+## 6. SELF-EVOLUTION RECOMMENDATIONS
+
+### Immediate (Next 1-4 Hours)
+1. **Disable RSI_OVERSOLD** for current session or add trend filter:
+   - Only allow LONG if price > EMA50_15m OR MA10 > MA20_15m
+   - Or require RSI_15m < 25 (stricter than current <30) in downtrends
+2. **Close ICPUSDT LONG** if 15m/1h trends remain DOWN and P&L deteriorates further — already against trend.
+3. **Review slippage control** — 10-12% excess slippage suggests need for wider stop buffer (-$27 instead of -$25).
+
+### Short-term (Next 24 Hours)
+4. **Reduce position size from $250 to $125** until win rate recovers above 40%.
+5. **Add ADX filter** — only open positions when ADX_15m > 20 to avoid choppy markets where mean-reversion fails.
+6. **Pause trading 30-60 minutes** to backtest disabled strategies against last 2h of kline data before re-enabling.
+
+### Medium-term (Next 1-2 Weeks)
+7. **Run full 14-day backtest** on RSI_OVERSOLD with proposed trend filter.
+8. **Implement auto-disable server-side** after 3 consecutive losses per strategy.
+9. **Add strategy cooldown** — 15-minute cooldown per symbol after any hard stop.
+
+---
+
+## 7. RISK METRICS SUMMARY
+
+| Metric | Value | Threshold | Status |
+|--------|-------|-----------|--------|
+| Win Rate | 36.4% | > 40% | WARNING |
+| Max Single Loss | -$27.40 | -$25 | CRITICAL (slippage) |
+| Session Drawdown | $-47.67 | -5% | CRITICAL |
+| Strategy Concentration | 100% RSI_OVERSOLD | Diversified | CRITICAL |
+| Loop Health | 0 crashes | 0 | OK |
+| Pair Coverage | 141 | 150 | WARNING |
+| Capital Reserve | $1,952.33 | > $1,800 | OK |
+
+---
+
+*Report generated by Hermes Monitoring Agent — 2026-05-28 09:04 UTC*

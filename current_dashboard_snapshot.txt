@@ -1,0 +1,13 @@
+{
+  "capital": 1948.5743893500592,
+  "total_trades": 2,
+  "total_wins": 0,
+  "total_losses": 2,
+  "total_pnl": -51.42561064994091,
+  "is_active": true,
+  "loop_running": true,
+  "loop_crash_count": 0,
+  "pairs_loaded": 141,
+  "open_positions": 0,
+  "closed_count": 2
+}

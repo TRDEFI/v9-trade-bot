@@ -1,0 +1,176 @@
+{
+  "session_start": 1779942883652,
+  "session_num": 1,
+  "is_active": true,
+  "capital": 1915.9184944076565,
+  "total_trades": 8,
+  "total_wins": 2,
+  "total_losses": 6,
+  "total_pnl": -84.08150559234345,
+  "opens": [
+    {
+      "sym": "DASHUSDT",
+      "side": "LONG",
+      "entry": 39.65,
+      "current_price": 39.59,
+      "lev": 20,
+      "size": 250,
+      "pnl_pct": -4.426481715006061,
+      "pnl_usd": -11.066204287515154,
+      "target_profit": 25,
+      "max_pnl_usd": -1,
+      "min_pnl_usd": -11.066204287515154,
+      "atr_pct": 0.9261928787660386,
+      "trend_15m": "DOWN",
+      "trend_1h": "DOWN",
+      "opened": 1779949804068
+    }
+  ],
+  "closed": [
+    {
+      "sym": "XAGUSDT",
+      "side": "LONG",
+      "entry": 72.09,
+      "closed_price": 72.07,
+      "pnl": -3.3871549452080894,
+      "strat": "RSI_OVERSOLD",
+      "reason": "MOMENTUM_STOP",
+      "opened": 1779942884276,
+      "closed": 1779943380235
+    },
+    {
+      "sym": "SOLUSDT",
+      "side": "LONG",
+      "entry": 80.55000000000001,
+      "closed_price": 80.65,
+      "pnl": 4.207324643078479,
+      "strat": "RSI_OVERSOLD",
+      "reason": "MOMENTUM_STOP",
+      "opened": 1779942884276,
+      "closed": 1779945360139
+    },
+    {
+      "sym": "ONDOUSDT",
+      "side": "LONG",
+      "entry": 0.3571,
+      "closed_price": 0.3555,
+      "pnl": -24.40268832259858,
+      "strat": "RSI_OVERSOLD",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779945302895,
+      "closed": 1779945448196
+    },
+    {
+      "sym": "DOTUSDT",
+      "side": "LONG",
+      "entry": 1.1809999999999998,
+      "closed_price": 1.175,
+      "pnl": -27.40220152413118,
+      "strat": "RSI_OVERSOLD",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779945364187,
+      "closed": 1779945551786
+    },
+    {
+      "sym": "DOGEUSDT",
+      "side": "LONG",
+      "entry": 0.09745,
+      "closed_price": 0.09734,
+      "pnl": -7.643919958953258,
+      "strat": "RSI_OVERSOLD",
+      "reason": "MOMENTUM_STOP",
+      "opened": 1779945450724,
+      "closed": 1779945900452
+    },
+    {
+      "sym": "ONDOUSDT",
+      "side": "LONG",
+      "entry": 0.359,
+      "closed_price": 0.3574,
+      "pnl": -24.28412256267396,
+      "strat": "RSI_OVERSOLD",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779948003508,
+      "closed": 1779948807791
+    },
+    {
+      "sym": "LINKUSDT",
+      "side": "LONG",
+      "entry": 8.83,
+      "closed_price": 8.835,
+      "pnl": 0.8312570781431381,
+      "strat": "RSI_OVERSOLD",
+      "reason": "MOMENTUM_STOP",
+      "opened": 1779948904854,
+      "closed": 1779949200492
+    },
+    {
+      "sym": "ADAUSDT",
+      "side": "LONG",
+      "entry": 0.2291,
+      "closed_price": 0.2291,
+      "pnl": -2,
+      "strat": "RSI_OVERSOLD",
+      "reason": "MOMENTUM_STOP",
+      "opened": 1779948904854,
+      "closed": 1779949380305
+    }
+  ],
+  "system_logs": [
+    {
+      "time": "06:30:04",
+      "msg": "[DASHUSDT] OPEN LONG DASHUSDT @ 39.6500 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.93% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "06:15:05",
+      "msg": "[LINKUSDT] OPEN LONG LINKUSDT @ 8.8300 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.77% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "06:15:05",
+      "msg": "[ADAUSDT] OPEN LONG ADAUSDT @ 0.2291 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.80% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "06:00:03",
+      "msg": "[ONDOUSDT] OPEN LONG ONDOUSDT @ 0.3590 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=1.20% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "05:17:30",
+      "msg": "[DOGEUSDT] OPEN LONG DOGEUSDT @ 0.0974 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.70% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "05:16:04",
+      "msg": "[DOTUSDT] OPEN LONG DOTUSDT @ 1.1810 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.91% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "05:15:03",
+      "msg": "[ONDOUSDT] OPEN LONG ONDOUSDT @ 0.3571 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=1.16% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "04:34:44",
+      "msg": "[XAGUSDT] OPEN LONG XAGUSDT @ 72.0900 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.63% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "04:34:44",
+      "msg": "[SOLUSDT] OPEN LONG SOLUSDT @ 80.5500 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.67% t15=DOWN t1h=DOWN",
+      "level": "info"
+    }
+  ],
+  "server_time": 1779949880084,
+  "elapsed": "1sa 56dk 36s",
+  "used_capital": 250,
+  "unrealized_pnl": -11.066204287515154,
+  "has_downloadable_log": false,
+  "loop_running": true,
+  "last_loop_time": 1779949879937,
+  "last_loop_duration_ms": 6,
+  "loop_crash_count": 0,
+  "pairs_loaded": 141
+}

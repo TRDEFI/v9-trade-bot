@@ -1,0 +1,13 @@
+[
+  {
+    "sym": "HUMAUSDT",
+    "side": "LONG",
+    "entry": 0.025939,
+    "closed_price": 0.025763,
+    "pnl": -35.92574887235419,
+    "strat": "VOL_BREAKUP",
+    "reason": "HARD_STOP_LOSS",
+    "opened": 1779714320681,
+    "closed": 1779715340699
+  }
+]

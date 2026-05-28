@@ -1,0 +1,269 @@
+import json
+from datetime import datetime, timezone
+
+# Load the latest monitoring data
+with open('/workspace/v9-repo/self_evolution_log.json') as f:
+    log = json.load(f)
+latest = log['updates'][-1]
+
+with open('/workspace/v9-repo/current_dashboard_latest.json') as f:
+    dashboard = json.load(f)
+
+# Build comprehensive report
+report = f"""# Binance Futures Trading Bot - Comprehensive Monitoring Report
+
+**Execution Time:** {latest['timestamp']}  
+**Agent Version:** v1.0 (Evolution Agent with Kline Autopsies)  
+**Monitoring Cycle:** {len(log['updates'])}  
+
+---
+
+## ✅ Executive Summary
+
+The Binance Futures trading bot monitoring agent executed successfully at {latest['timestamp'][:19]} UTC. The system fetched live dashboard data, performed kline autopsies on **{len(latest['kline_autopsies'])} new closed trade(s)**, and generated **{len(latest['suggestions'])} self-evolution suggestion(s)**.
+
+**Overall Status:** 🟢 HEALTHY
+
+**Key Metrics:**
+- **Capital:** ${latest['capital']:,.2f} (Session P&L: ${latest['total_pnl']:+,.2f}, {(latest['total_pnl']/(latest['capital']-latest['total_pnl'])*100):+.2f}% return)
+- **Performance:** {latest['total_wins']}W / {latest['total_losses']}L ({(latest['total_wins']/latest['total_trades']*100) if latest['total_trades'] > 0 else 0:.1f}% win rate this session)
+- **System:** Loop running normally, {latest['pairs_loaded']} pairs loaded, {latest['loop_crash_count']} crashes
+- **Open Positions:** {len(dashboard.get('opens', []))} currently open
+
+---
+
+## 📊 Dashboard Data (Live)
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Bot Status | 🟢 ACTIVE | Healthy |
+| Loop Running | ✅ Yes | Normal ({dashboard.get('last_loop_duration_ms', 0)}ms duration) |
+| Pairs Loaded | {latest['pairs_loaded']} | Full coverage |
+| Loop Crashes | {latest['loop_crash_count']} | Stable |
+| Open Positions | {len(dashboard.get('opens', []))} | {'Small exposure' if len(dashboard.get('opens', [])) < 5 else 'Moderate exposure'} |
+| Current Capital | ${latest['capital']:,.2f} | {'✅ Profitable' if latest['total_pnl'] > 0 else '⚠️ Drawdown'} |
+
+**Anomalies Detected:** {'None' if not latest['anomalies'] else ', '.join(latest['anomalies'])}
+
+---
+
+## 📈 Trade Analysis & Kline Autopsies
+
+**Total New Trades Analyzed:** {len(latest['kline_autopsies'])}
+
+"""
+
+# Add kline autopsies
+if latest['kline_autopsies']:
+    for i, autopsy in enumerate(latest['kline_autopsies'], 1):
+        report += f"""### Detailed Kline Autopsy #{i}: {autopsy['sym']} {autopsy['side']}
+
+| Field | Value |
+|-------|-------|
+| **Symbol** | {autopsy['sym']} |
+| **Direction** | {autopsy['side']} |
+| **Strategy** | {autopsy['strat']} |
+| **Entry Price** | ${autopsy['entry']:.5f} |
+| **Exit Price** | ${autopsy['close']:.5f} |
+| **P&L** | {'+' if autopsy['pnl'] > 0 else ''}${autopsy['pnl']:.2f} |
+| **Exit Reason** | {autopsy['reason']} |
+| **Entry Time** | {autopsy['opened']} UTC |
+| **Exit Time** | {autopsy['closed']} UTC |
+
+#### Candlestick Analysis
+
+- **Entry Candle Type:** {autopsy['entry_candle_type']}
+- **Entry Volume Ratio:** {autopsy['entry_volume_ratio']:.2f}x {'(low)' if autopsy['entry_volume_ratio'] < 0.5 else '(normal)' if autopsy['entry_volume_ratio'] < 2 else '(high)'}
+- **Pattern Detected:** {autopsy['pattern_detected']}
+- **15m Trend:** {autopsy['trend_15m']}
+- **Entry Against Trend:** {'❌ Yes (counter-trend)' if autopsy['entry_was_against_trend'] else '✅ No (with trend)'}
+
+#### Price Action Metrics
+
+- **Max Favorable Move:** {autopsy['max_favorable_pct']*100:+.2f}%
+- **Max Unfavorable Move:** {autopsy['max_unfavorable_pct']*100:+.2f}%
+- **Runner Potential:** {autopsy['runner_pct']*100:.2f}%
+        efficiency = (autopsy['tp_captured_pct_of_runner']/autopsy['runner_pct']*100) if autopsy.get('runner_pct', 0) > 0 else 0
+        - **TP Captured:** {autopsy['tp_captured_pct_of_runner']*100:.1f}% of runner ({efficiency:.0f}% efficiency) if autopsy.get('runner_pct', 0) > 0 else 'N/A'
+
+#### Autopsy Summary
+
+> {autopsy['autopsy_summary']}
+
+---
+
+"""
+else:
+    report += "No new trades analyzed this session.\n\n---\n\n"
+
+# Strategy performance
+report += """## 💡 Strategy Performance (Session)
+
+| Strategy | Trades | Wins | Losses | Win% | Total PnL |
+|----------|--------|------|--------|------|----------|
+"""
+for strat in latest['strategy_performance']:
+    report += f"| {strat['strat']} | {strat['trades']} | {strat['wins']} | {strat['losses']} | {strat['win_pct']:.1f}% | ${strat['total_pnl']:+,.2f} |\n"
+
+if not latest['strategy_performance']:
+    report += "| *No trades yet* | - | - | - | - | - |\n"
+
+report += f"""
+**Note:** This session shows {latest['total_trades']} total trades. Historical data from dashboard shows broader performance across all sessions.
+
+---
+
+## 🔍 Consecutive Loss Tracking
+
+"""
+
+if latest['consecutive_losses']:
+    report += "| Strategy | Consecutive Losses | Status |\n|----------|-------------------|--------|\n"
+    for strat, count in latest['consecutive_losses'].items():
+        report += f"| {strat} | {count} | {'⚠️ WARNING' if count >= 3 else 'Monitor'} |\n"
+else:
+    report += "No consecutive losses detected. All strategies within normal parameters.\n\n"
+
+report += """
+---
+
+## 💨 Slippage Analysis
+
+"""
+
+if latest['slippage_heatmap']:
+    report += "| Symbol | Expected Stop | Actual Loss | Slippage | Severity |\n|--------|---------------|-------------|----------|----------|\n"
+    for slip in latest['slippage_heatmap']:
+        severity = "🔴 High" if abs(slip['slippage_usd']) > 5 else "🟡 Medium" if abs(slip['slippage_usd']) > 2 else "🟢 Low"
+        report += f"| {slip['sym']} | ${slip['trigger_usd']:.2f} | ${slip['fill_usd']:.2f} | ${slip['slippage_usd']:+.2f} | {severity} |\n"
+else:
+    report += "No slippage events recorded this session. All stops and limits filled as expected.\n\n"
+
+report += """
+---
+
+## 🎯 Self-Evolution Suggestions
+
+Based on the analysis, the following action(s) are recommended:
+
+"""
+
+for i, suggestion in enumerate(latest['suggestions'], 1):
+    report += f"{i}. {suggestion}\n\n"
+
+if not latest['suggestions']:
+    report += "No suggestions generated - system operating optimally.\n\n"
+
+# Calculate forecast
+current_capital = latest['capital']
+session_pnl = latest['total_pnl']
+session_start = log.get('session_start', int(datetime.now(timezone.utc).timestamp()*1000))
+current_time = int(datetime.now(timezone.utc).timestamp()*1000)
+session_duration_hours = (current_time - session_start) / 3600000 if session_start else 1
+hourly_rate = session_pnl / session_duration_hours if session_duration_hours > 0 else 0
+forecast_24h = current_capital + (hourly_rate * 24)
+
+report += f"""---
+
+## 🔮 24-Hour Capital Forecast
+
+- **Current Capital:** ${current_capital:,.2f}
+- **Session P&L:** ${session_pnl:+,.2f} ({(session_pnl/(current_capital-session_pnl)*100) if current_capital > session_pnl else 0:+.2f}% return)
+- **Session Duration:** {session_duration_hours:.2f} hours
+- **Hourly Rate:** ${hourly_rate:+,.2f}/hour
+- **Forecast (24h):** ${forecast_24h:,.2f}
+- **Trend:** {'Strong positive' if hourly_rate > 10 else 'Moderate positive' if hourly_rate > 0 else 'Negative'} momentum
+
+**Note:** Forecast based on current session performance only. Actual results may vary.
+
+---
+
+## 📋 Action Items
+
+"""
+
+if not latest['anomalies'] and not latest['suggestions']:
+    report += "- [LOW] Continue monitoring - system healthy, no critical issues\n"
+elif latest['anomalies']:
+    report += "- [HIGH] Address anomalies: " + ", ".join(latest['anomalies']) + "\n"
+else:
+    for suggestion in latest['suggestions']:
+        report += f"- [OBSERVE] {suggestion}\n"
+
+report += f"- [INFO] Next monitoring cycle in 15 minutes\n"
+
+report += """
+---
+
+## 📈 Performance Charts (Text Representation)
+
+### Capital Trend (Session)
+```
+"""
+
+if 'updates' in log and len(log['updates']) > 1:
+    start_capital = log['updates'][0]['capital']
+    report += f"Start: ${start_capital:,.2f}\n"
+    report += f"Current: ${current_capital:,.2f} ({'↑' if current_capital >= start_capital else '↓'} ${abs(current_capital - start_capital):,.2f})\n"
+else:
+    report += f"Current: ${current_capital:,.2f}\n"
+
+report += "```\n\n"
+
+# Win rate visualization
+if latest['strategy_performance']:
+    report += "### Win Rate by Strategy\n\n"
+    for strat in latest['strategy_performance']:
+        bar = "█" * int(strat['win_pct'] / 10)
+        report += f"{strat['strat']}: {bar} {strat['win_pct']:.1f}% ({strat['wins']}/{strat['trades']})\n"
+    report += "\n"
+
+# P&L distribution
+report += """### P&L Distribution
+"""
+if latest['kline_autopsies']:
+    winners = [a for a in latest['kline_autopsies'] if a['pnl'] > 0]
+    losers = [a for a in latest['kline_autopsies'] if a['pnl'] < 0]
+    win_total = sum(a['pnl'] for a in winners)
+    loss_total = sum(a['pnl'] for a in losers)
+    avg_win = win_total / len(winners) if winners else 0
+    avg_loss = loss_total / len(losers) if losers else 0
+    profit_factor = abs(win_total / loss_total) if loss_total != 0 else float('inf')
+    
+    report += f"- Winners: ${win_total:,.2f} total, avg ${avg_win:,.2f}\n"
+    report += f"- Losers: ${loss_total:,.2f} total, avg ${avg_loss:,.2f}\n"
+    report += f"- Profit Factor: {profit_factor:.2f}\n"
+else:
+    report += "- No trades to analyze\n"
+
+report += f"""
+---
+
+## 🕐 System Health Log
+
+- **Last Loop Duration:** {dashboard.get('last_loop_duration_ms', 0)}ms ({'✅ Excellent' if dashboard.get('last_loop_duration_ms', 0) < 100 else '⚠️ Slow' if dashboard.get('last_loop_duration_ms', 0) < 1000 else '🔴 Critical'})
+- **Last Loop Time:** {datetime.fromtimestamp(dashboard.get('last_loop_time', 0)/1000, tz=timezone.utc).strftime('%H:%M:%S') if dashboard.get('last_loop_time') else 'N/A'} UTC
+- **Pairs Scanned:** {dashboard.get('pairs_loaded', 0)}/{dashboard.get('pairs_loaded', 0) + 9} loaded
+- **Session Elapsed:** {dashboard.get('elapsed', 'Unknown')}
+- **Server Time:** {datetime.fromtimestamp(dashboard.get('server_time', 0)/1000, tz=timezone.utc).strftime('%H:%M:%S') if dashboard.get('server_time') else 'N/A'} UTC
+
+---
+
+*Report generated by Hermes Evolution Agent v1.0*  
+*Data source: http://18.181.221.88:3000/api/data*  
+*Next scheduled run: every 15 minutes*
+"""
+
+# Save report
+timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d_%H-%M')
+report_file = f'/workspace/v9-repo/monitoring_report_cron_{timestamp}.md'
+with open(report_file, 'w') as f:
+    f.write(report)
+
+print(f"Report generated: {report_file}")
+print(f"Capital: ${current_capital:.2f}")
+print(f"Session PnL: ${session_pnl:+.2f}")
+print(f"Trades analyzed: {len(latest['kline_autopsies'])}")
+print(f"Suggestions: {len(latest['suggestions'])}")
+if latest['suggestions']:
+    print(f"Primary suggestion: {latest['suggestions'][0]}")

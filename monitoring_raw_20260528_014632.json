@@ -1,0 +1,102 @@
+{
+  "timestamp": "2026-05-28T01:46:32.513192+00:00",
+  "capital": 1833.19,
+  "total_trades": 8,
+  "total_wins": 1,
+  "total_losses": 7,
+  "total_pnl": -166.81,
+  "win_rate": 12.5,
+  "avg_win": -166.81,
+  "avg_loss": -23.83,
+  "forecast_24h": 1552.28,
+  "session_duration": "14251h 37m 0s",
+  "bot_active": true,
+  "loop_running": true,
+  "loop_crashes": 0,
+  "pairs_loaded": 141,
+  "open_positions_count": 0,
+  "closed_count": 8,
+  "strategy_performance": {
+    "TREND_SHORT": {
+      "trades": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -27.107074287401645,
+      "consec_losses": 2
+    },
+    "RSI_OVERSOLD": {
+      "trades": 7,
+      "wins": 1,
+      "losses": 6,
+      "pnl": -139.70300440406507,
+      "consec_losses": 3
+    },
+    "SQUEEZE_SHORT": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 3
+    },
+    "VOL_BREAKUP": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 5
+    },
+    "EMA_CROSS_DN": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 6
+    },
+    "MOMENTUM_SHORT": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 1
+    }
+  },
+  "anomalies": [
+    "Win rate 12.5% critically low",
+    "Total loss $166.81 exceeds threshold",
+    "RSI_OVERSOLD has 3 consecutive losses",
+    "SQUEEZE_SHORT has 3 consecutive losses",
+    "VOL_BREAKUP has 5 consecutive losses",
+    "EMA_CROSS_DN has 6 consecutive losses"
+  ],
+  "suggestions": [
+    "Disable RSI_OVERSOLD (consecutive 3 losses)"
+  ],
+  "slippage_issues": [
+    {
+      "sym": "SEIUSDT",
+      "strategy": "TREND_SHORT",
+      "pnl": -27.107074287401645,
+      "slippage_est": 2.1070742874016446
+    },
+    {
+      "sym": "ONDOUSDT",
+      "strategy": "RSI_OVERSOLD",
+      "pnl": -28.09603340292278,
+      "slippage_est": 3.0960334029227816
+    },
+    {
+      "sym": "DASHUSDT",
+      "strategy": "RSI_OVERSOLD",
+      "pnl": -31.189978107516662,
+      "slippage_est": 6.189978107516662
+    }
+  ],
+  "consecutive_losses": {
+    "TREND_SHORT": 2,
+    "RSI_OVERSOLD": 3,
+    "SQUEEZE_SHORT": 3,
+    "VOL_BREAKUP": 5,
+    "EMA_CROSS_DN": 6,
+    "MOMENTUM_SHORT": 1
+  }
+}

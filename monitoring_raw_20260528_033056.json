@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-05-28T03:30:59.855199Z",
+  "mode": "simulation",
+  "dashboard": {
+    "account_balance_usdt": 12806.32,
+    "open_positions": 3,
+    "open_orders": 4,
+    "daily_pnl": 306.32,
+    "daily_pnl_percent": 2.45,
+    "timestamp": "2026-05-28T03:30:59.855435Z"
+  },
+  "trade_analysis": {
+    "total_trades_24h": 18,
+    "winning_trades": 11,
+    "losing_trades": 7,
+    "win_rate_percent": 63.0,
+    "total_profit_usdt": 44.62,
+    "average_win_usdt": 33.57,
+    "average_loss_usdt": -46.38,
+    "profit_factor": 0.72,
+    "sharpe_ratio": 1.65
+  },
+  "evolution_suggestions": [
+    {
+      "priority": "CRITICAL",
+      "category": "Profitability",
+      "suggestion": "Profit factor below 1.0 - losing more than winning. Immediate strategy review needed.",
+      "action": "Pause trading and perform full strategy backtest"
+    }
+  ],
+  "status": "completed"
+}

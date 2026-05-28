@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-05-28T09:46:08.832287+00:00",
+  "capital": 1927.59,
+  "total_trades": 12,
+  "total_wins": 4,
+  "total_losses": 8,
+  "total_pnl": -72.41,
+  "win_rate": 33.3,
+  "avg_win": -18.1,
+  "avg_loss": -9.05,
+  "forecast_24h": 1849.46,
+  "session_duration": "22245h 2m 19s",
+  "bot_active": true,
+  "loop_running": true,
+  "loop_crashes": 0,
+  "pairs_loaded": 141,
+  "open_positions_count": 0,
+  "closed_count": 12,
+  "strategy_performance": {
+    "RSI_OVERSOLD": {
+      "trades": 12,
+      "wins": 4,
+      "losses": 8,
+      "pnl": -72.41289194082248,
+      "consec_losses": 1
+    },
+    "TREND_SHORT": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 2
+    },
+    "SQUEEZE_SHORT": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 3
+    },
+    "VOL_BREAKUP": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 5
+    },
+    "EMA_CROSS_DN": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 6
+    },
+    "MOMENTUM_SHORT": {
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0,
+      "consec_losses": 1
+    }
+  },
+  "anomalies": [
+    "Win rate 33.3% critically low",
+    "SQUEEZE_SHORT has 3 consecutive losses",
+    "VOL_BREAKUP has 5 consecutive losses",
+    "EMA_CROSS_DN has 6 consecutive losses"
+  ],
+  "suggestions": [
+    "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+  ],
+  "slippage_issues": [
+    {
+      "sym": "DOTUSDT",
+      "strategy": "RSI_OVERSOLD",
+      "pnl": -27.40220152413118,
+      "slippage_est": 2.402201524131179
+    }
+  ],
+  "consecutive_losses": {
+    "RSI_OVERSOLD": 1,
+    "TREND_SHORT": 2,
+    "SQUEEZE_SHORT": 3,
+    "VOL_BREAKUP": 5,
+    "EMA_CROSS_DN": 6,
+    "MOMENTUM_SHORT": 1
+  }
+}

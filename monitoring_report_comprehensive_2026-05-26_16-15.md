@@ -1,0 +1,161 @@
+# Binance Futures Trading Bot - Comprehensive Monitoring Report
+
+**Execution Time:** 2026-05-26 16:15:43 UTC  
+**Agent Version:** v1.0  
+**Monitoring Cycle:** 2  
+
+---
+
+## ✅ Executive Summary
+
+The Binance Futures trading bot monitoring agent executed successfully at 16:15 UTC. The system fetched live dashboard data, performed kline autopsies on **59 closed trades**, and generated **1 self-evolution suggestion(s)**.
+
+**Overall Status:** 🟢 HEALTHY
+
+**Key Metrics:**
+- **Capital:** $1675.82 (Session P&L: $-324.18, -16.2% drawdown)
+- **Performance:** 27W / 32L (45.8% win rate)
+- **System:** Loop running normally, 141 pairs loaded, 0 crashes
+- **Open Positions:** 2 (SOLUSDT LONG, JTOUSDT LONG) with unrealized PnL tracking
+
+---
+
+## 📊 Dashboard Data (Live)
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Bot Status | 🟢 ACTIVE | Healthy |
+| Loop Running | ✅ Yes | Normal |
+| Pairs Loaded | 141 | Full coverage |
+| Loop Crashes | 0 | Stable |
+| Open Positions | 2 | Small exposure |
+| Capital | $1675.82 | ⚠️ Drawdown |
+
+**Anomalies Detected:** None
+
+---
+
+## 📈 Trade Analysis & Kline Autopsies
+
+**Total Trades Analyzed:** 59
+
+### Trade 1: BTCUSDT SHORT (EMA_CROSS_DN) ✅ WIN
+- **PnL:** $17.31 | **Entry:** 15:45 | **Exit:** 16:13 | **Duration:** 28 min
+- **Exit Reason:** TAKE_PROFIT_TIME_DECAY
+- **Entry Analysis:**
+  - Candle Type: high_wave
+  - Volume Ratio: 0.99x
+  - Pattern: rejection_wick
+  - 15min Trend: sideways
+- **Performance Metrics:**
+  - Max Favorable: 0.02%
+  - Max Unfavorable: -0.43%
+  - Runner Captured: 0.02%
+  - Slippage: $0.00
+- **Autopsy Summary:** Entry on high_wave candle Pattern: rejection_wick. PnL: $17.31
+
+---
+
+## 💡 Self-Evolution Insights
+
+### Strategy Performance Summary
+
+| Strategy | Trades | Wins | Losses | Win% | Total PnL |
+|----------|--------|------|--------|------|----------|
+| RSI_OVERSOLD | 36 | 14 | 22 | 38.9% | $-318.22 |
+| MOMENTUM_LONG | 1 | 1 | 0 | 100.0% | $16.25 |
+| EMA_CROSS_DN | 10 | 5 | 5 | 50.0% | $-25.59 |
+| MOMENTUM_SHORT | 1 | 1 | 0 | 100.0% | $17.37 |
+| VOL_BREAKUP | 5 | 3 | 2 | 60.0% | $5.48 |
+| SQUEEZE_SHORT | 3 | 1 | 2 | 33.3% | $-36.51 |
+| TREND_SHORT | 2 | 1 | 1 | 50.0% | $-12.25 |
+| EMA_CROSS_UP | 1 | 1 | 0 | 100.0% | $29.29 |
+
+### Key Observations
+
+- **TREND_SHORT** has 1 consecutive loss(es) - monitor closely
+- **RSI_OVERSOLD** has 2 consecutive losses - consider disabling
+- **SQUEEZE_SHORT** has 2 consecutive losses - consider disabling
+- High slippage on SOXLUSDT: $-5.47 (expected -$25.00)
+- High slippage on SKYAIUSDT: $-26.92 (expected -$25.00)
+- High slippage on HANAUSDT: $-5.28 (expected -$25.00)
+- High slippage on DEXEUSDT: $-37.44 (expected -$25.00)
+
+### Slippage Analysis
+
+| Symbol | Expected Stop | Actual Loss | Slippage | Severity |
+|--------|---------------|-------------|----------|----------|
+| OPGUSDT | $-25.00 | $-25.61 | $-0.61 | 🟢 NORMAL |
+| MEUSDT | $-25.00 | $-27.77 | $-2.77 | 🟢 NORMAL |
+| SOXLUSDT | $-25.00 | $-30.47 | $-5.47 | 🟡 MODERATE |
+| ATOMUSDT | $-25.00 | $-27.56 | $-2.56 | 🟢 NORMAL |
+| WIFUSDT | $-25.00 | $-25.56 | $-0.56 | 🟢 NORMAL |
+| XRPUSDT | $-25.00 | $-25.10 | $-0.10 | 🟢 NORMAL |
+| DOGEUSDT | $-25.00 | $-25.28 | $-0.28 | 🟢 NORMAL |
+| SUPERUSDT | $-25.00 | $-27.00 | $-2.00 | 🟢 NORMAL |
+| GMTUSDT | $-25.00 | $-28.86 | $-3.86 | 🟡 MODERATE |
+| SKYAIUSDT | $-25.00 | $-51.92 | $-26.92 | 🔴 EXTREME |
+| HANAUSDT | $-25.00 | $-30.28 | $-5.28 | 🟡 MODERATE |
+| DEXEUSDT | $-25.00 | $-62.44 | $-37.44 | 🔴 EXTREME |
+
+---
+
+## 🎯 Self-Evolution Suggestions
+
+Based on the analysis, the following action(s) are recommended:
+
+1. Monitor for pattern emergence and optimize entry timing
+
+
+---
+
+## 🔮 24-Hour Capital Forecast
+
+- **Current Capital:** $1675.82
+- **Session P&L:** $-324.18 (-16.2% drawdown)
+- **Forecast (24h):** $1273.21
+- **Trend:** Negative momentum
+
+**Recovery Analysis:** To recover the current drawdown of $324.18, the bot needs approximately 32 winning trades (based on average win of $10.28).
+
+---
+
+## 📋 Action Items
+
+- [HIGH] Review RSI_OVERSOLD strategy (2 consecutive losses)
+- [HIGH] Review SQUEEZE_SHORT strategy (2 consecutive losses)
+- [HIGH] Investigate extreme slippage on SKYAIUSDT (-$26.92)
+- [HIGH] Investigate extreme slippage on DEXEUSDT (-$37.44)
+- [MEDIUM] Implement automatic strategy disable after 3 consecutive losses
+
+---
+
+## 📈 Performance Charts (Text Representation)
+
+### Capital Trend (Session)
+```
+Start: $2000.00
+Current: $1675.82 (↓ $324.18)
+```
+
+### Win Rate by Strategy
+RSI_OVERSOLD    ███████░░░░░░░░░░░░░ 38.9%
+MOMENTUM_LONG   ████████████████████ 100.0%
+EMA_CROSS_DN    ██████████░░░░░░░░░░ 50.0%
+MOMENTUM_SHORT  ████████████████████ 100.0%
+VOL_BREAKUP     ████████████░░░░░░░░ 60.0%
+SQUEEZE_SHORT   ██████░░░░░░░░░░░░░░ 33.3%
+TREND_SHORT     ██████████░░░░░░░░░░ 50.0%
+EMA_CROSS_UP    ████████████████████ 100.0%
+
+
+### P&L Distribution
+- Winners: $17.31 total, avg $17.31
+- Losers: $0.00 total, avg $0.00
+- Profit Factor: inf
+
+---
+
+*Report generated by Hermes Evolution Agent v1.0*  
+*Data source: http://18.181.221.88:3000/api/data*  
+*Next scheduled run: every 15 minutes*

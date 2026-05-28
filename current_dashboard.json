@@ -1,0 +1,84 @@
+{
+    "session_start": 1779682401441,
+    "session_num": 1,
+    "is_active": true,
+    "capital": 2000,
+    "total_trades": 0,
+    "total_wins": 0,
+    "total_losses": 0,
+    "total_pnl": 0,
+    "opens": [
+        {
+            "sym": "ARKMUSDT",
+            "side": "SHORT",
+            "entry": 0.13570000000000002,
+            "current_price": 0.1357,
+            "lev": 20,
+            "size": 250,
+            "pnl_pct": -1.399999999999591,
+            "pnl_usd": -3.4999999999989773,
+            "target_profit": 50.40004210969575,
+            "max_pnl_usd": 11.238393515107274,
+            "min_pnl_usd": -10.869196757552615,
+            "atr_pct": 0.7205975173574565,
+            "trend_15m": "DOWN",
+            "trend_1h": "UP",
+            "opened": 1779690602746
+        },
+        {
+            "sym": "MEGAUSDT",
+            "side": "SHORT",
+            "entry": 0.07692,
+            "current_price": 0.0771,
+            "lev": 20,
+            "size": 250,
+            "pnl_pct": -6.080187207488289,
+            "pnl_usd": -15.200468018720724,
+            "target_profit": 13.277376464689581,
+            "max_pnl_usd": -1,
+            "min_pnl_usd": -23.650806032240695,
+            "atr_pct": 0.5310950585875832,
+            "trend_15m": "DOWN",
+            "trend_1h": "DOWN",
+            "opened": 1779690602746
+        }
+    ],
+    "closed": [],
+    "system_logs": [
+        {
+            "time": "06:51:00",
+            "msg": "Log rotated: bot_scan.log.1779691860445.bak",
+            "level": "info"
+        },
+        {
+            "time": "06:30:03",
+            "msg": "[MEGAUSDT] OPEN SHORT MEGAUSDT @ 0.0769 [EMA_CROSS_DN] sz=250.00 tp=13.28 atr=0.53% t15=DOWN t1h=DOWN",
+            "level": "info"
+        },
+        {
+            "time": "06:30:03",
+            "msg": "[ARKMUSDT] OPEN SHORT ARKMUSDT @ 0.1357 [MOMENTUM_SHORT] sz=250.00 tp=50.40 atr=0.72% t15=DOWN t1h=UP",
+            "level": "info"
+        },
+        {
+            "time": "05:56:55",
+            "msg": "Log rotated: bot_scan.log.1779688615500.bak",
+            "level": "info"
+        },
+        {
+            "time": "05:05:21",
+            "msg": "Log rotated: bot_scan.log.1779685521985.bak",
+            "level": "info"
+        }
+    ],
+    "server_time": 1779692554021,
+    "elapsed": "2sa 49dk 12s",
+    "used_capital": 500,
+    "unrealized_pnl": -18.7004680187197,
+    "has_downloadable_log": false,
+    "loop_running": true,
+    "last_loop_time": 1779692553598,
+    "last_loop_duration_ms": 11,
+    "loop_crash_count": 0,
+    "pairs_loaded": 150
+}

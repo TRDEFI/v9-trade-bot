@@ -1,0 +1,192 @@
+{
+  "session_start": 1779820358163,
+  "session_num": 1,
+  "is_active": true,
+  "capital": 1926.0094960436932,
+  "total_trades": 9,
+  "total_wins": 3,
+  "total_losses": 6,
+  "total_pnl": -73.99050395630697,
+  "opens": [
+    {
+      "sym": "SKYAIUSDT",
+      "side": "LONG",
+      "entry": 0.22112,
+      "current_price": 0.22139,
+      "lev": 20,
+      "size": 250,
+      "pnl_pct": 1.0421128798841577,
+      "pnl_usd": 2.605282199710394,
+      "target_profit": 25,
+      "max_pnl_usd": 12.102387843704689,
+      "min_pnl_usd": -12.544862518089984,
+      "atr_pct": 1.098031361248763,
+      "trend_15m": "DOWN",
+      "trend_1h": "DOWN",
+      "opened": 1779834604885
+    }
+  ],
+  "closed": [
+    {
+      "sym": "SOXLUSDT",
+      "side": "SHORT",
+      "entry": 224.03,
+      "closed_price": 222.71,
+      "pnl": 27.46034013301775,
+      "strat": "SQUEEZE_SHORT",
+      "reason": "TAKE_PROFIT",
+      "opened": 1779820358832,
+      "closed": 1779821086442
+    },
+    {
+      "sym": "CRCLUSDT",
+      "side": "LONG",
+      "entry": 105.49000000000001,
+      "closed_price": 105.03,
+      "pnl": -23.80301450374481,
+      "strat": "RSI_OVERSOLD",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779820358832,
+      "closed": 1779821344746
+    },
+    {
+      "sym": "SKYAIUSDT",
+      "side": "LONG",
+      "entry": 0.23497,
+      "closed_price": 0.23602,
+      "pnl": 20.343277865259292,
+      "strat": "RSI_OVERSOLD",
+      "reason": "TAKE_PROFIT_TIME_DECAY",
+      "opened": 1779820358832,
+      "closed": 1779823440075
+    },
+    {
+      "sym": "ALGOUSDT",
+      "side": "LONG",
+      "entry": 0.1084,
+      "closed_price": 0.1089,
+      "pnl": 21.062730627306294,
+      "strat": "RSI_OVERSOLD",
+      "reason": "TAKE_PROFIT_TIME_DECAY",
+      "opened": 1779822903808,
+      "closed": 1779824583509
+    },
+    {
+      "sym": "SOXLUSDT",
+      "side": "SHORT",
+      "entry": 226.07000000000002,
+      "closed_price": 227.63,
+      "pnl": -36.502587694076475,
+      "strat": "SQUEEZE_SHORT",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779824704014,
+      "closed": 1779824885606
+    },
+    {
+      "sym": "EDENUSDT",
+      "side": "LONG",
+      "entry": 0.06609999999999999,
+      "closed_price": 0.06581,
+      "pnl": -23.93645990922834,
+      "strat": "RSI_OVERSOLD",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779828304924,
+      "closed": 1779828400554
+    },
+    {
+      "sym": "MRVLUSDT",
+      "side": "SHORT",
+      "entry": 211.59,
+      "closed_price": 212.5,
+      "pnl": -23.50385178883682,
+      "strat": "SQUEEZE_SHORT",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779829204349,
+      "closed": 1779832320812
+    },
+    {
+      "sym": "AMDUSDT",
+      "side": "SHORT",
+      "entry": 504.64,
+      "closed_price": 504.86,
+      "pnl": -4.179771718453029,
+      "strat": "SQUEEZE_SHORT",
+      "reason": "TIME_STOP_HARD",
+      "opened": 1779829204349,
+      "closed": 1779832804626
+    },
+    {
+      "sym": "ZEREBROUSDT",
+      "side": "LONG",
+      "entry": 0.021603,
+      "closed_price": 0.021478,
+      "pnl": -30.931166967550826,
+      "strat": "RSI_OVERSOLD",
+      "reason": "HARD_STOP_LOSS",
+      "opened": 1779835501320,
+      "closed": 1779835890468
+    }
+  ],
+  "system_logs": [
+    {
+      "time": "22:45:02",
+      "msg": "[ZEREBROUSDT] OPEN LONG ZEREBROUSDT @ 0.0216 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=1.16% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "22:30:04",
+      "msg": "[SKYAIUSDT] OPEN LONG SKYAIUSDT @ 0.2211 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=1.10% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "21:00:04",
+      "msg": "[AMDUSDT] OPEN SHORT AMDUSDT @ 504.6400 [SQUEEZE_SHORT] sz=250.00 tp=25.00 atr=0.50% t15=UP t1h=UP",
+      "level": "info"
+    },
+    {
+      "time": "21:00:04",
+      "msg": "[MRVLUSDT] OPEN SHORT MRVLUSDT @ 211.5900 [SQUEEZE_SHORT] sz=250.00 tp=25.00 atr=0.65% t15=UP t1h=UP",
+      "level": "info"
+    },
+    {
+      "time": "20:45:05",
+      "msg": "[EDENUSDT] OPEN LONG EDENUSDT @ 0.0661 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=1.49% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "19:45:04",
+      "msg": "[SOXLUSDT] OPEN SHORT SOXLUSDT @ 226.0700 [SQUEEZE_SHORT] sz=250.00 tp=25.00 atr=0.87% t15=UP t1h=UP",
+      "level": "info"
+    },
+    {
+      "time": "19:15:04",
+      "msg": "[ALGOUSDT] OPEN LONG ALGOUSDT @ 0.1084 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.73% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "18:32:39",
+      "msg": "[SKYAIUSDT] OPEN LONG SKYAIUSDT @ 0.2350 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=1.11% t15=DOWN t1h=DOWN",
+      "level": "info"
+    },
+    {
+      "time": "18:32:39",
+      "msg": "[SOXLUSDT] OPEN SHORT SOXLUSDT @ 224.0300 [SQUEEZE_SHORT] sz=250.00 tp=25.00 atr=1.34% t15=UP t1h=UP",
+      "level": "info"
+    },
+    {
+      "time": "18:32:39",
+      "msg": "[CRCLUSDT] OPEN LONG CRCLUSDT @ 105.4900 [RSI_OVERSOLD] sz=250.00 tp=25.00 atr=0.87% t15=DOWN t1h=DOWN",
+      "level": "info"
+    }
+  ],
+  "server_time": 1779836513292,
+  "elapsed": "4sa 29dk 15s",
+  "used_capital": 250,
+  "unrealized_pnl": 2.605282199710394,
+  "has_downloadable_log": false,
+  "loop_running": true,
+  "last_loop_time": 1779836512873,
+  "last_loop_duration_ms": 6,
+  "loop_crash_count": 0,
+  "pairs_loaded": 142
+}
