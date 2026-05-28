@@ -168,7 +168,7 @@ export class BotRunner {
         console.log('[Bot] Config:', JSON.stringify(USER_CONFIG));
         
         // Subscribe to Websocket for all tracked pairs and intervals
-        this.binance.subscribeKlines(this.activePairs, ['5m', '15m', '1h']);
+        this.binance.subscribeKlines(this.activePairs, ['1m', '5m', '15m', '1h']);
     }
 
     stop() {

@@ -227,7 +227,7 @@ export class BinanceClient {
     let isStale = false;
     if (cache && cache.length > 0) {
        const lastCandle = cache[cache.length - 1];
-       const intervalMinutes = interval === '1h' ? 60 : interval === '15m' ? 15 : 5;
+       const intervalMinutes = interval === '1h' ? 60 : interval === '15m' ? 15 : interval === '1m' ? 1 : 5;
        if (now - lastCandle.t > intervalMinutes * 60 * 1000 * 3) {
            isStale = true;
        }
