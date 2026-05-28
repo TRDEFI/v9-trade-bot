@@ -191,8 +191,19 @@ export function getSignal(klines: Kline[]): Signal | null {
 
   const sigs: Signal[] = [];
 
-  if (rsi < 30) sigs.push({ name: 'RSI_OVERSOLD', score: 0.90, side: 'LONG', avg_move: avg });
-  if (rsi > 70) sigs.push({ name: 'RSI_OVERBOUGHT', score: 0.90, side: 'SHORT', avg_move: avg });
+  // RSI crossover detection: only fire on first cross (not when already oversold/overbought)
+  const prevKlines = klines.slice(0, -1);
+  const rsiPrev = prevKlines.length >= 14 ? calcRsi(prevKlines, 14) : rsi;
+  const lastCandle = klines[klines.length - 1];
+  const justOversold = rsiPrev >= 30 && rsi < 30;
+  const justOverbought = rsiPrev <= 70 && rsi > 70;
+
+  if (justOversold && lastCandle.c > lastCandle.o) {
+      sigs.push({ name: 'RSI_OVERSOLD', score: 0.90, side: 'LONG', avg_move: avg });
+  }
+  if (justOverbought && lastCandle.c < lastCandle.o) {
+      sigs.push({ name: 'RSI_OVERBOUGHT', score: 0.90, side: 'SHORT', avg_move: avg });
+  }
 
   if (dev < -2.5 && rsi < 40) sigs.push({ name: 'MA10_BOUNCE', score: 0.88, side: 'LONG', avg_move: avg });
   if (dev > 2.5  && rsi > 60) sigs.push({ name: 'MA10_REJECT',  score: 0.88, side: 'SHORT', avg_move: avg });
@@ -217,7 +228,6 @@ export function getSignal(klines: Kline[]): Signal | null {
   const justCrossedDn = ema9Prev >= ema21Prev && ema9Curr < ema21Curr;
   
   // EMA_CROSS_UP: require green crossover candle, strong volume, EMA21 not declining
-  const lastCandle = klines[klines.length - 1];
   const isGreenCandle = lastCandle.c > lastCandle.o;
   const ema21Slope = ema21Curr > 0 && ema21Prev > 0 ? (ema21Curr - ema21Prev) / ema21Prev : 0;
   if (justCrossedUp && vr > 2.0 && rsi < 65 && isGreenCandle && ema21Slope > -0.0005) {

@@ -46,7 +46,7 @@ interface TrendReq { align15m: 'UP' | 'DOWN' | 'ANY', align1h: 'UP' | 'DOWN' | '
 const TREND_MATRIX: Record<string, TrendReq> = {
     'TREND_LONG':          { align15m: 'UP',   align1h: 'ANY'  },
     'TREND_SHORT':         { align15m: 'DOWN', align1h: 'ANY'  },
-    'RSI_OVERSOLD':        { align15m: 'ANY',  align1h: 'ANY'  },
+    'RSI_OVERSOLD':        { align15m: 'UP',   align1h: 'ANY'  },
     'RSI_OVERBOUGHT':      { align15m: 'DOWN', align1h: 'DOWN' },
     'MA10_BOUNCE':         { align15m: 'UP',   align1h: 'ANY'  },
     'MA10_REJECT':         { align15m: 'DOWN', align1h: 'ANY'  },
@@ -612,6 +612,7 @@ export class BotRunner {
                             }
 
                             // 1dk momentum kontrolu: son 2 kapanan mumdan en az 1'i sinyal yonunde olmali
+                            // RSI_OVERSOLD: son kapanan 1m mum KESINLIKLE YESIL olmali (en az 1'i degil)
                             const c1m = await this.binance.getKlines(sym, '1m', 8);
                             if (c1m && c1m.length >= 3) {
                                 const last1m = c1m[c1m.length - 2];
@@ -639,6 +640,22 @@ export class BotRunner {
                                         this.logToFile(`[${sym}] REJECT: SHORT active 1m green (+${risePct}%)`);
                                         continue;
                                     }
+                                }
+                            }
+
+                            // RSI_OVERSOLD: son kapanan 1m mum KESINLIKLE YESIL olmali
+                            if (sig.name === 'RSI_OVERSOLD' && c1m && c1m.length >= 3) {
+                                const last1m = c1m[c1m.length - 2];
+                                if (last1m.c < last1m.o) {
+                                    this.logToFile(`[${sym}] REJECT: RSI_OVERSOLD last closed 1m must be green`);
+                                    continue;
+                                }
+                            }
+                            if (sig.name === 'RSI_OVERBOUGHT' && c1m && c1m.length >= 3) {
+                                const last1m = c1m[c1m.length - 2];
+                                if (last1m.c > last1m.o) {
+                                    this.logToFile(`[${sym}] REJECT: RSI_OVERBOUGHT last closed 1m must be red`);
+                                    continue;
                                 }
                             }
 
