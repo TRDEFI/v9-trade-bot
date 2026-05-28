@@ -362,7 +362,27 @@ export class BotRunner {
                     continue;
                 }
 
-                const bestSeen = pos.maxNetPnlUsd ?? netPnlUsd;
+                // MOMENTUM_STOP: Pozisyon max'dan ciddi dusmuste VE hacim cokmusse erken kapat
+                // Amac: hedefe ulasamayacagi belli olan trade'leri -$25 stopa dusmeden once kapatmak
+                // Hacim kontrolu olmadan basit trailing stop WLD gibi saglikli pullback'leri de keserdi
+                const peakPnl = pos.maxNetPnlUsd ?? netPnlUsd;
+                if (ageMin >= 3 && peakPnl > 0) {
+                    const pctLost = (peakPnl - netPnlUsd) / peakPnl;
+                    if (pctLost > 0.65 && netPnlUsd < 10) {
+                        const c1m = await this.binance.getKlines(sym, '1m', 7);
+                        if (c1m && c1m.length >= 6) {
+                            const closed = c1m.slice(-6, -1);
+                            const avgVol = closed.reduce((s, k) => s + k.v, 0) / 5;
+                            const lastClosed = closed[closed.length - 1];
+                            if (lastClosed.v < avgVol * 0.5) {
+                                this.logToFile(`[${sym}] MOMENTUM_STOP: ${sym} retrace ${(pctLost*100).toFixed(0)}% from max $${peakPnl.toFixed(2)}, vol collapse (last=${lastClosed.v.toFixed(0)} vs avg=${avgVol.toFixed(0)})`);
+                                await this.closePosition(sym, 'MOMENTUM_STOP');
+                                continue;
+                            }
+                        }
+                    }
+                }
+
                 if (
                     ageMin >= USER_CONFIG.time_stop_soft_min &&
                     netPnlUsd <= USER_CONFIG.time_stop_loss_usd
