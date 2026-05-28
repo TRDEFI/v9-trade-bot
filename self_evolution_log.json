@@ -569,6 +569,106 @@
         "EMA_CROSS_DN has 6 consecutive losses"
       ],
       "forecast_24h": 1849.47
+    },
+    {
+      "timestamp": "2026-05-28T10:46:35.457213+00:00",
+      "capital": 1954.84,
+      "total_trades": 13,
+      "total_wins": 5,
+      "total_losses": 8,
+      "total_pnl": -45.16,
+      "kline_autopsies": [
+        {
+          "sym": "EDENUSDT",
+          "side": "SHORT",
+          "entry": 0.059829999999999994,
+          "close": 0.05948,
+          "pnl": 27.249540364365384,
+          "strat": "TREND_SHORT",
+          "reason": "TAKE_PROFIT",
+          "opened": "10:15",
+          "closed": "10:19",
+          "entry_candle_type": "doji",
+          "entry_volume_ratio": 1.2210222509200968,
+          "max_favorable_pct": 0.0028413839211098696,
+          "max_unfavorable_pct": -0.007019889687447716,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "none",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0.0028413839211098696,
+          "tp_captured_pct_of_runner": -0.0058499080728730765,
+          "autopsy_summary": "Entry on doji candle. PnL: $27.25"
+        }
+      ],
+      "slippage_heatmap": [],
+      "consecutive_losses": {
+        "RSI_OVERSOLD": 1,
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "MOMENTUM_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 12,
+          "wins": 4,
+          "losses": 8,
+          "win_pct": 33.3,
+          "total_pnl": -72.41
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 1,
+          "wins": 1,
+          "losses": 0,
+          "win_pct": 100.0,
+          "total_pnl": 27.25
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0.0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0.0
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0.0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0.0
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1779.95,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
     }
   ]
 }
