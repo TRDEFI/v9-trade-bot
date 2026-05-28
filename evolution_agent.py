@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/app/venv/bin/python3
 """
 Monitoring agent for Binance Futures trading bot with kline autopsies.
 Runs every 15 minutes to fetch dashboard data, analyze trades, and generate self-evolution suggestions.

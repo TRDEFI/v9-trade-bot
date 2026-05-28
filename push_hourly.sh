@@ -22,7 +22,7 @@ if ! git diff --quiet self_evolution_log.json; then
     git add self_evolution_log.json
     
     # Get latest capital and pnl from the log
-    CAPITAL_PNL=$(python3 -c "import sys,json; d=json.load(open('self_evolution_log.json')); u=d['updates'][-1]; print(f'Capital {u[\"capital\"]} PnL {u[\"total_pnl\"]}')" 2>/dev/null || echo "Capital N/A PnL N/A")
+    CAPITAL_PNL=$(/app/venv/bin/python3 -c "import sys,json; d=json.load(open('self_evolution_log.json')); u=d['updates'][-1]; print(f'Capital {u[\"capital\"]} PnL {u[\"total_pnl\"]}')" 2>/dev/null || echo "Capital N/A PnL N/A")
     
     # Commit and push
     git commit -m "evolution: hourly update $CAPITAL_PNL"
