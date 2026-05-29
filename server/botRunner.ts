@@ -114,6 +114,10 @@ export class BotRunner {
     cycleShortCount: number = 0;
     
     pairIndex = 0;
+    microVolBlocked = 0;
+    microVolTotal = 0;
+    maxRangePctDynamic = USER_CONFIG.max_5m_range_pct;
+    lastAdaptiveAdjust = 0;
     lastKlineCheck: Record<string, number> = {};
     lastReversalCheck: Record<string, number> = {};
     lastBalanceCheck: number = 0;
@@ -519,7 +523,9 @@ export class BotRunner {
                                 const range = (m.h - m.l) / m.l * 100;
                                 if (range > maxRange5mPct) maxRange5mPct = range;
                             }
-                            if (maxRange5mPct > USER_CONFIG.max_5m_range_pct) {
+                            this.microVolTotal++;
+                            if (maxRange5mPct > this.maxRangePctDynamic) {
+                                this.microVolBlocked++;
                                 this.logToFile(`[${sym}] REJECT: 5m micro-volatility too high (max range ${maxRange5mPct.toFixed(2)}%)`);
                                 continue;
                             }
@@ -828,6 +834,20 @@ export class BotRunner {
                         processed++;
                         if (processed >= 10) break;
                     }  // end while
+
+                    // Adaptive micro-volatility: auto-adjust if >90% blocked (piyasa oynaklığına uyum)
+                    if (this.microVolTotal > 50) {
+                        const blockRate = this.microVolBlocked / this.microVolTotal;
+                        if (blockRate > 0.9 && Date.now() - this.lastAdaptiveAdjust > 30 * 60 * 1000) {
+                            const newThreshold = Math.min(10, +(this.maxRangePctDynamic * 1.3).toFixed(2));
+                            this.logToFile(`[ADAPTIVE] max_5m_range_pct auto-adjusted: ${this.maxRangePctDynamic.toFixed(2)}% → ${newThreshold}% (${(blockRate * 100).toFixed(0)}% of ${this.microVolTotal} pairs blocked, threshold cooldown 30min)`);
+                            this.maxRangePctDynamic = newThreshold;
+                            this.lastAdaptiveAdjust = Date.now();
+                        }
+                        this.microVolBlocked = 0;
+                        this.microVolTotal = 0;
+                    }
+
                     this.openingPosition = false;  // mutex unlock AFTER while loop
                 }  // end else if
             }
