@@ -842,6 +842,9 @@ export class BotRunner {
                         if (processed >= 10) break;
                     }  // end while
 
+                    // ADAPTIVE DIAG: reached after while loop
+                    console.log(`[DIAG] after while: microVolTotal=${this.microVolTotal}, microVolBlocked=${this.microVolBlocked}, atrTotal=${this.atrTotal}, atrBlocked=${this.atrBlocked}, lastAdaptiveAdjust=${this.lastAdaptiveAdjust}`);
+
                     // Adaptive micro-volatility: auto-adjust if >80% blocked (her tick taze veri ile)
                     if (this.microVolTotal >= 3) {
                         const blockRate = this.microVolBlocked / this.microVolTotal;
