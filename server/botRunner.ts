@@ -835,18 +835,18 @@ export class BotRunner {
                         if (processed >= 10) break;
                     }  // end while
 
-                    // Adaptive micro-volatility: auto-adjust if >90% blocked (piyasa oynaklığına uyum)
-                    if (this.microVolTotal > 50) {
+                    // Adaptive micro-volatility: auto-adjust if >80% blocked (her tick taze veri ile)
+                    if (this.microVolTotal >= 3) {
                         const blockRate = this.microVolBlocked / this.microVolTotal;
-                        if (blockRate > 0.9 && Date.now() - this.lastAdaptiveAdjust > 30 * 60 * 1000) {
-                            const newThreshold = Math.min(10, +(this.maxRangePctDynamic * 1.3).toFixed(2));
-                            this.logToFile(`[ADAPTIVE] max_5m_range_pct auto-adjusted: ${this.maxRangePctDynamic.toFixed(2)}% → ${newThreshold}% (${(blockRate * 100).toFixed(0)}% of ${this.microVolTotal} pairs blocked, threshold cooldown 30min)`);
-                            this.maxRangePctDynamic = newThreshold;
+                        if (blockRate > 0.8 && Date.now() - this.lastAdaptiveAdjust > 30 * 60 * 1000) {
+                            const nxt = Math.min(10, +((this.maxRangePctDynamic * 1.3).toFixed(2)));
+                            this.logToFile(`[ADAPTIVE] max_5m_range_pct: ${this.maxRangePctDynamic.toFixed(2)}% → ${nxt}% (${(blockRate * 100).toFixed(0)}% of ${this.microVolTotal} pairs blocked)`);
+                            this.maxRangePctDynamic = nxt;
                             this.lastAdaptiveAdjust = Date.now();
                         }
-                        this.microVolBlocked = 0;
-                        this.microVolTotal = 0;
                     }
+                    this.microVolBlocked = 0;
+                    this.microVolTotal = 0;
 
                     this.openingPosition = false;  // mutex unlock AFTER while loop
                 }  // end else if
