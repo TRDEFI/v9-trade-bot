@@ -8075,6 +8075,452 @@
       "loop_running": true,
       "loop_crash_count": 0,
       "pairs_loaded": 141
+    },
+    {
+      "timestamp": "2026-05-29T13:00:45.363228+00:00",
+      "capital": 2001.14,
+      "total_trades": 1,
+      "total_wins": 1,
+      "total_losses": 0,
+      "total_pnl": 1.14,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.60646509589841,
+          "slippage_usd": -1.606465095898411
+        },
+        {
+          "sym": "NATGASUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.47780678851195,
+          "slippage_usd": -1.4778067885119484
+        },
+        {
+          "sym": "ALGOUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -40.204393505252874,
+          "slippage_usd": -15.204393505252874
+        },
+        {
+          "sym": "NEARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.908973808501294,
+          "slippage_usd": -4.908973808501294
+        },
+        {
+          "sym": "ARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -28.091081593928177,
+          "slippage_usd": -3.091081593928177
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "TREND_SHORT": 2
+      },
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 19,
+          "wins": 5,
+          "losses": 14,
+          "win_pct": 26.3,
+          "total_pnl": -140.13
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -25.72
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -65.54
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 2028.4,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
+    },
+    {
+      "timestamp": "2026-05-29T13:15:48.030763+00:00",
+      "capital": 2001.14,
+      "total_trades": 1,
+      "total_wins": 1,
+      "total_losses": 0,
+      "total_pnl": 1.14,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.60646509589841,
+          "slippage_usd": -1.606465095898411
+        },
+        {
+          "sym": "NATGASUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.47780678851195,
+          "slippage_usd": -1.4778067885119484
+        },
+        {
+          "sym": "ALGOUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -40.204393505252874,
+          "slippage_usd": -15.204393505252874
+        },
+        {
+          "sym": "NEARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.908973808501294,
+          "slippage_usd": -4.908973808501294
+        },
+        {
+          "sym": "ARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -28.091081593928177,
+          "slippage_usd": -3.091081593928177
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "TREND_SHORT": 2
+      },
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 19,
+          "wins": 5,
+          "losses": 14,
+          "win_pct": 26.3,
+          "total_pnl": -140.13
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -25.72
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -65.54
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 2022.95,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
+    },
+    {
+      "timestamp": "2026-05-29T13:30:49.010998+00:00",
+      "capital": 2001.14,
+      "total_trades": 1,
+      "total_wins": 1,
+      "total_losses": 0,
+      "total_pnl": 1.14,
+      "kline_autopsies": [],
+      "slippage_heatmap": [
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.60646509589841,
+          "slippage_usd": -1.606465095898411
+        },
+        {
+          "sym": "NATGASUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.47780678851195,
+          "slippage_usd": -1.4778067885119484
+        },
+        {
+          "sym": "ALGOUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -40.204393505252874,
+          "slippage_usd": -15.204393505252874
+        },
+        {
+          "sym": "NEARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.908973808501294,
+          "slippage_usd": -4.908973808501294
+        },
+        {
+          "sym": "ARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -28.091081593928177,
+          "slippage_usd": -3.091081593928177
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "TREND_SHORT": 2
+      },
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 19,
+          "wins": 5,
+          "losses": 14,
+          "win_pct": 26.3,
+          "total_pnl": -140.13
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -25.72
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -65.54
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 2019.32,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
+    },
+    {
+      "timestamp": "2026-05-29T13:45:50.698895+00:00",
+      "capital": 1980.86,
+      "total_trades": 2,
+      "total_wins": 1,
+      "total_losses": 1,
+      "total_pnl": -19.14,
+      "kline_autopsies": [
+        {
+          "sym": "XAUTUSDT",
+          "side": "SHORT",
+          "entry": 4495.3099999999995,
+          "close": 4511.74,
+          "pnl": -20.274601751603665,
+          "strat": "MOMENTUM_SHORT",
+          "reason": "TIME_STOP_HARD",
+          "opened": "12:45",
+          "closed": "13:45",
+          "entry_candle_type": "long_wick_down",
+          "entry_volume_ratio": 1.024578136463683,
+          "max_favorable_pct": 0.004070909458969501,
+          "max_unfavorable_pct": -0.0002891902894348271,
+          "stop_hit_candle_type": "none",
+          "stop_hit_volume_ratio": 1.0,
+          "pattern_detected": "rejection_wick",
+          "trend_15m": "sideways",
+          "entry_was_against_trend": false,
+          "slippage_usd": 0,
+          "runner_pct": 0,
+          "tp_captured_pct_of_runner": 0,
+          "autopsy_summary": "Entry on long_wick_down candle Pattern: rejection_wick. PnL: $-20.27"
+        }
+      ],
+      "slippage_heatmap": [
+        {
+          "sym": "BCHUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.60646509589841,
+          "slippage_usd": -1.606465095898411
+        },
+        {
+          "sym": "NATGASUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -26.47780678851195,
+          "slippage_usd": -1.4778067885119484
+        },
+        {
+          "sym": "ALGOUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -40.204393505252874,
+          "slippage_usd": -15.204393505252874
+        },
+        {
+          "sym": "NEARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -29.908973808501294,
+          "slippage_usd": -4.908973808501294
+        },
+        {
+          "sym": "ARUSDT",
+          "trigger_usd": -25.0,
+          "fill_usd": -28.091081593928177,
+          "slippage_usd": -3.091081593928177
+        }
+      ],
+      "consecutive_losses": {
+        "SQUEEZE_SHORT": 3,
+        "VOL_BREAKUP": 5,
+        "EMA_CROSS_DN": 6,
+        "TREND_SHORT": 2,
+        "MOMENTUM_SHORT": 1
+      },
+      "strategy_performance": [
+        {
+          "strat": "RSI_OVERSOLD",
+          "trades": 19,
+          "wins": 5,
+          "losses": 14,
+          "win_pct": 26.3,
+          "total_pnl": -140.13
+        },
+        {
+          "strat": "TREND_SHORT",
+          "trades": 3,
+          "wins": 1,
+          "losses": 2,
+          "win_pct": 33.3,
+          "total_pnl": -25.72
+        },
+        {
+          "strat": "SQUEEZE_SHORT",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "VOL_BREAKUP",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "EMA_CROSS_DN",
+          "trades": 0,
+          "wins": 0,
+          "losses": 0,
+          "win_pct": 0,
+          "total_pnl": 0
+        },
+        {
+          "strat": "MOMENTUM_SHORT",
+          "trades": 4,
+          "wins": 1,
+          "losses": 3,
+          "win_pct": 25.0,
+          "total_pnl": -85.82
+        }
+      ],
+      "anomalies": [],
+      "suggestions": [
+        "Disable SQUEEZE_SHORT (consecutive 3 losses)"
+      ],
+      "capital_forecast_24h": 1719.06,
+      "loop_running": true,
+      "loop_crash_count": 0,
+      "pairs_loaded": 141
     }
   ]
 }
