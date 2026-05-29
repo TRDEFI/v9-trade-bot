@@ -118,6 +118,11 @@ export class BotRunner {
     microVolTotal = 0;
     maxRangePctDynamic = USER_CONFIG.max_5m_range_pct;
     lastAdaptiveAdjust = 0;
+    atrBlocked = 0;
+    atrTotal = 0;
+    maxAtrPctDynamic = USER_CONFIG.max_atr_pct;
+    minAtrPctDynamic = USER_CONFIG.min_atr_pct;
+    lastAtrAdaptiveAdjust = 0;
     lastKlineCheck: Record<string, number> = {};
     lastReversalCheck: Record<string, number> = {};
     lastBalanceCheck: number = 0;
@@ -562,7 +567,9 @@ export class BotRunner {
                             }
 
                             const atrPct = (sig.avg_move / sigClosePrice) * 100;
-                            if (atrPct < USER_CONFIG.min_atr_pct || atrPct > USER_CONFIG.max_atr_pct) {
+                            this.atrTotal++;
+                            if (atrPct < this.minAtrPctDynamic || atrPct > this.maxAtrPctDynamic) {
+                                this.atrBlocked++;
                                 this.logToFile(`[${sym}] REJECT: ATR% out of scalp range (${atrPct.toFixed(2)}%)`);
                                 continue;
                             }
@@ -847,6 +854,21 @@ export class BotRunner {
                     }
                     this.microVolBlocked = 0;
                     this.microVolTotal = 0;
+
+                    // Adaptive ATR: auto-expand range if >80% blocked (her tick taze veri ile)
+                    if (this.atrTotal >= 3) {
+                        const atrBlockRate = this.atrBlocked / this.atrTotal;
+                        if (atrBlockRate > 0.8 && Date.now() - this.lastAtrAdaptiveAdjust > 30 * 60 * 1000) {
+                            const newMax = Math.min(10, +((this.maxAtrPctDynamic * 1.3).toFixed(2)));
+                            const newMin = Math.max(0.01, +((this.minAtrPctDynamic * 0.7).toFixed(2)));
+                            this.logToFile(`[ADAPTIVE] ATR range: ${this.minAtrPctDynamic.toFixed(2)}-${this.maxAtrPctDynamic.toFixed(2)}% → ${newMin.toFixed(2)}-${newMax.toFixed(2)}% (${(atrBlockRate * 100).toFixed(0)}% of ${this.atrTotal} pairs blocked)`);
+                            this.maxAtrPctDynamic = newMax;
+                            this.minAtrPctDynamic = newMin;
+                            this.lastAtrAdaptiveAdjust = Date.now();
+                        }
+                    }
+                    this.atrBlocked = 0;
+                    this.atrTotal = 0;
 
                     this.openingPosition = false;  // mutex unlock AFTER while loop
                 }  // end else if
