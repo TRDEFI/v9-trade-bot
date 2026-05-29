@@ -572,8 +572,9 @@ export class BotRunner {
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // Fresh Signal: Valid for 5 minutes (scalping balance)
-                            if (candleAgeMs > 5 * 60 * 1000) {
+                            // Fresh Signal: Valid for 10 minutes (scalping balance)
+                            if (candleAgeMs > 10 * 60 * 1000) {
+                                console.log(`[STALE] ${sym}: ${sig.name} candleAge=${(candleAgeMs/60000).toFixed(1)}min > 10min`);
                                 continue;
                             }
 
