@@ -537,6 +537,17 @@ export class BotRunner {
 
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.75) {  // FIX: 0.70 -> 0.75 (daha kaliteli sinyaller)
+                                if (processed === 0 && !sig) {
+                                    const rsi15 = closed15m.length >= 14 ? calcRsi(closed15m) : -1;
+                                    const lastC = closed15m[closed15m.length - 1]?.c ?? 0;
+                                    const dev = closed15m.length >= 10 ? ((lastC / calcMa(closed15m, 10)) - 1) * 100 : 0;
+                                    console.log(`[NO_SIG] ${sym}: rsi=${rsi15.toFixed(1)} dev=${dev.toFixed(2)}%`);
+                                    const prevKlines = closed15m.slice(0, -1);
+                                    if (prevKlines.length >= 14) {
+                                        const rsiPrev = calcRsi(prevKlines);
+                                        console.log(`[NO_SIG] justOversold=${rsiPrev >= 30 && rsi15 < 30}, justOverbought=${rsiPrev <= 70 && rsi15 > 70}`);
+                                    }
+                                }
                                 continue;
                             }
 
@@ -843,7 +854,7 @@ export class BotRunner {
                     }  // end while
 
                     // ADAPTIVE DIAG: reached after while loop
-                    console.log(`[DIAG] after while: microVolTotal=${this.microVolTotal}, microVolBlocked=${this.microVolBlocked}, atrTotal=${this.atrTotal}, atrBlocked=${this.atrBlocked}, lastAdaptiveAdjust=${this.lastAdaptiveAdjust}`);
+                    console.log(`[DIAG] after while: checked=${checked}, processed=${processed}, microVolTotal=${this.microVolTotal}, microVolBlocked=${this.microVolBlocked}, atrTotal=${this.atrTotal}, atrBlocked=${this.atrBlocked}`);
 
                     // Adaptive micro-volatility: auto-adjust if >80% blocked (her tick taze veri ile)
                     if (this.microVolTotal >= 3) {
