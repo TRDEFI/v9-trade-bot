@@ -490,8 +490,9 @@ export class BotRunner {
                             continue;
                         }
 
-                        // 5-second cooldown per pair before re-checking klines to avoid API spam.
-                        if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 5000) continue;
+                        // Minimal cooldown per pair (prevents double-process within same tick)
+                        // REST rate limiting is handled by getKlines' 60s cooldown internally.
+                        if (this.lastKlineCheck[sym] && now - this.lastKlineCheck[sym] < 100) continue;
                         this.lastKlineCheck[sym] = now;
 
                         if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) {
@@ -520,10 +521,10 @@ export class BotRunner {
                             for (let pf = 1; pf <= 3; pf++) {
                                 const pfSym = this.activePairs[(this.pairIndex + pf) % this.activePairs.length];
                                 if (!this.openPositions[pfSym]) {
-                                    this.binance.getKlines(pfSym, '15m', 80).catch(() => {});
-                                    this.binance.getKlines(pfSym, '5m', 15).catch(() => {});
-                                    this.binance.getKlines(pfSym, '1m', 8).catch(() => {});
-                                    this.binance.getKlines(pfSym, '1h', 80).catch(() => {});
+                                    this.binance.getKlines(pfSym, '15m', 80, true).catch(() => {});
+                                    this.binance.getKlines(pfSym, '5m', 15, true).catch(() => {});
+                                    this.binance.getKlines(pfSym, '1m', 8, true).catch(() => {});
+                                    this.binance.getKlines(pfSym, '1h', 80, true).catch(() => {});
                                 }
                             }
 

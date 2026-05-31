@@ -210,16 +210,16 @@ export class BinanceClient {
     }
   }
 
-  async getKlines(symbol: string, interval: string = '5m', limit: number = 24): Promise<Kline[]> {
+  async getKlines(symbol: string, interval: string = '5m', limit: number = 24, isPrefetch: boolean = false): Promise<Kline[]> {
     if (!this.klinesCache[symbol]) this.klinesCache[symbol] = {};
     if (!this.klinesLastRestFetch[symbol]) this.klinesLastRestFetch[symbol] = {};
 
-    const cache = this.klinesCache[symbol][interval];
     const now = Date.now();
+    const cache = this.klinesCache[symbol][interval];
     
     // Global backoff active?
     if (now < this.globalRestBackoffUntil) {
-      return cache || [];
+      return this.klinesCache[symbol][interval] || [];
     }
     
     // If cache doesn't exist or doesn't have enough candles, fetch via REST once.
@@ -237,14 +237,11 @@ export class BinanceClient {
       // Cooldown for this specific pair+interval to avoid 60req/s spam
       const lastFetch = this.klinesLastRestFetch[symbol][interval] || 0;
       if (now - lastFetch < 60000) { 
-          // Wait at least 60 seconds before retrying the same missing REST data
-          return cache || [];
+          return this.klinesCache[symbol][interval] || [];
       }
-      this.klinesLastRestFetch[symbol][interval] = now;
-
       try {
         const response = await axios.get(`${BASE_URL}/fapi/v1/klines`, {
-          params: { symbol, interval, limit: Math.max(limit, 50) }, // Fetch 50 to have enough history
+          params: { symbol, interval, limit: Math.max(limit, 50) },
           timeout: 5000
         });
         if (Array.isArray(response.data)) {
@@ -257,12 +254,18 @@ export class BinanceClient {
             v: parseFloat(x[5])
           }));
         }
+        this.klinesLastRestFetch[symbol][interval] = Date.now();
       } catch (e: any) {
         if (e.response && (e.response.status === 429 || e.response.status === 418)) {
-            console.error(`[Binance API] Rate Limited! Backing off entirely for 1 minute.`);
-            this.globalRestBackoffUntil = now + 60000;
+            if (!isPrefetch) {
+                console.error(`[Binance API] Rate Limited! Backing off entirely for 1 minute.`);
+                this.globalRestBackoffUntil = now + 60000;
+            }
+            this.klinesLastRestFetch[symbol][interval] = now + 60000;
+        } else {
+            this.klinesLastRestFetch[symbol][interval] = now;
         }
-        return cache || [];
+        return this.klinesCache[symbol][interval] || [];
       }
     }
     
