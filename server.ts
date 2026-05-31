@@ -76,6 +76,11 @@ async function startServer() {
     });
   });
 
+  // Scan filter statistics endpoint: shows rejection breakdown per filter layer
+  app.get('/api/bot/scan-stats', (req, res) => {
+    res.json(bot.getFilterStats());
+  });
+
   // Serve evolution log for HERMES agent
   app.get('/api/evolution', (req, res) => {
     try {

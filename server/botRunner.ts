@@ -1,5 +1,5 @@
 import { BinanceClient } from './binanceClient.js';
-import { getSignal, calcRsi, calcSupertrend, calcEma } from './strategy.js';
+import { getSignal, calcRsi, calcMa, calcSupertrend, calcEma } from './strategy.js';
 import fs from 'fs';
 
 export const USER_CONFIG = {
@@ -123,6 +123,13 @@ export class BotRunner {
     maxAtrPctDynamic = USER_CONFIG.max_atr_pct;
     minAtrPctDynamic = USER_CONFIG.min_atr_pct;
     lastAtrAdaptiveAdjust = 0;
+    scanStats = {
+        checked: 0, passed: 0, priceLow: 0, cooldown: 0, maxTrades: 0,
+        microVol: 0, noSignal: 0, disabled: 0, lossMemory: 0,
+        staleSignal: 0, atrOutOfRange: 0, microCap: 0, pullback: 0,
+        rsi5m: 0, active1mMomentum: 0, lowVolume: 0, trendMatrix: 0,
+        correlation: 0, insufficientMargin: 0, leverageBlocked: 0
+    };
     lastKlineCheck: Record<string, number> = {};
     lastReversalCheck: Record<string, number> = {};
     lastBalanceCheck: number = 0;
@@ -479,6 +486,7 @@ export class BotRunner {
                         // Minimum price filter: micro-cap coinlerde 1 tick = cok buyuk %
                         if (price < 0.008) {
                             this.logToFile(`[${sym}] REJECT: Price too low (${price})`);
+                            this.scanStats.priceLow++;
                             continue;
                         }
 
@@ -488,6 +496,7 @@ export class BotRunner {
 
                         if (this.reversalCooldown[sym] && now < this.reversalCooldown[sym]) {
                              this.logToFile(`[${sym}] REJECT: In cooldown until ${new Date(this.reversalCooldown[sym]).toLocaleTimeString()}`);
+                             this.scanStats.cooldown++;
                              continue;
                         }
 
@@ -495,6 +504,7 @@ export class BotRunner {
                         const symTradeCount = this.tradesPerSymbol[sym] || 0;
                         if (symTradeCount >= USER_CONFIG.max_trades_per_sym) {
                             this.logToFile(`[${sym}] REJECT: Max trades per session reached (${symTradeCount}/${USER_CONFIG.max_trades_per_sym})`);
+                            this.scanStats.maxTrades++;
                             continue;
                         }
 
@@ -504,15 +514,33 @@ export class BotRunner {
                         //     continue;
                         // }
 
+                        this.scanStats.checked++;
                         try {
-                            const c15m = await this.binance.getKlines(sym, '15m', 80);
+                            // PRE-FETCH: fire next 3 pairs' klines in background (zero-latency pipeline)
+                            for (let pf = 1; pf <= 3; pf++) {
+                                const pfSym = this.activePairs[(this.pairIndex + pf) % this.activePairs.length];
+                                if (!this.openPositions[pfSym]) {
+                                    this.binance.getKlines(pfSym, '15m', 80).catch(() => {});
+                                    this.binance.getKlines(pfSym, '5m', 15).catch(() => {});
+                                    this.binance.getKlines(pfSym, '1m', 8).catch(() => {});
+                                    this.binance.getKlines(pfSym, '1h', 80).catch(() => {});
+                                }
+                            }
+
+                            // Fire all 4 timeframe kline fetches in parallel (minimizes REST wait)
+                            const c15mPromise = this.binance.getKlines(sym, '15m', 80);
+                            const c5mPromise = this.binance.getKlines(sym, '5m', 15);
+                            const c1mPromise = this.binance.getKlines(sym, '1m', 8);
+                            const c1hPromise = this.binance.getKlines(sym, '1h', 80);
+
+                            const c15m = await c15mPromise;
                             if (!c15m || c15m.length < 55) {
                                 continue;
                             }
 
                             const closed15m = c15m.slice(0, -1);
                             
-                            const c5m = await this.binance.getKlines(sym, '5m', 15);
+                            const c5m = await c5mPromise;
                             if (!c5m || c5m.length < 11) {
                                 this.logToFile(`[${sym}] REJECT: c5m data not sufficient (${c5m ? c5m.length : 0})`);
                                 continue;
@@ -531,12 +559,14 @@ export class BotRunner {
                             this.microVolTotal++;
                             if (maxRange5mPct > this.maxRangePctDynamic) {
                                 this.microVolBlocked++;
+                                this.scanStats.microVol++;
                                 this.logToFile(`[${sym}] REJECT: 5m micro-volatility too high (max range ${maxRange5mPct.toFixed(2)}%)`);
                                 continue;
                             }
 
                             const sig = getSignal(closed15m); // ONLY use closed candles
                             if (!sig || sig.score < 0.75) {  // FIX: 0.70 -> 0.75 (daha kaliteli sinyaller)
+                                this.scanStats.noSignal++;
                                 if (processed === 0 && !sig) {
                                     const rsi15 = closed15m.length >= 14 ? calcRsi(closed15m) : -1;
                                     const lastC = closed15m[closed15m.length - 1]?.c ?? 0;
@@ -552,12 +582,14 @@ export class BotRunner {
                             }
 
                             if (DISABLED_STRATS.has(sig.name)) {
+                                this.scanStats.disabled++;
                                 continue;
                             }
 
                             // Strategy loss memory check (same symbol+strategy lost recently)
                             const memKey = `${sym}:${sig.name}`;
                             if (this.strategyLossMemory[memKey] && now < this.strategyLossMemory[memKey]) {
+                                this.scanStats.lossMemory++;
                                 this.logToFile(`[${sym}] REJECT: Strategy ${sig.name} in loss cooldown (${Math.ceil((this.strategyLossMemory[memKey] - now) / 60000)}min remaining)`);
                                 continue;
                             }
@@ -574,6 +606,7 @@ export class BotRunner {
 
                             // Fresh Signal: Valid for 10 minutes (scalping balance)
                             if (candleAgeMs > 10 * 60 * 1000) {
+                                this.scanStats.staleSignal++;
                                 console.log(`[STALE] ${sym}: ${sig.name} candleAge=${(candleAgeMs/60000).toFixed(1)}min > 10min`);
                                 continue;
                             }
@@ -582,28 +615,33 @@ export class BotRunner {
                             this.atrTotal++;
                             if (atrPct < this.minAtrPctDynamic || atrPct > this.maxAtrPctDynamic) {
                                 this.atrBlocked++;
+                                this.scanStats.atrOutOfRange++;
                                 this.logToFile(`[${sym}] REJECT: ATR% out of scalp range (${atrPct.toFixed(2)}%)`);
                                 continue;
                             }
 
                             // RSI_OVERSOLD requires ATR > 0.6% (low-ATR coins have terrible R:R)
                             if (sig.name === 'RSI_OVERSOLD' && atrPct < 0.6) {
+                                this.scanStats.atrOutOfRange++;
                                 this.logToFile(`[${sym}] REJECT: RSI_OVERSOLD requires ATR > 0.6% (got ${atrPct.toFixed(2)}%)`);
                                 continue;
                             }
 
                             // Mikro-cap filtre: $0.05 alti coinlerde tick granularity pozisyon yonetimini imkansiz kiliyor
                             if (price < 0.05) {
+                                this.scanStats.microCap++;
                                 this.logToFile(`[${sym}] REJECT: Micro-cap coin (< $0.05, price=${price})`);
                                 continue;
                             }
 
                             // Pullback Control (0.5% allowed slippage) FIX: 0.3% -> 0.5%
                             if (sig.side === 'LONG' && price > sigClosePrice * 1.005) {
+                                this.scanStats.pullback++;
                                 this.logToFile(`[${sym}] REJECT: LONG Price too high (Price: ${price}, Limit: ${sigClosePrice * 1.005})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && price < sigClosePrice * 0.995) {
+                                this.scanStats.pullback++;
                                 this.logToFile(`[${sym}] REJECT: SHORT Price too low (Price: ${price}, Limit: ${sigClosePrice * 0.995})`);
                                 continue;
                             }
@@ -611,16 +649,19 @@ export class BotRunner {
                             // Alt zaman momentum (esnetildi)
                             const rsi5m = calcRsi(closed5m, 14);
                             if (sig.side === 'LONG' && rsi5m > 80) {
+                                this.scanStats.rsi5m++;
                                 this.logToFile(`[${sym}] REJECT: LONG RSI5m too high (${rsi5m.toFixed(2)})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && rsi5m < 20) {
+                                this.scanStats.rsi5m++;
                                 this.logToFile(`[${sym}] REJECT: SHORT RSI5m too low (${rsi5m.toFixed(2)})`);
                                 continue;
                             }
 
                             // EMA_CROSS_UP specific: require RSI5m < 60 (buying pullback within 15m uptrend)
                             if (sig.name === 'EMA_CROSS_UP' && rsi5m > 60) {
+                                this.scanStats.rsi5m++;
                                 this.logToFile(`[${sym}] REJECT: EMA_CROSS_UP requires RSI5m < 60 (got ${rsi5m.toFixed(2)})`);
                                 continue;
                             }
@@ -628,27 +669,32 @@ export class BotRunner {
                             // Anlik hareket kontrolu
                             const active5m = c5m[c5m.length - 1];
                             if (sig.side === 'LONG' && active5m.c < active5m.o * 0.995) {
+                                this.scanStats.active1mMomentum++;
                                 this.logToFile(`[${sym}] REJECT: LONG Active 5m candle dropping (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && active5m.c > active5m.o * 1.005) {
+                                this.scanStats.active1mMomentum++;
                                 this.logToFile(`[${sym}] REJECT: SHORT Active 5m candle rising (O: ${active5m.o}, C: ${active5m.c})`);
                                 continue;
                             }
 
                             // 1dk momentum kontrolu: son 2 kapanan mumdan en az 1'i sinyal yonunde olmali
                             // RSI_OVERSOLD: son kapanan 1m mum KESINLIKLE YESIL olmali (en az 1'i degil)
-                            const c1m = await this.binance.getKlines(sym, '1m', 8);
+                            // NOTE: c1m already being fetched in parallel via c1mPromise above
+                            const c1m = await c1mPromise;
                             if (c1m && c1m.length >= 3) {
                                 const last1m = c1m[c1m.length - 2];
                                 const prev1m = c1m[c1m.length - 3];
                                 const longAllowed = last1m.c >= last1m.o || prev1m.c >= prev1m.o;
                                 const shortAllowed = last1m.c <= last1m.o || prev1m.c <= prev1m.o;
                                 if (sig.side === 'LONG' && !longAllowed) {
+                                    this.scanStats.active1mMomentum++;
                                     this.logToFile(`[${sym}] REJECT: LONG last 2 1m both red`);
                                     continue;
                                 }
                                 if (sig.side === 'SHORT' && !shortAllowed) {
+                                    this.scanStats.active1mMomentum++;
                                     this.logToFile(`[${sym}] REJECT: SHORT last 2 1m both green`);
                                     continue;
                                 }
@@ -656,11 +702,13 @@ export class BotRunner {
                                 if (c1m.length >= 2) {
                                     const active1m = c1m[c1m.length - 1];
                                     if (sig.side === 'LONG' && active1m.c < active1m.o) {
+                                        this.scanStats.active1mMomentum++;
                                         const dropPct = ((1 - active1m.c / active1m.o) * 100).toFixed(2);
                                         this.logToFile(`[${sym}] REJECT: LONG active 1m red (-${dropPct}%)`);
                                         continue;
                                     }
                                     if (sig.side === 'SHORT' && active1m.c > active1m.o) {
+                                        this.scanStats.active1mMomentum++;
                                         const risePct = ((active1m.c / active1m.o - 1) * 100).toFixed(2);
                                         this.logToFile(`[${sym}] REJECT: SHORT active 1m green (+${risePct}%)`);
                                         continue;
@@ -672,6 +720,7 @@ export class BotRunner {
                             if (sig.name === 'RSI_OVERSOLD' && c1m && c1m.length >= 3) {
                                 const last1m = c1m[c1m.length - 2];
                                 if (last1m.c < last1m.o) {
+                                    this.scanStats.active1mMomentum++;
                                     this.logToFile(`[${sym}] REJECT: RSI_OVERSOLD last closed 1m must be green`);
                                     continue;
                                 }
@@ -679,6 +728,7 @@ export class BotRunner {
                             if (sig.name === 'RSI_OVERBOUGHT' && c1m && c1m.length >= 3) {
                                 const last1m = c1m[c1m.length - 2];
                                 if (last1m.c > last1m.o) {
+                                    this.scanStats.active1mMomentum++;
                                     this.logToFile(`[${sym}] REJECT: RSI_OVERBOUGHT last closed 1m must be red`);
                                     continue;
                                 }
@@ -690,6 +740,7 @@ export class BotRunner {
                                 const avgBaseVol = closed1m.reduce((sum, k) => sum + k.v, 0) / 5;
                                 const avgUsdVol = avgBaseVol * price;
                                 if (avgUsdVol < 15000) {
+                                    this.scanStats.lowVolume++;
                                     this.logToFile(`[${sym}] REJECT: Low 1m volume - avg $${avgUsdVol.toFixed(0)}/min (min $15000)`);
                                     continue;
                                 }
@@ -701,7 +752,8 @@ export class BotRunner {
 
                             // 1h EMA50 trend filtresi — SADECE STRICT_TREND_STRATS icin (EMA_CROSS_UP, RSI_OVERBOUGHT)
                             // Mean-reversion stratejileri trend tersine calisir, 1h filtresi onlari korumaz
-                            const c1h = await this.binance.getKlines(sym, '1h', 80);
+                            // NOTE: c1h already being fetched in parallel via c1hPromise above
+                            const c1h = await c1hPromise;
                             let trend1h: 'UP' | 'DOWN' | 'UNKNOWN' = 'UNKNOWN';
                             if (c1h && c1h.length >= 55) {
                                 const closed1h = c1h.slice(0, -1);
@@ -718,16 +770,8 @@ export class BotRunner {
                                 const ok15m = trendReq.align15m === 'ANY' || trendReq.align15m === trend15m;
                                 const ok1h = trendReq.align1h === 'ANY' || trend1h === 'UNKNOWN' || trendReq.align1h === trend1h;
                                 if (!ok15m || !ok1h) {
+                                    this.scanStats.trendMatrix++;
                                     this.logToFile(`[${sym}] REJECT: ${sig.name} trend matrix requires 15m=${trendReq.align15m} (got ${trend15m}), 1h=${trendReq.align1h} (got ${trend1h})`);
-                                    continue;
-                                }
-                            }
-
-                            // EMA_CROSS_DN momentum check: don't short when last 2 15m candles are both UP
-                            if (sig.name === 'EMA_CROSS_DN' && closed15m.length >= 3) {
-                                const last2 = closed15m.slice(-2);
-                                if (last2[0].c > last2[0].o && last2[1].c > last2[1].o) {
-                                    this.logToFile(`[${sym}] REJECT: EMA_CROSS_DN blocked - last 2 15m candles rising`);
                                     continue;
                                 }
                             }
@@ -735,14 +779,17 @@ export class BotRunner {
                             // Same-side correlation guard: max 2 positions per side total
                             const existingSameSide = Object.values(this.openPositions).filter(p => p.side === sig.side).length;
                             if (existingSameSide >= 2) {
+                                this.scanStats.correlation++;
                                 this.logToFile(`[${sym}] REJECT: Correlation guard - already ${existingSameSide} ${sig.side} positions`);
                                 continue;
                             }
                             if (sig.side === 'LONG' && this.cycleLongCount >= 2) {
+                                this.scanStats.correlation++;
                                 this.logToFile(`[${sym}] REJECT: Correlation guard - max 2 LONG per cycle`);
                                 continue;
                             }
                             if (sig.side === 'SHORT' && this.cycleShortCount >= 2) {
+                                this.scanStats.correlation++;
                                 this.logToFile(`[${sym}] REJECT: Correlation guard - max 2 SHORT per cycle`);
                                 continue;
                             }
@@ -752,18 +799,27 @@ export class BotRunner {
                             const maxDrawdownUsd = freeBalance * 0.40;  // FIX: %80 -> %40
 
                             if (configMarginUsd > freeBalance || (currentTotalNetPnl < 0 && Math.abs(currentTotalNetPnl) >= maxDrawdownUsd)) {
+                                this.scanStats.insufficientMargin++;
                                 this.logToFile(`[${sym}] REJECT: Insufficient Free Margin or Max Drawdown Block (Required: ${configMarginUsd}, Available: ${freeBalance})`);
                                 continue;
                             }
 
                             const maxLev = await this.binance.getMaxLeverage(sym);
                             if (maxLev < USER_CONFIG.lev) {
+                                this.scanStats.leverageBlocked++;
                                 this.logToFile(`[${sym}] REJECT: ${USER_CONFIG.lev}x desteklenmiyor (max: ${maxLev}x)`);
                                 this.addLog(`[${sym}] REJECT: Leverage ${USER_CONFIG.lev}x desteklenmiyor (max: ${maxLev}x)`, 'error');
                                 continue;
                             }
 
-                            this.logToFile(`[${sym}] OPENED: side=${sig.side} price=${price} strat=${sig.name}`);
+                            // DIAG: RSI signal-time snapshot (debug for timing mismatch analysis)
+                            const rsiAtEntry = calcRsi(closed15m, 14);
+                            const ma10AtEntry = calcMa(closed15m, 10);
+                            const ma20AtEntry = calcMa(closed15m, 20);
+                            const devAtEntry = ((sigClosePrice / ma10AtEntry) - 1) * 100;
+
+                            this.scanStats.passed++;
+                            this.logToFile(`[${sym}] OPENED: side=${sig.side} price=${price} strat=${sig.name} rsi=${rsiAtEntry.toFixed(1)} dev=${devAtEntry.toFixed(2)}%`);
 
                             // FIX: Increment trade counter ON OPEN (not on close) to prevent spam
                             this.tradesPerSymbol[sym] = (this.tradesPerSymbol[sym] || 0) + 1;
@@ -815,7 +871,12 @@ export class BotRunner {
                                 opened_at: now,
                                 openCommission: result.totalCommission,
                                 maxNetPnlUsd: -result.totalCommission,
-                                minNetPnlUsd: -result.totalCommission
+                                minNetPnlUsd: -result.totalCommission,
+                                // DIAG: kline state at signal time (RSI mismatch debugging)
+                                rsi_at_entry: rsiAtEntry,
+                                ma10_at_entry: ma10AtEntry,
+                                ma20_at_entry: ma20AtEntry,
+                                dev_at_entry: devAtEntry
                             };
                             this.reservedCapital += actualMarginUsd;
                             if (sig.side === 'LONG') this.cycleLongCount++;
@@ -857,29 +918,49 @@ export class BotRunner {
                     // ADAPTIVE DIAG: reached after while loop
                     console.log(`[DIAG] after while: checked=${checked}, processed=${processed}, microVolTotal=${this.microVolTotal}, microVolBlocked=${this.microVolBlocked}, atrTotal=${this.atrTotal}, atrBlocked=${this.atrBlocked}`);
 
-                    // Adaptive micro-volatility: auto-adjust if >80% blocked (her tick taze veri ile)
+                    const ADAPTIVE_COOLDOWN = 15 * 60 * 1000; // 15dk cooldown (FIX: 30→15dk)
+
+                    // Adaptive micro-volatility: bidirectional adjustment
+                    // >80% blocked → expand (loosen), <20% blocked → contract (tighten)
                     if (this.microVolTotal >= 3) {
                         const blockRate = this.microVolBlocked / this.microVolTotal;
-                        if (blockRate > 0.8 && Date.now() - this.lastAdaptiveAdjust > 30 * 60 * 1000) {
-                            const nxt = Math.min(10, +((this.maxRangePctDynamic * 1.3).toFixed(2)));
-                            this.logToFile(`[ADAPTIVE] max_5m_range_pct: ${this.maxRangePctDynamic.toFixed(2)}% → ${nxt}% (${(blockRate * 100).toFixed(0)}% of ${this.microVolTotal} pairs blocked)`);
-                            this.maxRangePctDynamic = nxt;
-                            this.lastAdaptiveAdjust = Date.now();
+                        if (now - this.lastAdaptiveAdjust > ADAPTIVE_COOLDOWN) {
+                            if (blockRate > 0.8) {
+                                const nxt = Math.min(10, +((this.maxRangePctDynamic * 1.3).toFixed(2)));
+                                this.logToFile(`[ADAPTIVE] max_5m_range_pct: ${this.maxRangePctDynamic.toFixed(2)}% → ${nxt}% (expand, ${(blockRate * 100).toFixed(0)}% blocked)`);
+                                this.maxRangePctDynamic = nxt;
+                                this.lastAdaptiveAdjust = now;
+                            } else if (blockRate < 0.2) {
+                                const minBound = USER_CONFIG.max_5m_range_pct;
+                                const nxt = Math.max(minBound, +((this.maxRangePctDynamic * 0.95).toFixed(2)));
+                                this.logToFile(`[ADAPTIVE] max_5m_range_pct: ${this.maxRangePctDynamic.toFixed(2)}% → ${nxt}% (contract, ${(blockRate * 100).toFixed(0)}% blocked)`);
+                                this.maxRangePctDynamic = nxt;
+                                this.lastAdaptiveAdjust = now;
+                            }
                         }
                     }
                     this.microVolBlocked = 0;
                     this.microVolTotal = 0;
 
-                    // Adaptive ATR: auto-expand range if >80% blocked (her tick taze veri ile)
+                    // Adaptive ATR: bidirectional adjustment
                     if (this.atrTotal >= 3) {
                         const atrBlockRate = this.atrBlocked / this.atrTotal;
-                        if (atrBlockRate > 0.8 && Date.now() - this.lastAtrAdaptiveAdjust > 30 * 60 * 1000) {
-                            const newMax = Math.min(10, +((this.maxAtrPctDynamic * 1.3).toFixed(2)));
-                            const newMin = Math.max(0.01, +((this.minAtrPctDynamic * 0.7).toFixed(2)));
-                            this.logToFile(`[ADAPTIVE] ATR range: ${this.minAtrPctDynamic.toFixed(2)}-${this.maxAtrPctDynamic.toFixed(2)}% → ${newMin.toFixed(2)}-${newMax.toFixed(2)}% (${(atrBlockRate * 100).toFixed(0)}% of ${this.atrTotal} pairs blocked)`);
-                            this.maxAtrPctDynamic = newMax;
-                            this.minAtrPctDynamic = newMin;
-                            this.lastAtrAdaptiveAdjust = Date.now();
+                        if (now - this.lastAtrAdaptiveAdjust > ADAPTIVE_COOLDOWN) {
+                            if (atrBlockRate > 0.8) {
+                                const newMax = Math.min(10, +((this.maxAtrPctDynamic * 1.3).toFixed(2)));
+                                const newMin = Math.max(0.01, +((this.minAtrPctDynamic * 0.7).toFixed(2)));
+                                this.logToFile(`[ADAPTIVE] ATR range: ${this.minAtrPctDynamic.toFixed(2)}-${this.maxAtrPctDynamic.toFixed(2)}% → ${newMin.toFixed(2)}-${newMax.toFixed(2)}% (expand, ${(atrBlockRate * 100).toFixed(0)}% blocked)`);
+                                this.maxAtrPctDynamic = newMax;
+                                this.minAtrPctDynamic = newMin;
+                                this.lastAtrAdaptiveAdjust = now;
+                            } else if (atrBlockRate < 0.2) {
+                                const newMax = Math.max(USER_CONFIG.max_atr_pct, +((this.maxAtrPctDynamic * 0.95).toFixed(2)));
+                                const newMin = Math.min(USER_CONFIG.min_atr_pct, +((this.minAtrPctDynamic * 1.05).toFixed(2)));
+                                this.logToFile(`[ADAPTIVE] ATR range: ${this.minAtrPctDynamic.toFixed(2)}-${this.maxAtrPctDynamic.toFixed(2)}% → ${newMin.toFixed(2)}-${newMax.toFixed(2)}% (contract, ${(atrBlockRate * 100).toFixed(0)}% blocked)`);
+                                this.maxAtrPctDynamic = newMax;
+                                this.minAtrPctDynamic = newMin;
+                                this.lastAtrAdaptiveAdjust = now;
+                            }
                         }
                     }
                     this.atrBlocked = 0;
@@ -952,7 +1033,11 @@ export class BotRunner {
             sym, side: pos.side, entry: pos.entry,
             closed_price: closePrice, pnl: netPnlUsd,
             strat: pos.strat, reason, lev: pos.lev, size: pos.size,
-            opened: pos.opened_at, closed: Date.now()
+            opened: pos.opened_at, closed: Date.now(),
+            rsi_at_entry: pos.rsi_at_entry,
+            ma10_at_entry: pos.ma10_at_entry,
+            ma20_at_entry: pos.ma20_at_entry,
+            dev_at_entry: pos.dev_at_entry
         });
 
         this.reservedCapital -= pos.size;
@@ -972,6 +1057,44 @@ export class BotRunner {
 
         this.logToFile(`[${sym}] CLOSED: side=${pos.side} entry=${pos.entry} close=${closePrice} pnl=${netPnlUsd.toFixed(2)} reason=${reason}`);
         console.log('  CLOSED ' + reason + ' ' + sym + ' ENTRY=' + pos.entry + ' CLOSE=' + closePrice + ' PNL=' + netPnlUsd.toFixed(2));
+    }
+
+    getFilterStats() {
+        const s = this.scanStats;
+        const total = s.checked;
+        return {
+            summary: {
+                checked: s.checked,
+                passed: s.passed,
+                rejected: total - s.passed,
+                reject_rate: total > 0 ? (((total - s.passed) / total) * 100).toFixed(1) + '%' : '0%'
+            },
+            breakdown: {
+                price_low: s.priceLow,
+                cooldown: s.cooldown,
+                max_trades: s.maxTrades,
+                micro_volatility: s.microVol,
+                no_signal: s.noSignal,
+                disabled_strategy: s.disabled,
+                loss_memory: s.lossMemory,
+                stale_signal: s.staleSignal,
+                atr_out_of_range: s.atrOutOfRange,
+                micro_cap: s.microCap,
+                pullback_slippage: s.pullback,
+                rsi_5m: s.rsi5m,
+                active_1m_momentum: s.active1mMomentum,
+                low_volume: s.lowVolume,
+                trend_matrix: s.trendMatrix,
+                correlation_guard: s.correlation,
+                insufficient_margin: s.insufficientMargin,
+                leverage_blocked: s.leverageBlocked
+            },
+            adaptive_state: {
+                max_5m_range_pct: this.maxRangePctDynamic,
+                max_atr_pct: this.maxAtrPctDynamic,
+                min_atr_pct: this.minAtrPctDynamic
+            }
+        };
     }
 
     getDashboardData() {
@@ -1000,12 +1123,20 @@ export class BotRunner {
                 trend_15m: p.trend15m || 'UNKNOWN',
                 trend_1h: p.trend1h || 'UNKNOWN',
                 opened: p.opened_at,
+                rsi_at_entry: p.rsi_at_entry,
+                ma10_at_entry: p.ma10_at_entry,
+                ma20_at_entry: p.ma20_at_entry,
+                dev_at_entry: p.dev_at_entry,
             })),
             closed: this.closedPositions.slice(-1000).map(p => ({
                 sym: p.sym, side: p.side, entry: p.entry,
                 closed_price: p.closed_price, pnl: p.pnl,
                 strat: p.strat, reason: p.reason,
                 opened: p.opened, closed: p.closed,
+                rsi_at_entry: p.rsi_at_entry,
+                ma10_at_entry: p.ma10_at_entry,
+                ma20_at_entry: p.ma20_at_entry,
+                dev_at_entry: p.dev_at_entry,
             })),
             system_logs: this.systemLogs.slice(0, 50),
             server_time: Date.now(),
