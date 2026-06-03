@@ -44,8 +44,8 @@ const DISABLED_STRATS = new Set([
 interface TrendReq { align15m: 'UP' | 'DOWN' | 'ANY', align1h: 'UP' | 'DOWN' | 'ANY' }
 
 const TREND_MATRIX: Record<string, TrendReq> = {
-    'TREND_LONG':          { align15m: 'ANY',  align1h: 'ANY'  },
-    'TREND_SHORT':         { align15m: 'ANY',  align1h: 'ANY'  },
+    'TREND_LONG':          { align15m: 'UP',   align1h: 'ANY'  },
+    'TREND_SHORT':         { align15m: 'DOWN', align1h: 'ANY'  },
     'RSI_OVERSOLD':        { align15m: 'UP',   align1h: 'ANY'  },
     'RSI_OVERBOUGHT':      { align15m: 'DOWN', align1h: 'DOWN' },
     'MA10_BOUNCE':         { align15m: 'UP',   align1h: 'ANY'  },
