@@ -605,12 +605,12 @@ export class BotRunner {
                             const sigCloseTime = sigCandle.t + 15 * 60 * 1000;
                             const candleAgeMs = now - sigCloseTime;
 
-                            // Fresh Signal: Valid for 15 minutes (1x candle duration)
-                            // With 10min window, signals were stale for 5min out of every 15min cycle (33%)
-                            // 15min eliminates timing-based staleness entirely; next closed candle resets the clock
-                            if (candleAgeMs > 15 * 60 * 1000) {
+                            // Fresh Signal: Valid for 20 minutes (1.3x candle duration)
+                            // 15min eliminated timing staleness, but dead pairs (17-32min old candles) still blocked.
+                            // 20min: catches pairs with 15-20min delayed candles; only truly dead (>20min) blocked.
+                            if (candleAgeMs > 20 * 60 * 1000) {
                                 this.scanStats.staleSignal++;
-                                console.log(`[STALE] ${sym}: ${sig.name} candleAge=${(candleAgeMs/60000).toFixed(1)}min > 10min`);
+                                console.log(`[STALE] ${sym}: ${sig.name} candleAge=${(candleAgeMs/60000).toFixed(1)}min > 20min`);
                                 continue;
                             }
 
