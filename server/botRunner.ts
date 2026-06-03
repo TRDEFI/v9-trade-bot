@@ -90,6 +90,22 @@ export class BotRunner {
             this.fileLogStream = fs.createWriteStream('bot_scan.log', { flags: 'a' });
             this.logLineCount = 0;
             this.addLog(`Log rotated: ${oldPath}`, 'info');
+            // Keep only last 10 rotated backups
+            try {
+                const files = fs.readdirSync('.').filter(f => f.startsWith('bot_scan.log.') && f.endsWith('.bak'));
+                files.sort((a, b) => {
+                    const ta = parseInt(a.split('.')[2] || '0');
+                    const tb = parseInt(b.split('.')[2] || '0');
+                    return ta - tb;
+                });
+                while (files.length > 10) {
+                    const f = files.shift()!;
+                    fs.unlinkSync(f);
+                    console.log(`[LOG] Cleaned old backup: ${f}`);
+                }
+            } catch (e) {
+                console.error('[LOG] Backup cleanup failed:', e);
+            }
         }
     }
 
